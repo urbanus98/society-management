@@ -6,6 +6,7 @@ interface Props {
   variable: any;
   values: any;
   withDisabled?: boolean;
+  // defaultvalue?: string;
   classes?: string;
   formik: any;
 }
@@ -17,6 +18,7 @@ const Input = ({
   values,
   withDisabled = true,
   classes,
+  // defaultvalue,
   formik,
 }: Props) => {
   return (

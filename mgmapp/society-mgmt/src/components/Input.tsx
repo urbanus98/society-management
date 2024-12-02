@@ -2,6 +2,7 @@ interface Props {
   name: string;
   label: string;
   variable: any;
+  placeholder?: string;
   type?: string;
   classes?: string;
   formik: any;
@@ -11,6 +12,7 @@ const Input = ({
   name,
   label,
   variable,
+  placeholder,
   type = "text",
   classes,
   formik,
@@ -32,6 +34,7 @@ const Input = ({
         className={"input " + classes}
         type={type}
         name={name}
+        {...(placeholder && { placeholder: placeholder })}
         value={formik.values[variable]}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}

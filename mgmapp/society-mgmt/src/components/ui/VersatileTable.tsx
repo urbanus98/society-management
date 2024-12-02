@@ -6,7 +6,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Link } from "react-router-dom";
-import Button from "./Button";
+import Button from "./FuncButton";
 import { string } from "yup";
 
 // Define the table component
@@ -18,12 +18,12 @@ export default function VersatileTable({
 }: {
   headers: any[];
   rows: any[];
-  linkIndex: number;
+  linkIndex?: number;
   linkPart: string;
 }) {
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <Table sx={{ minWidth: 320 }} aria-label="simple table">
         {/* Table Header */}
         <TableHead>
           <TableRow>
@@ -40,7 +40,7 @@ export default function VersatileTable({
                 <TableCell key={cellIndex}>
                   {cellIndex === linkIndex ? (
                     <Link to={`/${linkPart}/${cell}/edit`}>
-                      <img src="/public/edit_bs.png" alt="edit" width={20} />
+                      <img src="images/edit_bs.png" alt="edit" width={20} />
                     </Link>
                   ) : (
                     cell

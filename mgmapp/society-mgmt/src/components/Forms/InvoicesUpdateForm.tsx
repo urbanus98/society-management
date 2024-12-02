@@ -1,10 +1,11 @@
-import Input from "./Input";
-import InputSelect from "./InputSelect";
-import InputCheckbox from "./InputCheckbox";
+import Input from "../Input";
+import InputSelect from "../InputSelect";
+import InputCheckbox from "../InputCheckbox";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
-import { statuses } from "./data";
+import { statuses } from "../misc";
+import SubmButton from "../ui/SubmButton";
 
 interface Props {
   entities: any[];
@@ -135,11 +136,7 @@ const InvoicesForm = ({ entities, invoice }: Props) => {
         />
       </div>
 
-      <div className="justify-center flex ">
-        <button type="submit" className="btn btn-primary width-50 margin-tb2 ">
-          Posodobi
-        </button>
-      </div>
+      <SubmButton text="Posodobi" margin="2" />
     </form>
   );
 };

@@ -22,33 +22,24 @@ export const Navbar = () => {
       </div>
       <ul className={menuOpen ? "open" : ""}>
         <li>
-          <NavLink to={"/invoices"}>Racuni</NavLink>
+          <NavLink to={"/events"}>Dogodki</NavLink>
         </li>
         <li>
-          <NavLink to={"/black"}>Crnu</NavLink>
+          <NavLink to={"/merch"}>Merch</NavLink>
+        </li>
+        <li>
+          <NavLink to={"/invoices"}>Računi</NavLink>
+        </li>
+        <li>
+          <NavLink to={"/traffic"}>Promet</NavLink>
+        </li>
+        <li>
+          <NavLink to={"/black"}>črnu</NavLink>
         </li>
         <li>
           <NavLink to={"/stats"}>Stats</NavLink>
         </li>
       </ul>
     </nav>
-    // <header className="flex align-center navbar">
-    //   <h2>
-    //     <a href="/" className="navbar-link margin-left">
-    //       Navbar
-    //     </a>
-    //   </h2>
-    //   <nav className="flex padding-lr">
-    //     <a href="/invoices" className="navbar-link">
-    //       Racuni
-    //     </a>
-    //     <a href="/invoices" className="navbar-link">
-    //       Crnu
-    //     </a>
-    //     <a href="/invoices" className="navbar-link">
-    //       Statiskika
-    //     </a>
-    //   </nav>
-    // </header>
   );
 };

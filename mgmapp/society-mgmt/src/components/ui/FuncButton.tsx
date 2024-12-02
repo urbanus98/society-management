@@ -1,5 +1,5 @@
 interface Props {
-  children: string;
+  children: any;
   onClick?: () => void;
   color?:
     | "primary"
@@ -12,12 +12,12 @@ interface Props {
     | "dark";
 }
 
-const Button = ({ children, color = "primary", onClick }: Props) => {
+const FuncButton = ({ children, color = "primary", onClick }: Props) => {
   return (
-    <button className={"btn btn-" + color} onClick={onClick}>
+    <button type="button" className={"btn btn-" + color} onClick={onClick}>
       {children}
     </button>
   );
 };
 
-export default Button;
+export default FuncButton;

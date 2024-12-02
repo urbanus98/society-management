@@ -2,13 +2,13 @@
 import UsefulTable from "../components/UsefulTable";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import EntitiesForm from "../components/EntitiesForm";
+import EntitiesForm from "../components/Forms/EntitiesForm";
 import { useParams } from "react-router-dom";
-import InvoicesForm from "../components/InvoicesForm";
-import InvoicesUpdateForm from "../components/InvoicesUpdateForm";
+import InvoicesForm from "../components/Forms/InvoicesForm";
+import InvoicesUpdateForm from "../components/Forms/InvoicesUpdateForm";
 
 export const Invoices = () => {
-  const entityHeaders = ["Ime", "Kraj", "Uredi"];
+  const entityHeaders = ["Ime", "Kraj", ""];
   const invoiceHeaders = [
     "Št.",
     "Entiteta",
@@ -16,7 +16,7 @@ export const Invoices = () => {
     "Storitev",
     "Status",
     "Datum",
-    "Uredi",
+    "",
   ];
 
   const [invoices, setInvoices] = useState<any[]>([]);
@@ -49,21 +49,10 @@ export const Invoices = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
-  // useEffect(() => {
-  //   axios
-  //     .get("http://localhost:8081/entities")
-  //     .then((response) => {
-  //       setEntities(response.data);
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //     });
-  // }, []);
-
   return (
     <div className="background padding-3">
-      <div className="grid">
-        <div className="span2 grid-item">
+      <div className="grid-3">
+        <div className="span2 grid-3-item">
           <UsefulTable
             headers={invoiceHeaders}
             rows={invoices}
@@ -74,7 +63,7 @@ export const Invoices = () => {
             linkPart="invoices"
           />
         </div>
-        <div className="grid-item">
+        <div className="grid-3-item">
           <UsefulTable
             headers={entityHeaders}
             rows={entities}

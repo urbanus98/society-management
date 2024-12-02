@@ -1,9 +1,11 @@
-import InputSelect from "../components/InputSelect";
-import Input from "../components/Input";
-import InputCheckbox from "../components/InputCheckbox";
+import InputSelect from "../InputSelect";
+import Input from "../Input";
+import InputCheckbox from "../InputCheckbox";
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
+import { getDate } from "../misc";
+import SubmButton from "../ui/SubmButton";
 
 interface Entity {
   id: string;
@@ -104,21 +106,9 @@ const InvoicesForm = ({ entities }: Props) => {
         />
       </div>
 
-      <div className="justify-center flex">
-        <button type="submit" className="btn btn-primary width-50 margin-tb2 ">
-          Dodaj
-        </button>
-      </div>
+      <SubmButton text="Ustvari" margin="2" />
     </form>
   );
 };
-
-function getDate() {
-  const today = new Date();
-  const month = today.getMonth() + 1;
-  const year = today.getFullYear();
-  const date = today.getDate();
-  return `${year}-${month}-${date}`;
-}
 
 export default InvoicesForm;

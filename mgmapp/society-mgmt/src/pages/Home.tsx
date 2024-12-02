@@ -1,5 +1,5 @@
 import Alert from "../components/ui/Alert";
-import Button from "../components/ui/Button";
+import FuncButton from "../components/ui/FuncButton";
 import ListGroup from "../components/ListGroup";
 import { useState } from "react";
 
@@ -27,7 +27,7 @@ export const Home = () => {
         heading="List of items"
         onSelectItem={handleSelectItem}
       />
-      <Button onClick={() => setAlertVisibility(true)}>Butt</Button>
+      <FuncButton onClick={() => setAlertVisibility(true)}>Butt</FuncButton>
     </div>
   );
 };

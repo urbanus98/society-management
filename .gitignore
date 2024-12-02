@@ -9,6 +9,9 @@ lerna-debug.log*
 # Node modules
 node_modules/
 
+# Uploads
+mgmapp_backend/uploads/
+
 # Build outputs
 dist/
 dist-ssr/

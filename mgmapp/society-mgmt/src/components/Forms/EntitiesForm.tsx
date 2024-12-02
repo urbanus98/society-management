@@ -1,6 +1,7 @@
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
+import SubmButton from "../ui/SubmButton";
 
 interface Props {
   name?: string;
@@ -177,11 +178,7 @@ const EntitiesForm = ({ name, address, postal, place, iban, note }: Props) => {
         placeholder="So lopovi ipd..."
         className="input width-100"
       />
-      <div className="justify-center flex">
-        <button type="submit" className="btn btn-primary width-50 margin-tb ">
-          Dodaj
-        </button>
-      </div>
+      <SubmButton text="Dodaj" />
     </form>
   );
 };
