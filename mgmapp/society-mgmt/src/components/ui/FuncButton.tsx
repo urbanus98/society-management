@@ -1,6 +1,7 @@
 interface Props {
   children: any;
   onClick?: () => void;
+  isDisabled?: boolean;
   color?:
     | "primary"
     | "secondary"
@@ -12,9 +13,19 @@ interface Props {
     | "dark";
 }
 
-const FuncButton = ({ children, color = "primary", onClick }: Props) => {
+const FuncButton = ({
+  children,
+  color = "primary",
+  isDisabled = false,
+  onClick,
+}: Props) => {
   return (
-    <button type="button" className={"btn btn-" + color} onClick={onClick}>
+    <button
+      type="button"
+      className={"btn btn-" + color}
+      disabled={isDisabled}
+      onClick={onClick}
+    >
       {children}
     </button>
   );

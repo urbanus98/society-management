@@ -2,8 +2,10 @@ DROP TABLE IF EXISTS `traffic`;
 DROP TABLE IF EXISTS `stuff_sold`;
 DROP TABLE IF EXISTS `ordered_stuff`;
 DROP TABLE IF EXISTS `orders`;
+DROP TABLE IF EXISTS `stuff_sold`;
 DROP TABLE IF EXISTS `stuff_types`;
 DROP TABLE IF EXISTS `stuff`;
+DROP TABLE IF EXISTS `occasions`;
 DROP TABLE IF EXISTS `invoices`;
 DROP TABLE IF EXISTS `events`;
 DROP TABLE IF EXISTS `event_types`;
@@ -23,53 +25,60 @@ CREATE TABLE events (
     date date,
     PRIMARY KEY (id),
     FOREIGN KEY (type_id) REFERENCES event_types(id)
-); 
+);
+
+CREATE TABLE sales (
+    id int NOT NULL AUTO_INCREMENT,
+    event_id int NULL DISTINCT,
+    date date,
+    PRIMARY KEY (id),
+    FOREIGN KEY (event_id) REFERENCES events(id)
+);
 
 CREATE TABLE stuff (
     id int NOT NULL AUTO_INCREMENT,
     name varchar(255),
-    price int,
     image_path varchar(255) NULL,
     PRIMARY KEY (id)
 );
 
--- CREATE TABLE stuff_types (
---     id int NOT NULL AUTO_INCREMENT,
---     stuff_id int,
---     type varchar(255),
---     price int,
---     PRIMARY KEY (id),
---     FOREIGN KEY (stuff_id) REFERENCES stuff(id)
--- );
-
-CREATE TABLE stuff_sold (
+CREATE TABLE stuff_types (
     id int NOT NULL AUTO_INCREMENT,
-    event_id int NULL,
     stuff_id int,
-    quantity int,
-    price_actual int,
+    type varchar(255),
+    price int,
     PRIMARY KEY (id),
-    FOREIGN KEY (event_id) REFERENCES events(id),
     FOREIGN KEY (stuff_id) REFERENCES stuff(id)
 );
 
--- CREATE TABLE orders (
---     id int NOT NULL AUTO_INCREMENT,
---     date varchar(255),
---     price_total int,
---     pdf_path varchar(255) NULL,
---     PRIMARY KEY (id)
--- );
+CREATE TABLE stuff_sold (
+    id int NOT NULL AUTO_INCREMENT,
+    sale_id int NULL,
+    stufftype_id int,
+    quantity int,
+    price_actual int,
+    PRIMARY KEY (id),
+    FOREIGN KEY (sale_id) REFERENCES sales(id),
+    FOREIGN KEY (stufftype_id) REFERENCES stuff_types(id)
+);
 
--- CREATE TABLE ordered_stuff (
---     id int NOT NULL AUTO_INCREMENT,
---     order_id int,
---     stufftype_id int,
---     quantity int,
---     PRIMARY KEY (id),
---     FOREIGN KEY (stufftype_id) REFERENCES stuff_types(id),
---     FOREIGN KEY (order_id) REFERENCES orders(id)
--- );
+CREATE TABLE orders (
+    id int NOT NULL AUTO_INCREMENT,
+    date date,
+    price_total int,
+    pdf_path varchar(255) NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE ordered_stuff (
+    id int NOT NULL AUTO_INCREMENT,
+    order_id int,
+    stufftype_id int,
+    amount int,
+    PRIMARY KEY (id),
+    FOREIGN KEY (stufftype_id) REFERENCES stuff_types(id),
+    FOREIGN KEY (order_id) REFERENCES orders(id)
+);
 
 CREATE TABLE entities (
     id int NOT NULL AUTO_INCREMENT,
@@ -84,7 +93,7 @@ CREATE TABLE entities (
 
 CREATE TABLE invoices (
     id int NOT NULL AUTO_INCREMENT,
-    event_id int NULL,
+    event_id int NULL DISTINCT,
     payer_id int,
     receiver_id int,
     number int,

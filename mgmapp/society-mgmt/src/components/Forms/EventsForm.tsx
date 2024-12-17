@@ -1,5 +1,5 @@
-import Input from "../Input";
-import InputSelect from "../InputSelect";
+import Input from "../Inputs/Formik/FormikInput";
+import InputSelect from "../Inputs/Formik/FormikSelect";
 import axios from "axios";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
@@ -15,15 +15,25 @@ const EventsForm = ({ event }: Props) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [evenTypes, setEvenTypes] = useState<any[]>([]);
-
-  console.log(event);
+  const [invoiceIds, setInvoiceIds] = useState<any[]>([]);
+  const [saleIds, setSaleIds] = useState<any[]>([]);
 
   useEffect(() => {
+    const fetchEventTypes = axios.get("http://localhost:8081/event-types");
+    const fetchEventIds = axios.get(
+      "http://localhost:8081/event-ids/" + (id == undefined ? -1 : id)
+    );
+
+    console.log(event);
     axios
-      .get("http://localhost:8081/event-types")
-      .then((response) => {
-        setEvenTypes(response.data);
-      })
+      .all([fetchEventTypes, fetchEventIds])
+      .then(
+        axios.spread((typesResponse, idsResponse) => {
+          setEvenTypes(typesResponse.data);
+          setInvoiceIds(idsResponse.data.invoices);
+          setSaleIds(idsResponse.data.sales);
+        })
+      )
       .catch((error) => {
         console.error(error);
       });
@@ -36,6 +46,8 @@ const EventsForm = ({ event }: Props) => {
       typeId: event?.type_id || 1,
       name: event?.name || "",
       duration: event?.duration || 0,
+      eSaleId: event?.sale_id == null ? "" : event?.sale_id,
+      eInvoiceId: event?.invoice_id == null ? "" : event?.invoice_id,
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Obvezno polje"),
@@ -119,6 +131,34 @@ const EventsForm = ({ event }: Props) => {
             formik={formik}
           />
         </div>
+      </div>
+
+      <h3 className="bright-text" style={{ margin: "15pt 0 0 0" }}>
+        Dodeli račun/prodajo
+      </h3>
+      <div className="width-100">
+        <InputSelect
+          label="Racun"
+          name="eInvoiceId"
+          variable={"eInvoiceId"}
+          values={invoiceIds}
+          classes="width-100"
+          withEnabled={true}
+          withDisabled={false}
+          formik={formik}
+        />
+      </div>
+      <div className="width-100">
+        <InputSelect
+          label="Prodaja"
+          name="eSaleId"
+          variable={"eSaleId"}
+          values={saleIds}
+          classes="width-100"
+          withEnabled={true}
+          withDisabled={false}
+          formik={formik}
+        />
       </div>
 
       <SubmButton />

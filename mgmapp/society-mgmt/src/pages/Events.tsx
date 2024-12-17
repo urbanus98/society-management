@@ -16,7 +16,7 @@ export function CreateEvent() {
 }
 
 export function UpdateEvent() {
-  const [event, setEvent] = useState<any[]>([]);
+  const [event, setEvent] = useState<any>();
   const { id } = useParams();
 
   useEffect(() => {
@@ -26,17 +26,9 @@ export function UpdateEvent() {
       .catch((error) => console.error(error));
   }, [id]);
 
-  // useEffect(() => {
-  //   axios
-  //     .get(`http://localhost:8081/events/${id}`) // Use the id from the URL
-  //     .then((response) => {
-  //       setEvent(response.data[0]);
-  //       console.log(response.data[0]);
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //     });
-  // }, [id]);
+  if (!event) {
+    return <div>Loading...</div>; // Display a loading indicator while fetching data
+  }
 
   return (
     <div className="background padding-3 flex justify-center">

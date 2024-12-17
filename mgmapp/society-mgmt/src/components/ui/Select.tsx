@@ -6,6 +6,7 @@ interface Props {
   name?: string;
   classes?: string;
   withDisabled?: boolean;
+  withEnabled?: boolean;
 }
 
 const Select = ({
@@ -16,6 +17,7 @@ const Select = ({
   name,
   classes = "",
   withDisabled = true,
+  withEnabled = false,
 }: Props) => {
   return (
     <select
@@ -32,6 +34,8 @@ const Select = ({
           -- Izberi nekaj --{" "}
         </option>
       )}
+      {withEnabled && <option value=""> -- Brez vrednosti -- </option>}
+
       {values.map((value) => (
         <option key={value.id} value={value.id}>
           {value.name}

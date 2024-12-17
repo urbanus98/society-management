@@ -13,7 +13,6 @@ const Item = ({ item, linkPart }: Props) => {
         {...(item.image_path
           ? { src: `http://localhost:8081/${item.image_path}` }
           : { src: `http://localhost:8081/assets/tt_black.png` })}
-        // src={`http://localhost:8081/${item.image_path}`}
         alt={item.name}
         className="border-radius width-100 margin-5"
       />
@@ -25,7 +24,19 @@ const Item = ({ item, linkPart }: Props) => {
           {item.name}
         </Link>
       </h4>
-      <p className="margin-none">{item.price} &euro;</p>
+      {/* {item.types.map(({ type, price }: { type: string; price: number }) => (
+        <div key={type}>
+          <p className="margin-none">
+            {type}: {price} &euro;
+          </p>
+        </div>
+      ))} */}
+
+      {item.types.map((type: any, index: number) => (
+        <p className="margin-none" key={index}>
+          <b>{type.type}</b>: {type.price} &euro;
+        </p>
+      ))}
     </div>
   );
 };

@@ -16,7 +16,12 @@ import {
   Merch,
   CreateMerch,
   UpdateMerch,
-  SellMerch,
+  OrderMerch,
+  CreateSale,
+  UpdateSale,
+  UpdateOrder,
+  MerchOrders,
+  MerchSales,
   Black,
   Stats,
 } from "./pages";
@@ -42,7 +47,12 @@ function App() {
         <Route path="/merch" element={<Merch />} />
         <Route path="/merch/create" element={<CreateMerch />} />
         <Route path="/merch/:id/edit" element={<UpdateMerch />} />
-        <Route path="/merch/sell" element={<SellMerch />} />
+        <Route path="/merch/orders/create" element={<OrderMerch />} />
+        <Route path="/merch/orders" element={<MerchOrders />} />
+        <Route path="/merch/orders/:id/edit" element={<UpdateOrder />} />
+        <Route path="/merch/sales" element={<MerchSales />} />
+        <Route path="/merch/sales/create" element={<CreateSale />} />
+        <Route path="/merch/sales/:id/edit" element={<UpdateSale />} />
         <Route path="/black" element={<Black />} />
         <Route path="/stats" element={<Stats />} />
       </Routes>

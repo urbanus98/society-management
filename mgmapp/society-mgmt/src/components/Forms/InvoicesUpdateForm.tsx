@@ -1,6 +1,6 @@
-import Input from "../Input";
-import InputSelect from "../InputSelect";
-import InputCheckbox from "../InputCheckbox";
+import Input from "../Inputs/Formik/FormikInput";
+import InputSelect from "../Inputs/Formik/FormikSelect";
+import InputCheckbox from "../Inputs/Formik/FormikCheckbox";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";

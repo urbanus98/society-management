@@ -1,11 +1,10 @@
-import { Link } from "react-router-dom";
 import VersatileTable from "./ui/VersatileTable";
 import LinkButton from "./ui/LinkButton";
 
 interface Props {
   headers: string[];
   rows: any[];
-  title: string;
+  title?: string;
   buttonText?: string;
   buttonLink?: string;
   linkIndex?: number;
@@ -24,7 +23,7 @@ const UsefulTable = ({
   return (
     <>
       <div className="padding-table flex">
-        <h1 className="bright-text">{title}</h1>
+        {title && <h1 className="bright-text">{title}</h1>}
         {buttonText && buttonLink && (
           <div className="padding-5 margin-left1">
             <LinkButton text={buttonText} link={buttonLink} />

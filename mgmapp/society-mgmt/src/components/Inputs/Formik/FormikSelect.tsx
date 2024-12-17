@@ -1,9 +1,13 @@
+import Select from "../../ui/Select";
+
 interface Props {
   name: string;
   label: string;
   variable: any;
-  placeholder?: string;
-  type?: string;
+  values: any;
+  withDisabled?: boolean;
+  withEnabled?: boolean;
+  // defaultvalue?: string;
   classes?: string;
   formik: any;
 }
@@ -12,13 +16,15 @@ const Input = ({
   name,
   label,
   variable,
-  placeholder,
-  type = "text",
+  values,
+  withDisabled = true,
+  withEnabled = false,
   classes,
+  // defaultvalue,
   formik,
 }: Props) => {
   return (
-    <div className="coluflex">
+    <>
       <label
         htmlFor={name}
         className={`input_label ${
@@ -30,16 +36,16 @@ const Input = ({
         {label}
       </label>
 
-      <input
-        className={"input " + classes}
-        type={type}
-        name={name}
-        {...(placeholder && { placeholder: placeholder })}
-        value={formik.values[variable]}
+      <Select
+        values={values}
+        classes={classes}
+        withDisabled={withDisabled}
+        withEnabled={withEnabled}
+        defaultvalue={String(formik.values[variable])}
         onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
+        name={name}
       />
-    </div>
+    </>
   );
 };
 

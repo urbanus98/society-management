@@ -78,8 +78,17 @@ input::selection{
     width: 15pt;
 }
 
-.w200 {
+table {
+    border-collapse: separate !important;
+    border-spacing: 3pt !important;
+  }
+
+.mw200 {
     max-width: 250pt;
+}
+
+.mw100 {
+    max-width: 100pt;
 }
 
 .w40 {
@@ -192,6 +201,10 @@ input::selection{
     padding: 5pt;
 }
 
+.padding-03 {
+    padding: 0 3pt;
+}
+
 .border-radius {
     border-radius: 0.4rem;
 }
@@ -274,3 +287,17 @@ input::selection{
     display: none;
 }
 
+.btn-danger {
+    color: #fff;
+    background-color: #e3342f;
+    border-color: #e3342f;
+  }
+
+.btn-danger:hover {
+    color: #fff;
+    background-color: #d0211c;
+    border-color: #c51f1a;
+  }
+
+
+  
