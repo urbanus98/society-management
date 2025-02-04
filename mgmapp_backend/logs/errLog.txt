@@ -1,0 +1,3 @@
+2024-12-18 17:04:54		078fa1b7-7c1a-4ae4-8ee4-c5ac16a0a7f9	Error: Not allowed by CORS
+2024-12-18 17:04:55		26f699f3-0f2b-4e3b-93a8-ed73529ef892	Error: Not allowed by CORS
+2024-12-19 10:35:15		e4a45cc7-5f2d-43bc-90ac-414b9ec2b93e	TypeError: Cannot read properties of undefined (reading 'filename')
