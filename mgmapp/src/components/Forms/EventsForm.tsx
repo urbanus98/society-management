@@ -23,7 +23,7 @@ const EventsForm = ({ event }: Props) => {
   useEffect(() => {
     const fetchEventTypes = axiosPrivate.get("events/types");
     const fetchEventIds = axiosPrivate.get(
-      "events/ids/" + (id == undefined ? -1 : id)
+      "events/ids/" + (id != undefined ? id : -1)
     );
 
     axios

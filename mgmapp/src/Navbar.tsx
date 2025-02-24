@@ -47,17 +47,14 @@ export const Navbar = () => {
             <NavLink to={"/invoices"}>Računi</NavLink>
           </li>
           <li>
-            <NavLink to={"/traffic"}>Promet</NavLink>
+            <NavLink to={"/black"}>Črnu</NavLink>
           </li>
-          <li>
-            <NavLink to={"/black"}>črnu</NavLink>
-          </li>
-          <li>
+          {/* <li>
             <NavLink to={"/stats"}>Stats</NavLink>
-          </li>
+          </li> */}
           <li className="user-menu">
             <a onClick={signOut} style={{ cursor: "pointer" }}>
-              Logout
+              <i>Logout</i>
             </a>
           </li>
         </ul>

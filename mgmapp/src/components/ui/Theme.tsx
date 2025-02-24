@@ -7,7 +7,7 @@ const theme = createTheme({
       main: "#90caf9", // Customize primary color
     },
     background: {
-      default: "#121212", // Customize background color
+      default: "#121212", // Customize color
     },
   },
 });

@@ -57,7 +57,7 @@ const EntitiesForm = ({ name, address, postal, place, iban, note }: Props) => {
       <label
         htmlFor="name"
         className={`input_label ${
-          formik.touched.name && formik.errors.name ? "text-red" : "bright-text"
+          formik.touched.name && formik.errors.name ? "red-text" : "bright-text"
         }`}
       >
         {formik.touched.name && formik.errors.name ? formik.errors.name : "Ime"}
@@ -75,7 +75,7 @@ const EntitiesForm = ({ name, address, postal, place, iban, note }: Props) => {
         htmlFor=""
         className={`input_label ${
           formik.touched.address && formik.errors.address
-            ? "text-red"
+            ? "red-text"
             : "bright-text"
         }`}
       >
@@ -96,7 +96,7 @@ const EntitiesForm = ({ name, address, postal, place, iban, note }: Props) => {
         htmlFor=""
         className={`input_label ${
           formik.touched.postal && formik.errors.postal
-            ? "text-red"
+            ? "red-text"
             : "bright-text"
         }`}
       >
@@ -117,7 +117,7 @@ const EntitiesForm = ({ name, address, postal, place, iban, note }: Props) => {
         htmlFor=""
         className={`input_label ${
           formik.touched.place && formik.errors.place
-            ? "text-red"
+            ? "red-text"
             : "bright-text"
         }`}
       >
@@ -137,7 +137,7 @@ const EntitiesForm = ({ name, address, postal, place, iban, note }: Props) => {
       <label
         htmlFor=""
         className={`input_label ${
-          formik.touched.iban && formik.errors.iban ? "text-red" : "bright-text"
+          formik.touched.iban && formik.errors.iban ? "red-text" : "bright-text"
         }`}
       >
         {formik.touched.iban && formik.errors.iban ? formik.errors.iban : "TRR"}

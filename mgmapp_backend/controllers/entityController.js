@@ -10,8 +10,6 @@ const getEntities = (req, res)=>{
         return res.json(result);
     });
 };
-    
-
 
 const getEntitiesRow = (req, res)=>{
     const sql = "SELECT * FROM entities";
@@ -21,11 +19,11 @@ const getEntitiesRow = (req, res)=>{
             return res.status(500).json({ error: 'Failed to fetch data from the database' });
         }
         const rows = result.map((row) => {
-            return [
-              row.name,
-              row.place,
-              row.id,
-            ];
+            return {
+                name: row.name,
+                place: row.place,
+                id: row.id,
+            };
           });
         return res.json(rows);
     });

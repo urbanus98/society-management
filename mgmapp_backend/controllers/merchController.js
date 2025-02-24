@@ -1,5 +1,5 @@
 const db = require('../db');
-const parseJSON = require('./miscController').parseJSON;
+const parseJSON = require('../services/misc').parseJSON;
 
 exports.getStuffTypes = (req, res)=>{
     const sql = `
@@ -78,10 +78,9 @@ exports.postMerch = (req, res) => {
         let imagePath = null;
 
         console.log(req.body);
-        console.log(details);
-
+        
         if (req.file) {
-        imagePath = `uploads/${req.file.filename}`;
+            imagePath = `uploads/${req.file.filename}`;
         }
         const sqlStuff = imagePath
             ? `INSERT INTO stuff (name, image_path) VALUES (?, ?)`

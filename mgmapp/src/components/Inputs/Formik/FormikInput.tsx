@@ -23,7 +23,7 @@ const FormikInput = ({
         htmlFor={name}
         className={`input_label ${
           formik.touched[variable] && formik.errors[variable]
-            ? "text-red"
+            ? "red-text"
             : "bright-text"
         }`}
       >

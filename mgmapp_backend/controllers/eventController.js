@@ -1,7 +1,5 @@
 const db = require('../db');
-const express = require('express');
-
-const { getSalesWithAmounts } = require('./miscController');
+const { getSalesWithAmounts } = require('./salesController');
 
 // ** EVENTS **
 
@@ -28,11 +26,11 @@ exports.getEvents = (req, res)=>{
             return res.status(500).json({ error: 'Failed to fetch data from the database' });
         }
         const rows = result.map((row) => {
-            return [
-              row.type + " - " + row.name,
-              row.date_formatted,
-              row.id,
-            ];
+            return {
+              name: row.type + " - " + row.name,
+              date: row.date_formatted,
+              id: row.id,
+            };
         });
         return res.json(rows);
     });
@@ -41,7 +39,7 @@ exports.getEvents = (req, res)=>{
 exports.postEvent = (req, res) => {
     var {name, duration, typeId, date, eSaleId, eInvoiceId} = req.body;
     const sql = `INSERT INTO events (name, duration, type_id, date) VALUES ('${name}', '${duration}', '${typeId}', '${date}')`;
-    console.log(sql);
+    // console.log(sql);
 
     db.query(sql, (err, result) => {
         if (err) {
@@ -103,7 +101,7 @@ exports.getEvent = (req, res)=>{
             console.error('Error fetching data from database:', err);
             return res.status(500).json({ error: 'Failed to fetch data from the database' });
         }
-        console.log(result);
+        // console.log(result);
 
 
         return res.json(result[0]);
@@ -120,7 +118,7 @@ exports.putEvent = (req, res)=>{
     UPDATE events SET name = '${name}', duration = '${duration}', type_id = '${typeId}', date = '${date}' WHERE id = ${id};
     
     `;
-    console.log(sqlEvent);
+    // console.log(sqlEvent);
     db.query(sqlEvent, (err, result) => {
         if (err) {
             console.error('Error updating event in database:', err);
@@ -169,7 +167,7 @@ exports.getEventIDs = async (req, res)=>{
         JOIN entities ON invoices.payer_id = entities.id
         JOIN traffic ON invoices.id = traffic.invoice_id
         WHERE invoices.event_id IS NULL OR invoices.event_id = ${id}
-        ORDER BY issue_date
+        ORDER BY issue_date, id DESC
     `;
     db.query(sqlInvoices, async (err, resultInvoices)=>{
         if (err) {
@@ -177,7 +175,21 @@ exports.getEventIDs = async (req, res)=>{
             return res.status(500).json({ error: 'Failed to fetch data from the database' });
         }
 
-        const resultSales = await getSalesWithAmounts(db, id);
+        var sqlSales = `
+            SELECT
+                id,
+                date as dateS,
+                DATE_FORMAT(date, "%d.%m.%Y") as date
+            FROM
+                sales
+            WHERE sales.event_id IS NULL OR sales.event_id = ${id}
+            ORDER BY dateS DESC, id DESC
+        `;
+        const resultSales = await getSalesWithAmounts(sqlSales);
+        console.log("resultInvoices");
+        console.log(resultInvoices);
+        console.log("resultSales");
+        console.log(resultSales);
 
         return res.json({
             invoices: resultInvoices.map((row) => {

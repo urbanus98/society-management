@@ -1,13 +1,15 @@
 import VersatileTable from "./ui/VersatileTable";
 import LinkButton from "./ui/LinkButton";
 
+interface TableRowData {
+  [key: string]: any; // Allows dynamic keys
+}
 interface Props {
-  headers: string[];
-  rows: any[];
+  headers: { key: string; label: string }[];
+  rows: TableRowData[];
   title?: string;
   buttonText?: string;
   buttonLink?: string;
-  linkIndex?: number;
   linkPart: string;
 }
 
@@ -17,11 +19,10 @@ const UsefulTable = ({
   title,
   buttonText,
   buttonLink,
-  linkIndex,
   linkPart,
 }: Props) => {
   return (
-    <>
+    <div>
       <div className="padding-table flex">
         {title && <h1 className="bright-text">{title}</h1>}
         {buttonText && buttonLink && (
@@ -30,13 +31,10 @@ const UsefulTable = ({
           </div>
         )}
       </div>
-      <VersatileTable
-        headers={headers}
-        rows={rows}
-        linkIndex={linkIndex}
-        linkPart={linkPart}
-      />
-    </>
+      <div className="mh450 scrollable">
+        <VersatileTable headers={headers} rows={rows} linkPart={linkPart} />
+      </div>
+    </div>
   );
 };
 

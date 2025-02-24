@@ -5,6 +5,9 @@ DROP TABLE IF EXISTS `orders`;
 DROP TABLE IF EXISTS `stuff_sold`;
 DROP TABLE IF EXISTS `stuff_types`;
 DROP TABLE IF EXISTS `stuff`;
+DROP TABLE IF EXISTS `black_traffic`;
+DROP TABLE IF EXISTS `debts`;
+DROP TABLE IF EXISTS `sales`;
 DROP TABLE IF EXISTS `occasions`;
 DROP TABLE IF EXISTS `invoices`;
 DROP TABLE IF EXISTS `events`;
@@ -45,6 +48,27 @@ CREATE TABLE sales (
     date date,
     PRIMARY KEY (id),
     FOREIGN KEY (event_id) REFERENCES events(id)
+);
+
+CREATE TABLE debts (
+    id int NOT NULL AUTO_INCREMENT,
+    user_id int NULL,
+    amount int,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE black_traffic (
+    id int NOT NULL AUTO_INCREMENT,
+    debt_id int NULL,
+    sale_id int NULL,
+    name varchar(255),
+    amount int,
+    direction boolean,
+    date DATE,
+    PRIMARY KEY (id),
+    FOREIGN KEY (sale_id) REFERENCES sales(id),
+    FOREIGN KEY (debt_id) REFERENCES debts(id)
 );
 
 CREATE TABLE stuff (

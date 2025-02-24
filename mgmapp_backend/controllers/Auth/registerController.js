@@ -1,5 +1,5 @@
 const db = require('../../db');
-const hashPassword = require('../miscController').hashPassword;
+const hashPassword = require('../../services/misc').hashPassword;
 
 const handleNewUser = async (req, res) => {
     const { name, username, password, role } = req.body;

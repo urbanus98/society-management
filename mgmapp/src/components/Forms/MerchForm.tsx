@@ -78,9 +78,13 @@ const MerchForm = ({ item }: { item?: any }) => {
       }
 
       if (id) {
-        await axiosPrivate.put(`merch/${id}`, formData);
+        await axiosPrivate.put(`merch/${id}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
       } else {
-        await axiosPrivate.post("merch", formData);
+        await axiosPrivate.post("merch", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
       }
       navigate(`/merch`);
     } catch (error) {

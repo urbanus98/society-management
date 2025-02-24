@@ -3,11 +3,17 @@ import EventsForm from "../components/Forms/EventsForm";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { Loading } from "../components/Loading";
+import BackWTitle from "../components/BackWTitle";
 
 export function Events() {
   const axiosPrivate = useAxiosPrivate();
-  const eventHeaders = ["Dogodek", "Datum", "Uredi"];
   const [events, setEvents] = useState<any[]>([]);
+  const headers = [
+    { key: "date", label: "Datum" },
+    { key: "name", label: "Dogodek" },
+    { key: "id", label: "" },
+  ];
 
   useEffect(() => {
     const getEvents = async () => {
@@ -19,25 +25,26 @@ export function Events() {
   }, []);
 
   return (
-    <div className="background padding-3">
-      <UsefulTable
-        headers={eventHeaders}
-        rows={events}
-        title="Dogodki"
-        buttonText="Dodaj dogodek"
-        buttonLink="/events/create"
-        linkIndex={2}
-        linkPart="events"
-      />
+    <div className="padding-3 flex justify-center align-center">
+      <div className="res-width-80">
+        <UsefulTable
+          headers={headers}
+          rows={events}
+          title="Dogodki"
+          buttonText="Dodaj dogodek"
+          buttonLink="/events/create"
+          linkPart="events"
+        />
+      </div>
     </div>
   );
 }
 
 export function CreateEvent() {
   return (
-    <div className="background padding-3 flex justify-center">
-      <div className="res-width-2">
-        <h1 className="text-center bright-text">Ustvari dogodek</h1>
+    <div className="padding-3 coluflex justify-center align-center">
+      <BackWTitle title="Ustvari dogodek" />
+      <div className="res-width-30">
         <EventsForm />
       </div>
     </div>
@@ -60,13 +67,13 @@ export function UpdateEvent() {
   }, []);
 
   if (!event) {
-    return <div>Loading...</div>; // Display a loading indicator while fetching data
+    return <Loading />; // Display a loading indicator while fetching data
   }
 
   return (
-    <div className="background padding-3 flex justify-center">
-      <div className="res-width-2">
-        <h1 className="text-center bright-text">Uredi dogodek</h1>
+    <div className="padding-3 coluflex justify-center align-center">
+      <BackWTitle title="Uredi dogodek" />
+      <div className="res-width-30">
         <EventsForm event={event} />
       </div>
     </div>

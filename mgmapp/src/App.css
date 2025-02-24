@@ -8,6 +8,17 @@
     width: 100%;
 }
 
+html, body {
+    background-color: #5a6168;
+}
+
+.page-container {
+    min-height: 100vh;
+    background-color: #5a6168;
+    /* background-color: #4c5258; */
+    /* background-color: #292e33; */
+}
+
 .white {
     background-color: #f1f5f8;
 }
@@ -19,6 +30,14 @@
     border-radius: 0.5rem;
 }
 
+.height-full {
+    height: 85vh;
+}
+
+.height-100 {
+    height: 100%;
+}
+
 .width-100 {
     width: 100%;
 }
@@ -28,23 +47,36 @@
 }
 
 .res-width,
-.res-width-2,
+.res-width-30,
 .res-width-3 {
     width: 100%;
 }
 
 @media (min-width: 1100px) {
-    .res-width {
-        width: 40%;
-    }
-    .res-width-2 {
+    .res-width-30 {
         width: 30%;
     }
-    .res-width-3 {
+    .res-width-40 {
+        width: 40%;
+    }
+    .res-width-80 {
         width: 80%;
     }
-    
 }
+
+/* .scrollable {
+    overflow-y: scroll;
+} */
+
+.scrollable {
+    overflow: auto; /* Enables scrolling */
+    scrollbar-width: none; /* Firefox: Hides scrollbar */
+    -ms-overflow-style: none; /* IE/Edge: Hides scrollbar */
+  }
+  
+  .scrollable::-webkit-scrollbar {
+    display: none; /* Chrome/Safari: Hides scrollbar */
+  }
 
 .input {
     padding: 0.5rem;
@@ -73,15 +105,55 @@ input::selection{
     margin: 0.5rem;
 }
 
+.link_text {
+    font-size: 1.2rem;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
 .bigcheck {
     height: 15pt;
     width: 15pt;
 }
 
+p {
+    margin: 0 !important;
+}
+
 table {
     border-collapse: separate !important;
     border-spacing: 3pt !important;
-  }
+}
+
+.mh600 {
+    max-height: 600pt;
+}
+
+.mh450 {
+    max-height: 450pt;
+}
+
+.mh300 {
+    max-height: 300pt;
+}
+
+.mw900 {
+    max-width: 900pt;
+}
+
+.mw800 {
+    max-width: 800pt;
+}
+
+.mw700 {
+    max-width: 700pt;
+}
+
+.mw500 {
+    max-width: 500pt;
+}
 
 .mw200 {
     max-width: 250pt;
@@ -89,6 +161,14 @@ table {
 
 .mw100 {
     max-width: 100pt;
+}
+
+.h20 {
+    height: 20pt;
+}
+
+.h40 {
+    height: 40pt;
 }
 
 .w40 {
@@ -153,7 +233,6 @@ table {
     .gap {
         gap: 0.5rem;
     }
-    
 }
 
 .margin-none {
@@ -168,17 +247,24 @@ table {
     margin-left: 1rem;
 }
 
+.margin-right1 {
+    margin-right: 1rem;
+}
+
 .margin-tb2 {
     margin: 0.5rem 0;
 }
 
 .margin-tb1 {
-
     margin: 1.2rem 0;
 }
 
 .margin-tb {
     margin: 2rem 0;
+}
+
+.padding-lr2 {
+    padding: 0 2vw;
 }
 
 .padding-lr {
@@ -189,8 +275,15 @@ table {
     padding: 3vw 0;
 }
 
+.padding-tb2 {
+    padding: 2vw 0;
+}
+
 .padding-3 {
     padding: 3vh 3vw;
+}
+
+.height {
     height:91vh;
 }
 
@@ -206,15 +299,26 @@ table {
     padding: 0 3pt;
 }
 
+.mar-btm30 {
+    margin-bottom: 30pt;
+}
+
 .border-radius {
     border-radius: 0.4rem;
+}
+
+.circle {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    text-align: center;
 }
 
 .flex-column {
     flex-direction: column;
 }
 
-.text-center {
+.text-centers {
     text-align: center;
 }
 
@@ -238,7 +342,32 @@ table {
     background-color: #5a6168;
 }
 
-.text-red {
+.black-back {
+    background-color: #222;
+}
+
+.black-back2 {
+    background-color: #2c2c2c;
+}
+
+.white-back {
+    background-color: rgb(245, 245, 245);
+}
+
+.white-back2 {
+    background-color: rgba(245, 245, 245, 0.911);
+    /* background-color: '#f8f9fa'; */
+}
+
+.blue-text {
+    color: #2963ab;
+}
+
+.green-text {
+    color: #21992b;
+}
+
+.red-text {
     color: #fa453f;
 }
 
@@ -247,12 +376,45 @@ table {
     text-decoration: none;
 }
 
+.dark-back {
+    background-color: #212224
+}   
+
 .dark-text {
     color: #1e1f20
 }
 
 .no-decor {
-    text-decoration: none;
+    text-decoration: none !important;
+}
+
+a {
+    text-decoration: none !important;
+}
+
+.glow-hover {
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.glow-hover:hover {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Adjust glow color and intensity */
+}
+
+.shadow-hover:hover {
+    opacity: 0.8;
+}
+
+.grid-b {
+    display: grid;
+    grid-template-columns: 1fr 4fr 4fr 1fr;
+    gap: 1rem;
+}
+
+.grid-b-item {
+    padding: 10pt;
+    border-radius: 0.4rem;
+    min-width: 100pt;
+    min-height: 100pt;
 }
 
 .grid-3 {

@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const { getSales, postSale, getSale, putSale } = require('../controllers/salesController');
+const { getSalesRows, postSale, getSale, putSale } = require('../controllers/salesController');
 
 router.route('/')
-    .get(getSales)
+    .get(getSalesRows)
     .post(postSale);
     
 router.route('/:id')

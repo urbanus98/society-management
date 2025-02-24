@@ -1,16 +1,16 @@
 const db = require('../db');
-
-
+const { parseJSON } = require('../services/misc');
+const { insertTraffic } = require('./trafficController');
 
 const getOrders = (req, res)=>{
     const sql = `
-    SELECT
-    orders.id,
-    orders.price_total, 
-    DATE_FORMAT(orders.date, "%d.%m.%Y") as date
-    FROM orders
-    ORDER BY date
-    `;
+        SELECT
+            orders.id,
+            orders.price_total, 
+            DATE_FORMAT(orders.date, "%d.%m.%Y") as date
+        FROM orders
+        ORDER BY date DESC, id DESC
+        `; 
     db.query(sql, (err, result)=>{
         if (err) {
             console.error('Error fetching orders:', err);
@@ -18,98 +18,228 @@ const getOrders = (req, res)=>{
         }
 
         const rows = result.map((row) => {
-            return [
-                row.price_total + " €",
-                row.date,
-                row.id,
-            ];
+            return {
+                date: row.date,
+                price: row.price_total + " €",
+                id: row.id,
+            };
         });
         return res.json(rows);
     });
 };
 
-const postOrders = (req, res)=>{
-    const { price, date, details } = req.body;
-    const sqlOrders = `INSERT INTO orders (price_total, date) VALUES ('${price}', '${date}')`;
-    console.log(sqlOrders);
-    console.log(details);
+const insertOrder = (req) => {
+    return new Promise((resolve, reject) => {
+        const { price, date } = req.body;
 
-    // Perform the first insert for orders
-    db.query(sqlOrders, (err, orderResult) => {
-        if (err) {
-            console.error('Error inserting order:', err);
-            return res.status(500).json({ error: 'Failed to create order' });
+        // console.log(req.body);
+        // console.log(details);
+        
+        let filePath = null;
+        if (req.file) {
+            filePath = `uploads/${req.file.filename}`;
         }
-        console.log('Order inserted successfully:', orderResult);
+        const sql = filePath
+            ? `INSERT INTO orders (price_total, date, pdf_path) VALUES (?, ?, ?)`
+            : `INSERT INTO orders (price_total, date) VALUES (?, ?)`;
+        const values = filePath ? [price, date, filePath] : [price, date];
+        // console.log(sql);
 
-        // Get the last inserted ID (order ID)
-        const orderId = orderResult.insertId;
-        console.log('Last inserted order ID:', orderId);
-
-        const orderValues = details.map(({ stuffType_id, amount }) => [orderId, stuffType_id, amount]);
-        const sqlOrderedStuff = `INSERT INTO ordered_stuff (order_id, stufftype_id, amount) VALUES ?`;
-        console.log(sqlOrderedStuff);
-
-        db.query(sqlOrderedStuff, [orderValues], (err, orderedStuffResult) => {
+        db.query(sql, values, (err, result) => {
             if (err) {
-                console.error('Error inserting ordered stuff:', err);
-                return res.status(500).json({ error: 'Failed to create ordered stuff records' });
+                console.error('Error inserting order:', err);
+                return reject('Failed to create order');
             }
-            console.log('Ordered stuff inserted successfully:', orderedStuffResult);
+            console.log('Order inserted successfully:', result);
 
-            const sqlTraffic = `INSERT INTO traffic (name, amount, direction, date, order_id) VALUES ('Narocilo', '${price}', 1, '${date}', '${orderId}')`;
-            console.log(sqlTraffic);
-
-            db.query(sqlTraffic, (err, trafficResult) => {
-                if (err) {
-                    console.error('Error inserting traffic:', err);
-                    return res.status(500).json({ error: 'Failed to create traffic records' });
-                }
-                console.log('Traffic inserted successfully:', trafficResult);
-            });
-
-            return res.json({ message: 'Data created successfully' });
+            resolve(result.insertId);
         });
     });
 };
 
-const getOrder = (req, res)=>{
-    const id = req.params.id;
-    const sqlOrder = `
-    SELECT
-    id,
-    price_total, 
-    DATE_FORMAT(date, "%Y-%m-%d") as date
-    FROM orders
-    WHERE orders.id = ${id}
-    `;
-    db.query(sqlOrder, (err, resultOrder)=>{
-        if (err) {
-            console.error('Error fetching order:', err);
-            return res.status(500).json({ error: `Failed to get order with id ${id}` });
+const postOrder = async (req, res)=>{
+    try {
+        const { price, date, details } = req.body;
+
+        const orderId = await insertOrder(req);
+        await insertNewStuffOrdered(details, orderId);
+        await insertTraffic(null, orderId, 'Naročilo', price, 1, date);
+        
+        return res.json({ message: 'Data created successfully' });
+    } catch (error) {
+        console.error("Error inserting data:", error);
+        return res.status(500).json({ error: "Failed to store data in the database" });
+    }
+};
+
+const getOrder = async (req, res)=>{
+    try {
+        const orderId = req.params.id;
+        
+        const formattedResult = await getOrderData(orderId);
+        
+        return res.json(formattedResult);
+    } catch (error) {
+        console.error("Error inserting data:", error);
+        return res.status(500).json({ error: "Failed to store data in the database" });
+    }
+};
+
+const putOrder = async (req, res)=>{
+    const orderId = req.params.id;
+    const { price, date, details } = req.body;
+
+    await updateOrder(req, orderId);
+    await updateOrderTraffic(orderId, price, date);
+
+    const orderedStuffIDs = await getOrderedStuffIDs(orderId);
+    await handleOrderedStuff(orderId, orderedStuffIDs, details);
+
+    return res.status(200).json({ message: 'Data updated successfully' });
+};
+
+module.exports = { getOrders, postOrder, getOrder, putOrder };
+
+
+const updateOrderTraffic = (orderId, amount, date) => {
+    return new Promise((resolve, reject) => {
+        const sql = `UPDATE traffic SET amount = '${amount}', date = '${date}' WHERE order_id = ${orderId}`;
+        // console.log(sql);
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.error('Error updating data in database:', err);
+                reject({ error: 'Failed to update data in the database' });
+            }
+            console.log('Data updated successfully:', result);
+            
+            resolve();
+        });
+    });
+}
+
+
+const updateOrder = (req, orderId) => {
+    return new Promise((resolve, reject) => {
+        const { price, date } = req.body;
+        if (req.file) {
+            const filePath = `uploads/${req.file.filename}`;
+            var sql = `UPDATE orders SET price_total = '${price}', date = '${date}', pdf_path = '${filePath}' WHERE id = ${orderId}`;
+        } else {
+            var sql = `UPDATE orders SET price_total = '${price}', date = '${date}' WHERE id = ${orderId}`;
         }
-        console.log('Data fetched successfully:', resultOrder);
 
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.error('Error updating order:', err);
+                reject('Failed to update order');
+            }
+            console.log('Order updated successfully:', result);
+            resolve(result);
+        });
+    });
+};
+
+const getOrderedStuffIDs = (id) => {
+    return new Promise((resolve, reject) => {
+        var sqlOrderedStuffQuery = `SELECT id FROM ordered_stuff WHERE order_id = ${id}`;
+
+        db.query(sqlOrderedStuffQuery, (err, orderedTypesResult) => {
+            if (err) {
+                console.error('Error fetching data from database:', err);
+                reject('Failed to fetch data from the database');
+            }
+
+            resolve(orderedTypesResult);
+        });
+    });
+};
+
+const handleOrderedStuff = async (orderId, alreadyOrderedStuffIDs, details) => {
+    try {
+        let oldDetails = details.slice(0, alreadyOrderedStuffIDs.length);
+        let newDetails = details.slice(alreadyOrderedStuffIDs.length);
+
+        // console.log('Old Details:', oldDetails);
+        // console.log('New Details:', newDetails);
+        
+        await updateOldStuffOrdered(oldDetails, alreadyOrderedStuffIDs);
+        await insertNewStuffOrdered(newDetails, orderId);
+
+        return true;
+    } catch (error) {
+        console.error('Error updating stuff sold:', error);
+        return { error: 'Failed to update stuff sold records' };
+    }
+};
+
+const updateOldStuffOrdered = (oldDetails, stuffSoldIDs) => {
+    return Promise.all(
+        oldDetails.map(({ stuffType_id, amount }, index) => {
+            const sql = `UPDATE ordered_stuff SET amount = ?, stufftype_id = ? WHERE id = ?`;
+            return new Promise((resolve, reject) => {
+                db.query(sql, [amount, stuffType_id, stuffSoldIDs[index].id], (err, result) => {
+                    if (err) {
+                        console.error('Error updating ordered stuff:', err);
+                        return reject("Failed to update ordered stuff records");
+                    }
+                    resolve(result);
+                });
+            });
+        })
+    );
+};
+
+const insertNewStuffOrdered = (newDetails, orderId) => {
+    return new Promise((resolve, reject) => {
+        const details = parseJSON(newDetails);
+        if (details.length === 0) return resolve(); // No new items to insert
+
+        const values = details.map(({ stuffType_id, amount }) => [orderId, stuffType_id, amount]);
+        const sql = `INSERT INTO ordered_stuff (order_id, stufftype_id, amount) VALUES ?`;
+
+        db.query(sql, [values], (err, result) => {
+            if (err) {
+                console.error("Error inserting stuff sold:", err);
+                return reject("Failed to insert new stuff sold records");
+            }
+            resolve(result);
+        });
+    });
+};
+
+
+const getOrderData = (orderId) => {
+    return new Promise((resolve, reject) => {
         const sqlStuff = `
-        SELECT ordered_stuff.id as id, ordered_stuff.amount as amount, ordered_stuff.stufftype_id, stuff_types.type as type, stuff.name as name
-        FROM ordered_stuff
-        JOIN stuff_types on ordered_stuff.stufftype_id = stuff_types.id
-        JOIN stuff on stuff_types.stuff_id = stuff.id
-        WHERE ordered_stuff.order_id = ${resultOrder[0].id}
+            SELECT 
+                ordered_stuff.id as id, 
+                ordered_stuff.amount as amount, 
+                ordered_stuff.stufftype_id, 
+                stuff_types.type as type, 
+                stuff.name as name,
+                orders.price_total,
+                orders.pdf_path,
+                DATE_FORMAT(orders.date, "%Y-%m-%d") as date
+            FROM ordered_stuff
+            JOIN orders on orders.id = ordered_stuff.order_id
+            JOIN stuff_types on ordered_stuff.stufftype_id = stuff_types.id
+            JOIN stuff on stuff_types.stuff_id = stuff.id
+            WHERE ordered_stuff.order_id = ${orderId}
         `;
-        console.log(sqlStuff);
+        // console.log(sqlStuff);
 
-        db.query(sqlStuff, (err, resultStuff)=>{
+        db.query(sqlStuff, (err, result)=>{
             if (err) {
                 console.error('Error fetching order:', err);
-                return res.status(500).json({ error: `Failed to get order with id ${id}` });
+                reject({ error: `Failed to get order with id ${orderId}` });
             }
-            console.log('Data fetched successfully:', resultStuff);
+            // console.log('Data fetched successfully:', result);
 
             const formattedResult = {
-                price: resultOrder[0].price_total,
-                date: resultOrder[0].date,
-                types: resultStuff.map((row) => {
+                price: result[0].price_total,
+                date: result[0].date,
+                filePath: result[0].pdf_path,
+                types: result.map((row) => {
                     return {
                         name: row.name + " - " + row.type,
                         id: row.id,
@@ -119,74 +249,7 @@ const getOrder = (req, res)=>{
                 }),
             };
 
-            return res.json(formattedResult);
-        });
-
-    });
-};
-
-const putOrder = (req, res)=>{
-    const id = req.params.id;
-    const { price, date, details } = req.body;
-    const sqlOrders = `UPDATE orders SET price_total = '${price}', date = '${date}' WHERE id = ${id}`;
-    console.log(sqlOrders);
-    console.log(details);
-
-    db.query(sqlOrders, (err, orderResult) => {
-        if (err) {
-            console.error('Error updating order:', err);
-            return res.status(500).json({ error: 'Failed to update order' });
-        }
-        console.log('Order updated successfully:', orderResult);
-
-        var sqlOrderedStuffQuery = `SELECT id FROM ordered_stuff WHERE order_id = ${id}`;
-
-        db.query(sqlOrderedStuffQuery, (err, orderedTypesResult) => {
-            if (err) {
-                console.error('Error fetching data from database:', err);
-                return res.status(500).json({ error: 'Failed to fetch data from the database' });
-            }
-
-            console.log('Ordered stuff fetched successfully:', orderedTypesResult);
-
-            // split parsedDetails into two arrays take n elements from the end
-            let oldDetails = details.slice(0, orderedTypesResult.length);
-            let newDetails = details.slice(orderedTypesResult.length);
-
-            console.log('Old Details:', oldDetails);
-            console.log('New Details:', newDetails);
-
-            const sqlOrderedStuff = `UPDATE ordered_stuff SET amount = ?, stufftype_id = ? WHERE id = ?`;
-            console.log(sqlOrderedStuff);
-
-            oldDetails.forEach(({ stuffType_id, amount}, index ) => {
-                db.query(sqlOrderedStuff, [amount, stuffType_id, orderedTypesResult[index].id], (err, orderedStuffResult) => {
-                    if (err) {
-                        console.error('Error updating ordered stuff:', err);
-                        return res.status(500).json({ error: 'Failed to update ordered stuff records' });
-                    }
-                    console.log('Ordered stuff updated successfully:', orderedStuffResult);
-                });
-            });
-
-            if (newDetails.length === 0) {
-                return res.status(200).json({ message: 'Data updated successfully' });
-            }
-              
-            const newOrderedStuffValues = newDetails.map(({ stuffType_id, amount }) => [stuffType_id, id, amount ]);
-            const newsqlStuffType = `INSERT INTO ordered_stuff (stufftype_id, order_id, amount) VALUES ?`;
-            console.log(newsqlStuffType);
-
-            db.query(newsqlStuffType, [newOrderedStuffValues], (err, newOrderedStuffResult) => {
-                if (err) {
-                console.error("Error inserting stuff types:", err);
-                return res.status(500).json({ error: "Failed to create stuff type records" });
-                }
-                console.log('Stuff types inserted successfully:', newOrderedStuffResult);
-                return res.status(201).json({ message: 'Data updated successfully' });
-            });
+            resolve(formattedResult);
         });
     });
 };
-
-module.exports = { getOrders, postOrders, getOrder, putOrder };

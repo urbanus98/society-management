@@ -1,4 +1,5 @@
 const db = require("../db");
+const { insertTraffic } = require("./trafficController");
 
 const getInvoices = async (req, res)=>{
     
@@ -20,74 +21,49 @@ const getInvoices = async (req, res)=>{
             return res.status(500).json({ error: 'Failed to fetch data from the database' });
         }
         const rows = result.map((row) => {
-            return [
-              row.number,
-              row.entity,
-              row.amount + " €",
-              row.service,
-              statusMap[row.status],
-              row.issue_date,
-              row.id, 
-            ];
+            return {
+              number: row.number,
+              entity: row.entity,
+              amount: row.amount + " €",
+            //   row.service,
+              status: statusMap[row.status],
+              date: row.issue_date,
+              id: row.id, 
+            };
         });
         return res.json(rows);
     });
 };
 
-// const getInvoices = (req, res)=>{
-//     const sql = "SELECT * FROM invoices";
-//     db.query(sql, (err, result)=>{
-//         if(err) return res.json(err);
-//         return res.json(result);
-//     });
-// };
 
 const postInvoice = async (req, res) => {
-    var { entity_id, serviceName, status, issue_date, type, amount } = req.body;
-    var number = await getInvoiceNumber();
-    
-    if (number === undefined) { 
-        number = 1; 
-    } else { 
-        number += 1; 
+    try {
+        var { entity_id, serviceName, status, issue_date, type, amount } = req.body;
+        var number = await getInvoiceNumber();
+        
+        if (number === undefined) { 
+            number = 1; 
+        } else { 
+            number += 1; 
+        }
+        
+        const invoiceId = await insertInvoice(entity_id, number, status, issue_date, type);
+        await insertTraffic(invoiceId, null, serviceName, amount, 0, issue_date);
+        
+        return res.json({ message: 'Invoice and service created successfully' });
+    } catch (error) {
+        console.error('Error inserting invoice in database:', error);
+        return res.status(500).json({ error: 'Failed to insert invoice in the database' });
     }
 
-    const sqlInvoices = `INSERT INTO invoices (payer_id, receiver_id, number, status, type, issue_date) VALUES ('${entity_id}', '1', '${number}', '${status}', '${type}', '${issue_date}')`;
-    console.log(sqlInvoices);
-
-    // Perform the first insert for invoices
-    db.query(sqlInvoices, (err, invoiceResult) => {
-        if (err) {
-            console.error('Error inserting invoice:', err);
-            return res.status(500).json({ error: 'Failed to create invoice' });
-        }
-        console.log('Invoice inserted successfully:', invoiceResult);
-
-        // Get the last inserted ID (invoice ID)
-        const invoiceId = invoiceResult.insertId;
-        console.log('Last inserted invoice ID:', invoiceId);
-
-        // Now insert the service linked to the invoice ID
-        const sqlTraffic = `INSERT INTO traffic (invoice_id, name, amount, direction, date) VALUES ('${invoiceId}', '${serviceName}', '${amount}', 0, '${issue_date}')`;
-        console.log(sqlTraffic);
-
-        db.query(sqlTraffic, (err, serviceResult) => {
-            if (err) {
-                console.error('Error inserting service:', err);
-                return res.status(500).json({ error: 'Failed to create service record' });
-            }
-            console.log('Service inserted successfully:', serviceResult);
-
-            return res.json({ message: 'Invoice and service created successfully' });
-        });
-    });
 };
 
 const putInvoice = async (req, res)=>{
     const id = req.params.id;
     var {entity_id, serviceName, amount, type, number, status, issueDate} = req.body;
+
     const sql = `UPDATE invoices SET payer_id = '${entity_id}', status = '${status}', issue_date = '${issueDate}', type = '${type}', number = '${number}' WHERE id = ${id}`;
-    console.log(sql);
+    
     db.query(sql, (err, result) => {
         if (err) {
             console.error('Error updating invoice in database:', err);
@@ -114,14 +90,14 @@ const getInvoice = async (req, res)=>{
     const id = req.params.id;
     const sql = `
     SELECT 
-    invoices.number, 
-    invoices.status, 
-    invoices.type, 
-    DATE_FORMAT(issue_date, "%Y-%m-%d") as issue_date, 
-    invoices.payer_id as payer_id, 
-    traffic.name as service, 
-    traffic.amount, 
-    invoices.id as id FROM invoices
+        invoices.number, 
+        invoices.status, 
+        invoices.type, 
+        DATE_FORMAT(issue_date, "%Y-%m-%d") as issue_date, 
+        invoices.payer_id as payer_id, 
+        traffic.name as service, 
+        traffic.amount, 
+        invoices.id as id FROM invoices
     INNER JOIN traffic ON invoices.id = traffic.invoice_id
     WHERE invoices.id = ${id}`;
 
@@ -155,3 +131,21 @@ async function getInvoiceNumber() {
 }
 
 module.exports = { getInvoices, postInvoice, putInvoice, getInvoice };
+
+
+const insertInvoice = (entity_id, number, status, issue_date, type) => {
+    const sql = `INSERT INTO invoices (payer_id, receiver_id, number, status, type, issue_date) VALUES ('${entity_id}', '1', '${number}', '${status}', '${type}', '${issue_date}')`;
+    // console.log(sql);
+
+    return new Promise((resolve, reject) => {
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.error('Error inserting data:', err);
+                reject({ error: 'Failed to create data' });
+            }
+            console.log('Data inserted successfully:', result);
+
+            resolve(result.insertId);
+        });
+    });
+}

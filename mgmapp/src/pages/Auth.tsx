@@ -1,11 +1,12 @@
 import AdminPanel from "../components/Users/AdminPanel";
-import Register from "../components/Forms/User/RegisterForm";
-import Login from "../components/Forms/User/LoginForm";
+import BackWTitle from "../components/BackWTitle";
+import LoginForm from "../components/Forms/User/LoginForm";
+import RegisterForm from "../components/Forms/User/RegisterForm";
 
 export function Admin() {
   return (
-    <div className="background padding-3 flex justify-center">
-      <div className="res-width-2">
+    <div className="padding-3 flex justify-center">
+      <div className="res-width-30">
         <AdminPanel />
       </div>
     </div>
@@ -14,10 +15,10 @@ export function Admin() {
 
 export function RegisterUser() {
   return (
-    <div className="background padding-3 flex justify-center">
-      <div className="res-width-2">
-        <h1 className="bright-text">Register</h1>
-        <Register />
+    <div className="padding-3 coluflex justify-center align-center">
+      <BackWTitle title="Registriraj uporabnika" />
+      <div className="res-width-30">
+        <RegisterForm />
       </div>
     </div>
   );
@@ -25,10 +26,10 @@ export function RegisterUser() {
 
 export function LoginUser() {
   return (
-    <div className="background padding-3 flex justify-center">
-      <div className="res-width-2">
-        <h1 className="bright-text">Login</h1>
-        <Login />
+    <div className="padding-3 coluflex justify-center align-center">
+      <BackWTitle title="Prijava" />
+      <div className="res-width-30">
+        <LoginForm />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const fileUpload = require('../middleware/fileUpload');
 
-const fileUpload = require('../middleware/fileUpload'); // Middleware for file uploads
 const { getMerch, postMerch, getMerchItem, putMerch, getStuffTypes } = require('../controllers/merchController');
 
 router.get('/types', getStuffTypes);

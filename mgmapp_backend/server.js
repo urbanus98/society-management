@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config();
 
 const cookieParser = require('cookie-parser');
 const express = require('express');
@@ -53,7 +53,19 @@ app.use('/entities', require('./routes/entities'));
 app.use('/merch', require('./routes/merch'));
 app.use('/orders', require('./routes/orders'));
 app.use('/traffic', require('./routes/traffic'));
+app.use('/debts', require('./routes/debts'));
+app.use('/black', require('./routes/black'));
 
+app.get('/dummy', (req, res) => {
+    const sql = "SELECT 1";
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.error('Error fetching data from database:', err);
+            return res.status(500).json({ error: 'Failed to fetch data from the database' });
+        }
+        return res.json(result);
+    });
+});
 
 app.get('/users', (req, res)=>{
     const sql = "SELECT * FROM users";

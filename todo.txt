@@ -1,0 +1,12 @@
+- refactor backend
+- fix same key
+- fix chart labels
+- debts editable only by own users?
+- more files on order?
+- timestamps?
+- set black
+- add cents
+- create pdf
+- remove table column on responsive
+- add event in sale & invoice
+- orders description?

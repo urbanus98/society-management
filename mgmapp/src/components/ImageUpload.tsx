@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import DefaultImage from "../assets/tt_white.png";
 
 const ImageUpload = ({

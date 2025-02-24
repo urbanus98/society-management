@@ -2,24 +2,33 @@
 import UsefulTable from "../components/UsefulTable";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import EntitiesForm from "../components/Forms/EntitiesForm";
 import { useParams } from "react-router-dom";
-import InvoicesForm from "../components/Forms/InvoicesForm";
+import { Loading } from "../components/Loading";
+import EntitiesForm from "../components/Forms/EntitiesForm";
 import InvoicesUpdateForm from "../components/Forms/InvoicesUpdateForm";
+import InvoicesForm from "../components/Forms/InvoicesForm";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import SubNavigator from "../components/SubNavigator";
+import BackWTitle from "../components/BackWTitle";
+
+const left = { link: "/invoices", text: "Računi" };
+const right = { link: "/traffic", text: "Promet" };
 
 export const Invoices = () => {
   const axiosPrivate = useAxiosPrivate();
 
-  const entityHeaders = ["Ime", "Kraj", ""];
+  const entityHeaders = [
+    { key: "name", label: "Ime" },
+    { key: "place", label: "Kraj" },
+    { key: "id", label: "" },
+  ];
   const invoiceHeaders = [
-    "Št.",
-    "Entiteta",
-    "Vsota",
-    "Storitev",
-    "Status",
-    "Datum",
-    "",
+    { key: "date", label: "Št" },
+    { key: "entity", label: "Entiteta" },
+    { key: "amount", label: "Vsota" },
+    { key: "status", label: "Status" },
+    { key: "date", label: "Datum" },
+    { key: "id", label: "" },
   ];
 
   const [invoices, setInvoices] = useState<any[]>([]);
@@ -49,11 +58,12 @@ export const Invoices = () => {
       });
   }, [axiosPrivate]); // Empty dependency array to only run once when component mounts
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading />;
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="background padding-3">
+    <div className="padding-3">
+      <SubNavigator left={left} right={right} disabled={0b01} />
       <div className="grid-3">
         <div className="span2 grid-3-item">
           <UsefulTable
@@ -62,7 +72,6 @@ export const Invoices = () => {
             title="Računi"
             buttonText="Ustvari račun"
             buttonLink="/invoices/create"
-            linkIndex={6}
             linkPart="invoices"
           />
         </div>
@@ -73,10 +82,8 @@ export const Invoices = () => {
             title="Entitete"
             buttonText="Dodaj entiteto"
             buttonLink="/entities/create"
-            linkIndex={2}
             linkPart="entities"
           />
-          {/* <Outlet /> */}
         </div>
       </div>
     </div>
@@ -85,9 +92,9 @@ export const Invoices = () => {
 
 export const CreateEntity = () => {
   return (
-    <div className="background padding-3 flex justify-center">
+    <div className="padding-3 coluflex justify-center align-center">
+      <BackWTitle title="Dodaj entiteto" />
       <div className="width-50">
-        <h1 className="text-center bright-text">Dodaj entiteto</h1>
         <EntitiesForm />
       </div>
     </div>
@@ -112,13 +119,13 @@ export const UpdateEntity = () => {
   }, [id]); // Add id to the dependency array
 
   if (!entity) {
-    return <div>Loading...</div>; // Display a loading indicator while fetching data
+    return <Loading />; // Display a loading indicator while fetching data
   }
 
   return (
-    <div className="background padding-3 flex justify-center">
+    <div className="padding-3 coluflex justify-center align-center">
+      <BackWTitle title="Uredi entiteto" />
       <div className="width-50">
-        <h1 className="text-center bright-text">Uredi entiteto</h1>
         <EntitiesForm
           name={entity.name}
           address={entity.address}
@@ -154,13 +161,13 @@ export const UpdateInvoice = () => {
   }, [id]);
 
   if (!invoice) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   return (
-    <div className="background padding-3 flex justify-center">
-      <div className="res-width">
-        <h1 className="text-center bright-text">Uredi račun</h1>
+    <div className="padding-3 coluflex justify-center align-center">
+      <BackWTitle title="Uredi račun" />
+      <div className="res-width-40">
         <InvoicesUpdateForm entities={entities} invoice={invoice} />
       </div>
     </div>
@@ -184,9 +191,9 @@ export const CreateInvoice = () => {
   }, [axiosPrivate]);
 
   return (
-    <div className="background padding-3 flex justify-center">
-      <div className="res-width">
-        <h1 className="text-center bright-text">Ustvari račun</h1>
+    <div className="padding-3 coluflex justify-center align-center">
+      <BackWTitle title="Ustvari račun" />
+      <div className="res-width-40">
         <InvoicesForm entities={entities} />
       </div>
     </div>

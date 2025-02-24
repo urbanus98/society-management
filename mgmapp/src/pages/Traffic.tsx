@@ -1,16 +1,77 @@
-import UsefulTable from "../components/UsefulTable";
 import { useEffect, useState } from "react";
 import TrafficForm from "../components/Forms/TrafficForm";
-import axios from "axios";
-import LinkButton from "../components/ui/LinkButton";
 import { useParams } from "react-router-dom";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import SubNavigator from "../components/SubNavigator";
+import TrafficUpdateForm from "../components/Forms/TrafficUpdateForm";
+import { Loading } from "../components/Loading";
+import BackWTitle from "../components/BackWTitle";
+import UsefulFinanceTable from "../components/UsefulFinanceTable";
+import ChartWStatus from "../components/ChartWStatus";
+
+export function Traffic() {
+  const axiosPrivate = useAxiosPrivate();
+  const [traffic, setTraffic] = useState<any>({});
+  const [loading, setLoading] = useState(true);
+  const left = { link: "/invoices", text: "Računi" };
+  const right = { link: "/traffic", text: "Promet" };
+  const [status, setStatus] = useState(0);
+  const [traffiC, setTraffiC] = useState<any[]>([]);
+
+  const headers = [
+    { key: "date", label: "Datum" },
+    { key: "amount", label: "Znesek" },
+    { key: "name", label: "Namen" },
+    { key: "id", label: "" },
+  ];
+
+  useEffect(() => {
+    const getTraffic = async () => {
+      try {
+        const response = await axiosPrivate.get("traffic");
+        setTraffic(response.data);
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+      }
+    };
+
+    const getBlackChart = async () => {
+      const response = await axiosPrivate.get("traffic/chart");
+      setTraffiC(response.data);
+      console.log(response.data);
+      setStatus(response.data[response.data.length - 1].cumulative_balance);
+    };
+
+    getTraffic();
+    getBlackChart();
+  }, []);
+
+  if (loading) return <Loading />;
+
+  return (
+    <div className="padding-3">
+      <SubNavigator left={left} right={right} disabled={0b10} margin />
+      <div className="grid-2">
+        <ChartWStatus chartData={traffiC} status={status} />
+        <UsefulFinanceTable
+          headers={headers}
+          rows={traffic}
+          linkPart="traffic"
+          buttonLink="/traffic/create"
+          buttonText="Ustvari vnos"
+          title="Promet"
+        />
+      </div>
+    </div>
+  );
+}
 
 export function CreateTraffic() {
   return (
-    <div className="background padding-3 flex justify-center">
-      <div className="res-width-2">
-        <h1 className="text-center bright-text">Ustvari vnos</h1>
+    <div className="padding-3 coluflex justify-center align-center">
+      <BackWTitle title="Ustvari vnos" />
+      <div className="res-width-30">
         <TrafficForm />
       </div>
     </div>
@@ -36,65 +97,11 @@ export const UpdateTraffic = () => {
   }, [id]);
 
   return (
-    <div className="background padding-3 flex justify-center">
-      <div className="res-width-2">
-        <h1 className="text-center bright-text">Uredi vnos</h1>
-        <TrafficForm traffic={traffic} />
+    <div className="padding-3 coluflex justify-center align-center">
+      <BackWTitle title="Uredi vnos" />
+      <div className="res-width-30">
+        <TrafficUpdateForm traffic={traffic} />
       </div>
     </div>
   );
 };
-
-export function Traffic() {
-  const axiosPrivate = useAxiosPrivate();
-  const [traffic, setTraffic] = useState<any>({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const headers = ["Namen", "Znesek", "Datum", ""];
-
-  useEffect(() => {
-    axiosPrivate
-      .get(`traffic`)
-      .then((response) => {
-        setTraffic(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setError(error.message);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-
-  return (
-    <div className="background padding-3">
-      <div className="">
-        <LinkButton text="Dodaj vnos" link="/traffic/create" />
-      </div>
-      <div className="grid-2">
-        <div>
-          <UsefulTable
-            headers={headers}
-            rows={traffic.incoming}
-            title="Prilivi"
-            linkPart="traffic"
-            linkIndex={3}
-          />
-        </div>
-        <div>
-          <UsefulTable
-            headers={headers}
-            rows={traffic.outgoing}
-            title="Odlivi"
-            linkPart="traffic"
-            linkIndex={3}
-          />
-        </div>
-      </div>
-    </div>
-  );
-}

@@ -1,16 +1,21 @@
+import UsefulTable from "../components/UsefulTable";
 import LinkButton from "../components/ui/LinkButton";
 import MerchForm from "../components/Forms/MerchForm";
 import Item from "../components/Item";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import OrdersForm from "../components/Forms/OrdersForm";
-import UsefulTable from "../components/UsefulTable";
 import SalesForm from "../components/Forms/SalesForm";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import SubNavigator from "../components/SubNavigator";
+import { Loading } from "../components/Loading";
+import BackWTitle from "../components/BackWTitle";
 
 export function Merch() {
   const axiosPrivate = useAxiosPrivate();
   const [merch, setMerch] = useState<any[]>([]);
+  const left = { link: "/merch/orders", text: "Naročila" };
+  const right = { link: "/merch/sales", text: "Prodaja" };
 
   useEffect(() => {
     axiosPrivate
@@ -24,26 +29,33 @@ export function Merch() {
   }, []);
 
   if (!merch) {
-    // If there is no data, return a loading indicator
-    return <div>Loading...</div>; // Display a loading indicator while fetching data
+    return <Loading />;
   }
-  console.log(merch);
+  // console.log(merch);
   return (
-    <div className="background padding-3 flex justify-center">
-      <div className="res-width-3">
-        <h1 className="text-center bright-text">Merch</h1>
-        <div className="flex justify-between">
-          <LinkButton link="/merch/create" text="Create Merch" />
-          <LinkButton link="/merch/orders" text="Merch Orders" />
+    <div className="padding-3 coluflex align-center">
+      <SubNavigator left={left} right={right} title="Merch" margin />
+      <div className="flex res-width-40">
+        <LinkButton link="/merch/create" text="Dodaj Merch" />
+        {/* <Link to="/merch/create" className="bright-text">
+          <p className="link_text">Dodaj merch &rarr;</p>
+        </Link> */}
+      </div>
+      <div className="flex wrap justify-center res-width-80">
+        {merch.map((item) => (
+          <Item item={item} linkPart="merch" key={item.id} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
-          <LinkButton link="/merch/sales" text="Merch Sales" />
-        </div>
-
-        <div className="flex wrap justify-center">
-          {merch.map((item) => (
-            <Item item={item} linkPart="merch" key={item.id} />
-          ))}
-        </div>
+export function CreateMerch() {
+  return (
+    <div className="padding-3 coluflex justify-center align-center">
+      <BackWTitle title="Dodaj merch" />
+      <div className="res-width-30">
+        <MerchForm />
       </div>
     </div>
   );
@@ -66,25 +78,14 @@ export function UpdateMerch() {
   }, [id]);
 
   if (!merch) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
-  console.log(merch);
+  // console.log(merch);
   return (
-    <div className="background padding-3 flex justify-center">
-      <div className="res-width-2">
-        <h1 className="text-center bright-text">Uredi merch</h1>
+    <div className="padding-3 coluflex justify-center align-center">
+      <BackWTitle title="Uredi merch" />
+      <div className="res-width-30">
         <MerchForm item={merch} />
-      </div>
-    </div>
-  );
-}
-
-export function CreateMerch() {
-  return (
-    <div className="background padding-3 flex justify-center">
-      <div className="res-width-2">
-        <h1 className="text-center bright-text">Dodaj merch</h1>
-        <MerchForm />
       </div>
     </div>
   );
@@ -93,6 +94,13 @@ export function CreateMerch() {
 export function MerchOrders() {
   const axiosPrivate = useAxiosPrivate();
   const [orders, setOrders] = useState<any[]>([]);
+  const left = { link: "/merch/sales", text: "Prodaja" };
+  const right = { link: "/merch", text: "Merch" };
+  const headers = [
+    { key: "date", label: "Datum" },
+    { key: "price", label: "Cena" },
+    { key: "id", label: "" },
+  ];
 
   useEffect(() => {
     axiosPrivate
@@ -107,24 +115,23 @@ export function MerchOrders() {
   }, []);
 
   if (!orders) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
   }
 
-  const headers = ["Cena", "Datum"];
-
   return (
-    <div className="background padding-3 flex justify-center">
-      <div className="res-width-2">
-        <h1 className="text-center bright-text">Merch Orders</h1>
-        {/* <div className="padding-tb">
-          <LinkButton link="/merch/orders/create" text="Order Merch" />
-        </div> */}
+    <div className="padding-3 coluflex justify-center align-center">
+      <SubNavigator left={left} right={right} />
+      <div className="res-width-80">
         <UsefulTable
+          title="Naročila"
           headers={headers}
           rows={orders}
           buttonLink="/merch/orders/create"
           buttonText="Naroci"
-          linkIndex={2}
           linkPart="merch/orders"
         />
       </div>
@@ -132,11 +139,11 @@ export function MerchOrders() {
   );
 }
 
-export function OrderMerch() {
+export function CreateOrder() {
   return (
-    <div className="background padding-3 flex justify-center">
-      <div className="res-width-2">
-        <h1 className="text-center bright-text">Vnesi naročilo</h1>
+    <div className="padding-3 coluflex justify-center align-center">
+      <BackWTitle title="Vnesi naročilo" />
+      <div className="res-width-30">
         <OrdersForm />
       </div>
     </div>
@@ -153,7 +160,7 @@ export function UpdateOrder() {
       .get(`orders/${id}`)
       .then((response) => {
         setOrderData(response.data);
-        console.log(orderData);
+        console.log(response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -162,14 +169,58 @@ export function UpdateOrder() {
 
   if (!orderData) {
     // If there is no data, return a loading indicator
-    return <div>Loading...</div>; // Display a loading indicator while fetching data
+    return <Loading />; // Display a loading indicator while fetching data
   }
 
   return (
-    <div className="background padding-3 flex justify-center">
-      <div className="res-width-2">
-        <h1 className="text-center bright-text">Edit order</h1>
+    <div className="padding-3 coluflex justify-center align-center">
+      <BackWTitle title="Uredi naročilo" />
+      <div className="res-width-30">
         <OrdersForm order={orderData} />
+      </div>
+    </div>
+  );
+}
+
+export function MerchSales() {
+  const axiosPrivate = useAxiosPrivate();
+  const [sales, setSales] = useState<any[]>([]);
+  const left = { link: "/merch", text: "Merch" };
+  const right = { link: "/merch/orders", text: "Naročila" };
+  const headers = [
+    { key: "date", label: "Datum" },
+    { key: "price", label: "Zaslužek" },
+    { key: "id", label: "" },
+  ];
+
+  useEffect(() => {
+    axiosPrivate
+      .get(`sales`) // Use the id from the URL
+      .then((response) => {
+        console.log(response.data);
+        setSales(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  if (!sales) {
+    return <Loading />;
+  }
+
+  return (
+    <div className="padding-3 coluflex justify-center align-center">
+      <SubNavigator left={left} right={right} />
+      <div className="res-width-80">
+        <UsefulTable
+          headers={headers}
+          rows={sales}
+          title="Prodaja mercha"
+          buttonText="Zabelezi prodajo"
+          buttonLink="create"
+          linkPart="merch/sales"
+        />
       </div>
     </div>
   );
@@ -177,9 +228,9 @@ export function UpdateOrder() {
 
 export function CreateSale() {
   return (
-    <div className="background padding-3 flex justify-center">
-      <div className="res-width-2">
-        <h1 className="text-center bright-text">Prodaj merch</h1>
+    <div className="padding-3 coluflex justify-center align-center">
+      <BackWTitle title="Prodaj merch" />
+      <div className="res-width-30">
         <SalesForm />
       </div>
     </div>
@@ -205,47 +256,15 @@ export function UpdateSale() {
 
   if (!sale) {
     // If there is no data, return a loading indicator
-    return <div>Loading...</div>; // Display a loading indicator while fetching data
+    return <Loading />; // Display a loading indicator while fetching data
   }
 
   return (
-    <div className="background padding-3 flex justify-center">
-      <div className="res-width-2">
-        <h1 className="text-center bright-text">Prodaj merch</h1>
+    <div className="padding-3 coluflex justify-center align-center">
+      <BackWTitle title="Uredi prodajo" />
+      <div className="res-width-30">
         <SalesForm sale={sale} />
       </div>
-    </div>
-  );
-}
-
-export function MerchSales() {
-  const axiosPrivate = useAxiosPrivate();
-  const headers = ["Datum", "Zasluzek", ""];
-  const [sales, setSales] = useState<any[]>([]);
-
-  useEffect(() => {
-    axiosPrivate
-      .get(`sales`) // Use the id from the URL
-      .then((response) => {
-        console.log(response.data);
-        setSales(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
-
-  return (
-    <div className="background padding-3">
-      <UsefulTable
-        headers={headers}
-        rows={sales}
-        title="Prodaja mercha"
-        buttonText="Zabelezi prodajo"
-        buttonLink="create"
-        linkIndex={2}
-        linkPart="merch/sales"
-      />
     </div>
   );
 }

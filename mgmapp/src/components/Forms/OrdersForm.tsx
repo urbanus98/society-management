@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Input from "../Inputs/Input";
 import { getDate } from "../misc";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import FileUpload from "../FileUpload";
 
 const OrdersForm = ({ order }: { order?: any }) => {
   const axiosPrivate = useAxiosPrivate();
@@ -13,7 +14,11 @@ const OrdersForm = ({ order }: { order?: any }) => {
   const [isDisabled, setIsDisabled] = useState(false);
   const [stuffTypes, setStuffTypes] = useState<any[]>([]);
   const [rows, setRows] = useState<any[]>([{}]);
+  const [price, setPrice] = useState(order ? order.price : 0);
   const [date, setDate] = useState(order ? order.date : getDate());
+  const [file, setFile] = useState<File | null>(null);
+  const [filePreview, setFilePreview] = useState<string>("");
+  // const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     axiosPrivate
@@ -27,7 +32,6 @@ const OrdersForm = ({ order }: { order?: any }) => {
       });
 
     if (order) {
-      setDate(order.date);
       const newRows = order.types.map((type: any) => ({
         id: type.id,
         name: type.name,
@@ -36,6 +40,10 @@ const OrdersForm = ({ order }: { order?: any }) => {
       }));
       setRows(newRows);
       setIsDisabled(true);
+
+      if (order?.filePath) {
+        setFilePreview(`http://localhost:8081/${order.filePath}`);
+      }
     }
   }, [order]);
 
@@ -79,20 +87,22 @@ const OrdersForm = ({ order }: { order?: any }) => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Prevent form refresh
     try {
-      const price = (event.target as HTMLFormElement).elements.namedItem(
-        "price"
-      ) as HTMLInputElement;
-
-      const formData = {
-        details: rows,
-        date,
-        price: price.value,
-      };
+      const formData = new FormData();
+      if (file) {
+        formData.append("file", file);
+      }
+      formData.append("date", date);
+      formData.append("price", price);
+      formData.append("details", JSON.stringify(rows));
 
       if (id) {
-        await axiosPrivate.put(`orders/${id}`, formData);
+        await axiosPrivate.put(`orders/${id}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
       } else {
-        await axiosPrivate.post("orders", formData);
+        await axiosPrivate.post("orders", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
       }
       navigate(`/merch/orders`);
     } catch (error) {
@@ -119,8 +129,9 @@ const OrdersForm = ({ order }: { order?: any }) => {
             label="Cena (€)"
             type="number"
             placeholder="Vsota"
-            value={order ? order.price : ""}
+            value={price}
             classes="w70"
+            handleChange={(event) => setPrice(Number(event.target.value))}
           />
         </div>
         <DynamicTable
@@ -129,7 +140,22 @@ const OrdersForm = ({ order }: { order?: any }) => {
           columns={columns}
           isDisabled={isDisabled}
         />
-        <SubmButton text="Potrdi" />
+        <div className="coluflex">
+          <div className="flex">
+            <label className="input_label bright-text">
+              Pripni račun: &nbsp;
+              {order?.filePath && (
+                <a href={filePreview} target="_blank" rel="noopener noreferrer">
+                  {order.filePath.split("/").pop()}
+                </a>
+              )}
+            </label>
+          </div>
+          <div className="input_label">
+            <FileUpload setFile={setFile} />
+          </div>
+          <SubmButton text="Potrdi" />
+        </div>
       </div>
     </form>
   );

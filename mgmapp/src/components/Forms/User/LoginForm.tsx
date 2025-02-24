@@ -5,7 +5,7 @@ import AuthContext from "../../../context/AuthProvider";
 import axios from "../../../api/axios";
 import Alert from "../../ui/Alert";
 
-const Login = () => {
+const LoginForm = () => {
   const navigate = useNavigate();
 
   const context = useContext(AuthContext);
@@ -20,10 +20,8 @@ const Login = () => {
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
   const [errorMsg, setErrorMsg] = useState("");
-  const [user, setUser] = useState({
-    username: "",
-    password: "",
-  });
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
     userRef.current?.focus();
@@ -32,27 +30,34 @@ const Login = () => {
   useEffect(() => {
     setErrorMsg("");
     setAlertVisibility(false);
-  }, [user.username, user.password]);
+  }, [username, password]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     try {
-      const response = await axios.post("auth", JSON.stringify(user), {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      });
-      console.log(JSON.stringify(response?.data));
+      const response = await axios.post(
+        "auth",
+        JSON.stringify({ username, password }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      // console.log(JSON.stringify(response?.data));
       // console.log(JSON.stringify(response));
       const accessToken = response?.data?.accessToken;
       const role = response?.data?.role;
 
       setAuth({
-        ...user,
+        username: username,
         role: role,
         accessToken: accessToken,
+        name: response?.data?.name,
+        id: response?.data?.id,
       });
-      setUser({ username: "", password: "" });
+      setUsername("");
+      setPassword("");
       navigate(from, { replace: true });
     } catch (error: any) {
       if (!error.response) {
@@ -90,11 +95,11 @@ const Login = () => {
           Username
         </label>
         <input
-          value={user.username}
+          value={username}
           autoComplete="username"
           ref={userRef}
           className="input"
-          onChange={(e) => setUser({ ...user, username: e.target.value })}
+          onChange={(e) => setUsername(e.target.value as string)}
           required
         />
         <label htmlFor="password" className="input_label bright-text">
@@ -102,10 +107,10 @@ const Login = () => {
         </label>
         <input
           type="password"
-          value={user.password}
+          value={password}
           autoComplete="current-password"
           className="input"
-          onChange={(e) => setUser({ ...user, password: e.target.value })}
+          onChange={(e) => setPassword(e.target.value as string)}
           required
         />
       </div>
@@ -127,4 +132,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginForm;

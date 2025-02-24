@@ -1,11 +1,11 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import Input from "../../Inputs/Input";
 import SubmButton from "../../ui/SubmButton";
 import { useNavigate } from "react-router-dom";
 import Select from "../../ui/Select";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 
-const Register = () => {
+const RegisterForm = () => {
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
 
@@ -76,4 +76,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default RegisterForm;

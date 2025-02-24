@@ -20,20 +20,29 @@ import {
   Merch,
   CreateMerch,
   UpdateMerch,
-  OrderMerch,
+  CreateOrder,
   CreateSale,
   UpdateSale,
   UpdateOrder,
   MerchOrders,
   MerchSales,
-  Black,
+  Debts,
+  UpdateDebt,
+  DebtPay,
+  DebtDeposit,
+  DebtBuy,
+  DebtCashout,
   Stats,
+  Black,
+  DebtActions,
+  CreateBlackFlow,
+  UpdateBlackFlow,
 } from "./pages";
 import "./App.css";
 
 function App() {
   return (
-    <div>
+    <div className="page-container">
       <Navbar />
       <Routes>
         <Route path="/login" element={<LoginUser />} />
@@ -54,7 +63,7 @@ function App() {
           <Route path="/merch" element={<Merch />} />
           <Route path="/merch/create" element={<CreateMerch />} />
           <Route path="/merch/:id/edit" element={<UpdateMerch />} />
-          <Route path="/merch/orders/create" element={<OrderMerch />} />
+          <Route path="/merch/orders/create" element={<CreateOrder />} />
           <Route path="/merch/orders" element={<MerchOrders />} />
           <Route path="/merch/orders/:id/edit" element={<UpdateOrder />} />
           <Route path="/merch/sales" element={<MerchSales />} />
@@ -63,6 +72,16 @@ function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/register" element={<RegisterUser />} />
           <Route path="/black" element={<Black />} />
+          <Route path="/black/flow/create" element={<CreateBlackFlow />} />
+          <Route path="/black/flow/:id/edit" element={<UpdateBlackFlow />} />
+          <Route path="/debts" element={<Debts />} />
+          <Route path="/debts/:id/edit" element={<UpdateDebt />} />
+          <Route path="/debt-actions" element={<DebtActions />} />
+          <Route path="/debts/pay" element={<DebtPay />} />
+          <Route path="/debts/deposit" element={<DebtDeposit />} />
+          <Route path="/debts/buy" element={<DebtBuy />} />
+          <Route path="/debts/cashout" element={<DebtCashout />} />
+          <Route path="/debts/status" element={<Debts />} />
           <Route path="/stats" element={<Stats />} />
         </Route>
       </Routes>

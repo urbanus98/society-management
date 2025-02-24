@@ -3,6 +3,8 @@ import React, { createContext, useState, ReactNode } from "react";
 // Define the shape of the auth state
 interface AuthState {
   username?: string;
+  name?: string;
+  id?: number;
   role?: string;
   accessToken?: string;
 }
