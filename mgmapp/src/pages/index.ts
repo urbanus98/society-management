@@ -7,3 +7,4 @@ export * from "./Events";
 export * from "./Traffic";
 export * from "./Merch";
 export * from "./Auth";
+export * from "./Trips";

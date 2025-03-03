@@ -4,6 +4,7 @@ interface Props {
   value?: any;
   placeholder?: string;
   type?: string;
+  step?: string;
   classes?: string;
   required?: boolean;
   handleChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -17,6 +18,7 @@ const Input = ({
   type = "text",
   classes,
   required = false,
+  step = "1",
   handleChange,
 }: Props) => {
   return (
@@ -31,6 +33,7 @@ const Input = ({
         name={name}
         placeholder={placeholder}
         defaultValue={value}
+        step={step}
         onChange={handleChange}
         required={required}
       />

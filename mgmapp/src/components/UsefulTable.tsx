@@ -24,9 +24,9 @@ const UsefulTable = ({
   return (
     <div>
       <div className="padding-table flex">
-        {title && <h1 className="bright-text">{title}</h1>}
+        {title && <h1 className="bright-text margin-right1">{title}</h1>}
         {buttonText && buttonLink && (
-          <div className="padding-5 margin-left1">
+          <div className="padding-5">
             <LinkButton text={buttonText} link={buttonLink} />
           </div>
         )}

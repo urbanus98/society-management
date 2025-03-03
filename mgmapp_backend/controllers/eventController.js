@@ -162,7 +162,7 @@ exports.putEvent = (req, res)=>{
 exports.getEventIDs = async (req, res)=>{
     const id = req.params.id;
     const sqlInvoices = `
-        SELECT invoices.id, entities.name, DATE_FORMAT(issue_date, "%d.%m.%Y") as issue_date, traffic.amount
+        SELECT invoices.id, entities.name, DATE_FORMAT(issue_date, "%d.%m.%Y") as issue_date, ROUND(traffic.amount / 100, 2) as amount
         FROM invoices
         JOIN entities ON invoices.payer_id = entities.id
         JOIN traffic ON invoices.id = traffic.invoice_id

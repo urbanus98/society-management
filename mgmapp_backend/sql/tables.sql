@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS `trips`;
+DROP TABLE IF EXISTS `locations`;
+DROP TABLE IF EXISTS `mileage_rates`;
 DROP TABLE IF EXISTS `traffic`;
 DROP TABLE IF EXISTS `stuff_sold`;
 DROP TABLE IF EXISTS `ordered_stuff`;
@@ -101,7 +104,6 @@ CREATE TABLE stuff_sold (
 CREATE TABLE orders (
     id int NOT NULL AUTO_INCREMENT,
     date date,
-    price_total int,
     pdf_path varchar(255) NULL,
     PRIMARY KEY (id)
 );
@@ -155,9 +157,41 @@ CREATE TABLE traffic (
     FOREIGN KEY (invoice_id) REFERENCES invoices(id)
 );
 
+CREATE TABLE locations (
+    id int NOT NULL AUTO_INCREMENT,
+    name varchar(255) NOT NULL,
+    distance int NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE mileage_rates (
+    id int NOT NULL AUTO_INCREMENT,
+    year int NOT NULL,
+    rate int NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE trips (
+    id int NOT NULL AUTO_INCREMENT,
+    user_id int NULL,
+    event_id int NULL,
+    rate_id int NULL,
+    origin_id int NULL,
+    destination_id int NULL,
+    mileage int NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (event_id) REFERENCES events(id),
+    FOREIGN KEY (rate_id) REFERENCES mileage_rates(id),
+    FOREIGN KEY (origin_id) REFERENCES locations(id),
+    FOREIGN KEY (destination_id) REFERENCES locations(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 insert into event_types (name) values ('Vaje');
 insert into event_types (name) values ('Intenzivne vaje');
 insert into event_types (name) values ('Nastop');
 
+insert into locations (name) values ('Vipava');
+insert into mileage_rates (year, rate) values (2024, 20);
 
 insert into entities (name, address, postal, place, iban, note) values ('TamburaTeam', 'Ulica Milana Bajca 5', 5271, 'Vipava', 'SI56 1234 5678 9101 1121', 'Najbulši štjrje');

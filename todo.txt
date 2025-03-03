@@ -10,3 +10,5 @@
 - remove table column on responsive
 - add event in sale & invoice
 - orders description?
+- add update rate to event update
+- add links to events in trips

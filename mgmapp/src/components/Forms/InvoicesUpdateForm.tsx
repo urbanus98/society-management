@@ -74,6 +74,7 @@ const InvoicesForm = ({ entities, invoice }: Props) => {
           label="Cena (&euro;)"
           type="number"
           classes="w60"
+          step="0.01"
           formik={formik}
         />
       </div>

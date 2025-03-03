@@ -27,14 +27,12 @@ export const Debts = () => {
     const getDebts = async () => {
       const response = await axiosPrivate.get("debts");
       setDebts(response.data);
-      const response2 = await axiosPrivate.get("debts/rows");
-      setDebtsRows(response2.data);
+      const responseRows = await axiosPrivate.get("debts/rows");
+      setDebtsRows(responseRows.data);
+      console.log(response.data);
     };
-    // const getDebtRows = async () => {
-    // };
 
     getDebts();
-    // getDebtRows();
   }, []);
 
   return (
@@ -54,7 +52,7 @@ export const Debts = () => {
                 {debt.name}:
               </h3>
               <h4 className="bright-text" key={debt.id}>
-                {debt.credit - debt.debt} €
+                {debt.credit - debt.debt + Number(debt.tripCosts)} €
               </h4>
             </div>
           ))}

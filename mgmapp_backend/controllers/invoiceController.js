@@ -1,5 +1,6 @@
 const db = require("../db");
 const { insertTraffic } = require("./trafficController");
+const { priceDivide, priceMultiply } = require("../services/genericActions");
 
 const getInvoices = async (req, res)=>{
     
@@ -24,7 +25,7 @@ const getInvoices = async (req, res)=>{
             return {
               number: row.number,
               entity: row.entity,
-              amount: row.amount + " €",
+              amount: priceDivide(row.amount) + " €",
             //   row.service,
               status: statusMap[row.status],
               date: row.issue_date,
@@ -71,7 +72,7 @@ const putInvoice = async (req, res)=>{
         }
         console.log('Invoice updated successfully:', result);
 
-        const sqlTraffic = `UPDATE traffic SET name = '${serviceName}', amount = '${amount}', date = '${issueDate}' WHERE invoice_id = ${id}`;
+        const sqlTraffic = `UPDATE traffic SET name = '${serviceName}', amount = '${priceMultiply(amount)}', date = '${issueDate}' WHERE invoice_id = ${id}`;
 
         db.query(sqlTraffic, (err, serviceResult) => {
             if (err) {
@@ -96,7 +97,7 @@ const getInvoice = async (req, res)=>{
         DATE_FORMAT(issue_date, "%Y-%m-%d") as issue_date, 
         invoices.payer_id as payer_id, 
         traffic.name as service, 
-        traffic.amount, 
+        ROUND(traffic.amount / 100, 2) as amount,
         invoices.id as id FROM invoices
     INNER JOIN traffic ON invoices.id = traffic.invoice_id
     WHERE invoices.id = ${id}`;

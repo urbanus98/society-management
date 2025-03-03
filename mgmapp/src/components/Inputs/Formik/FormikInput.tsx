@@ -4,6 +4,7 @@ interface Props {
   variable: any;
   placeholder?: string;
   type?: string;
+  step?: string;
   classes?: string;
   formik: any;
 }
@@ -15,6 +16,7 @@ const FormikInput = ({
   placeholder,
   type = "text",
   classes,
+  step,
   formik,
 }: Props) => {
   return (
@@ -38,6 +40,7 @@ const FormikInput = ({
         value={formik.values[variable]}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
+        step={step}
       />
     </div>
   );

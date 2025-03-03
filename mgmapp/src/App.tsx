@@ -32,11 +32,12 @@ import {
   DebtDeposit,
   DebtBuy,
   DebtCashout,
-  Stats,
   Black,
   DebtActions,
   CreateBlackFlow,
   UpdateBlackFlow,
+  Trips,
+  DataManegement,
 } from "./pages";
 import "./App.css";
 
@@ -82,7 +83,8 @@ function App() {
           <Route path="/debts/buy" element={<DebtBuy />} />
           <Route path="/debts/cashout" element={<DebtCashout />} />
           <Route path="/debts/status" element={<Debts />} />
-          <Route path="/stats" element={<Stats />} />
+          <Route path="/trips" element={<Trips />} />
+          <Route path="/data-manegement" element={<DataManegement />} />
         </Route>
       </Routes>
     </div>

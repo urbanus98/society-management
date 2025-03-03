@@ -1,11 +1,12 @@
 const db = require("../db");
+const { priceMultiply } = require("../services/genericActions");
 
 const getTraffic = (req, res)=> {
     const sql = `
         SELECT
             traffic.id,
             traffic.name,
-            traffic.amount,
+            ROUND(traffic.amount / 100, 2) as amount,
             traffic.direction,
             DATE_FORMAT(traffic.date, "%d.%m.%Y") as date
         FROM traffic
@@ -40,7 +41,7 @@ const postTraffic = async (req, res) => {
 
 const getOneTraffic = (req, res) => {
     const id = req.params.id;
-    const sql = `SELECT traffic.name, traffic.direction, traffic.amount, DATE_FORMAT(traffic.date, "%Y-%m-%d") as date FROM traffic WHERE id = ${id}`;
+    const sql = `SELECT traffic.name, traffic.direction, ROUND(traffic.amount / 100, 2) as amount, DATE_FORMAT(traffic.date, "%Y-%m-%d") as date FROM traffic WHERE id = ${id}`;
 
     db.query(sql, (err, result) => {
         if (err) {
@@ -61,7 +62,7 @@ const putTraffic = async (req, res) => {
     const id = req.params.id;
     var { name, amount, direction, date } = req.body;
 
-    await updateTraffic(id, name, amount, direction, date);
+    await updateTraffic(id, name, priceMultiply(amount), direction, date);
 
     return res.status(200).json({ message: 'Data updated successfully' });
 };
@@ -71,7 +72,7 @@ const insertTraffic = (invoiceId, orderId, name, amount, direction, date) => {
         const sql = `
             INSERT INTO 
                 traffic (invoice_id, order_id, name, amount, direction, date) 
-            VALUES (${invoiceId}, ${orderId}, '${name}', '${amount}', '${direction}', '${date}')
+            VALUES (${invoiceId}, ${orderId}, '${name}', '${priceMultiply(amount)}', '${direction}', '${date}')
         `;
         console.log(sql);
         db.query(sql, (err, result) => {
@@ -88,7 +89,7 @@ const insertTraffic = (invoiceId, orderId, name, amount, direction, date) => {
 
 const updateTraffic = (trafficId, name, amount, direction, date) => {
     return new Promise((resolve, reject) => {
-        const sql = `UPDATE traffic SET name = '${name}', amount = '${amount}', direction = '${direction}', date = '${date}' WHERE id = ${trafficId}`;
+        const sql = `UPDATE traffic SET name = '${name}', amount = '${priceMultiply(amount)}', direction = '${direction}', date = '${date}' WHERE id = ${trafficId}`;
         // console.log(sql);
         db.query(sql, (err, result) => {
             if (err) {
@@ -113,11 +114,11 @@ const getTrafficChart = (req, res)=> {
             DATE_FORMAT(ws.week_start, '%Y-%m') AS month_year,
             YEARWEEK(ws.week_start) AS week_number,
             ws.week_start, -- Explicitly include in GROUP BY
-            COALESCE(SUM(CASE WHEN tr.direction = 0 THEN tr.amount ELSE 0 END), 0) - 
-            COALESCE(SUM(CASE WHEN tr.direction = 1 THEN tr.amount ELSE 0 END), 0) AS weekly_balance,
+            COALESCE(SUM(CASE WHEN tr.direction = 0 THEN ROUND(tr.amount / 100, 2) ELSE 0 END), 0) - 
+            COALESCE(SUM(CASE WHEN tr.direction = 1 THEN ROUND(tr.amount / 100, 2) ELSE 0 END), 0) AS weekly_balance,
             (SELECT 
-                SUM(CASE WHEN tr2.direction = 0 THEN tr2.amount ELSE 0 END) - 
-                SUM(CASE WHEN tr2.direction = 1 THEN tr2.amount ELSE 0 END)
+                SUM(CASE WHEN tr2.direction = 0 THEN ROUND(tr2.amount / 100, 2) ELSE 0 END) - 
+                SUM(CASE WHEN tr2.direction = 1 THEN ROUND(tr2.amount / 100, 2) ELSE 0 END)
             FROM traffic tr2
             WHERE tr2.date <= ws.week_start) AS cumulative_balance
         FROM WeekSeries ws

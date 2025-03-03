@@ -9,11 +9,10 @@ const getSalesRows = async (req, res)=>{
         var sql = `
         SELECT
             id,
-            date as dateS,
             DATE_FORMAT(date, "%d.%m.%Y") as date
         FROM
             sales
-        ORDER BY dateS DESC, id DESC
+        ORDER BY sales.date DESC, id DESC
     `;
         const salesWithAmounts = await getSalesWithAmounts(sql);
         console.log(salesWithAmounts);

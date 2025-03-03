@@ -23,10 +23,16 @@ const DebtChart = ({ debtData }: { debtData: any }) => {
   const labels = debtData.map((debt: any) => debt.name);
   const credit = debtData.map((debt: any) => debt.credit);
   const debt = debtData.map((debt: any) => -debt.debt);
+  const tCost = debtData.map((cost: any) => Math.round(cost.tripCosts));
 
   const data = {
     labels: labels,
     datasets: [
+      {
+        label: "Potni stroški",
+        data: tCost,
+        backgroundColor: "#fcce03",
+      },
       {
         label: "Prilivi",
         data: credit,

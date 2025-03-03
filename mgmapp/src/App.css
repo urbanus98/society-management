@@ -59,14 +59,17 @@ html, body {
     .res-width-40 {
         width: 40%;
     }
+    .res-width-60 {
+        width: 60%;
+    }
     .res-width-80 {
         width: 80%;
     }
 }
 
-/* .scrollable {
-    overflow-y: scroll;
-} */
+.margin-auto-lr {
+    margin: 0 auto;
+}
 
 .scrollable {
     overflow: auto; /* Enables scrolling */
@@ -225,6 +228,10 @@ table {
     flex-wrap: wrap;
 }
 
+.fit-content {
+    width: fit-content;
+}
+
 .gap {
     gap: 1rem;
 }
@@ -336,6 +343,10 @@ table {
 
 .align-center {
     align-items: center;
+}
+
+.align-selfcenter {
+    align-self: center;
 }
 
 .background {

@@ -1,4 +1,5 @@
 const db = require('../db');
+const { priceMultiply, priceDivide } = require('../services/genericActions');
 const { parseJSON } = require('../services/misc');
 const { insertTraffic } = require('./trafficController');
 
@@ -6,11 +7,12 @@ const getOrders = (req, res)=>{
     const sql = `
         SELECT
             orders.id,
-            orders.price_total, 
+            traffic.amount, 
             DATE_FORMAT(orders.date, "%d.%m.%Y") as date
         FROM orders
-        ORDER BY date DESC, id DESC
-        `; 
+            JOIN traffic on traffic.order_id = orders.id
+        ORDER BY orders.date DESC, id DESC
+    `;
     db.query(sql, (err, result)=>{
         if (err) {
             console.error('Error fetching orders:', err);
@@ -20,7 +22,7 @@ const getOrders = (req, res)=>{
         const rows = result.map((row) => {
             return {
                 date: row.date,
-                price: row.price_total + " €",
+                price: priceDivide(row.amount) + " €",
                 id: row.id,
             };
         });
@@ -30,7 +32,7 @@ const getOrders = (req, res)=>{
 
 const insertOrder = (req) => {
     return new Promise((resolve, reject) => {
-        const { price, date } = req.body;
+        const { date } = req.body;
 
         // console.log(req.body);
         // console.log(details);
@@ -40,9 +42,9 @@ const insertOrder = (req) => {
             filePath = `uploads/${req.file.filename}`;
         }
         const sql = filePath
-            ? `INSERT INTO orders (price_total, date, pdf_path) VALUES (?, ?, ?)`
-            : `INSERT INTO orders (price_total, date) VALUES (?, ?)`;
-        const values = filePath ? [price, date, filePath] : [price, date];
+            ? `INSERT INTO orders (date, pdf_path) VALUES (?, ?)`
+            : `INSERT INTO orders (date) VALUES (?)`;
+        const values = filePath ? [date, filePath] : [date];
         // console.log(sql);
 
         db.query(sql, values, (err, result) => {
@@ -103,7 +105,7 @@ module.exports = { getOrders, postOrder, getOrder, putOrder };
 
 const updateOrderTraffic = (orderId, amount, date) => {
     return new Promise((resolve, reject) => {
-        const sql = `UPDATE traffic SET amount = '${amount}', date = '${date}' WHERE order_id = ${orderId}`;
+        const sql = `UPDATE traffic SET amount = '${priceMultiply(amount)}', date = '${date}' WHERE order_id = ${orderId}`;
         // console.log(sql);
         db.query(sql, (err, result) => {
             if (err) {
@@ -120,12 +122,12 @@ const updateOrderTraffic = (orderId, amount, date) => {
 
 const updateOrder = (req, orderId) => {
     return new Promise((resolve, reject) => {
-        const { price, date } = req.body;
+        const { date } = req.body;
         if (req.file) {
             const filePath = `uploads/${req.file.filename}`;
-            var sql = `UPDATE orders SET price_total = '${price}', date = '${date}', pdf_path = '${filePath}' WHERE id = ${orderId}`;
+            var sql = `UPDATE orders SET date = '${date}', pdf_path = '${filePath}' WHERE id = ${orderId}`;
         } else {
-            var sql = `UPDATE orders SET price_total = '${price}', date = '${date}' WHERE id = ${orderId}`;
+            var sql = `UPDATE orders SET date = '${date}' WHERE id = ${orderId}`;
         }
 
         db.query(sql, (err, result) => {
@@ -217,13 +219,14 @@ const getOrderData = (orderId) => {
                 ordered_stuff.stufftype_id, 
                 stuff_types.type as type, 
                 stuff.name as name,
-                orders.price_total,
+                traffic.amount as price_total,
                 orders.pdf_path,
                 DATE_FORMAT(orders.date, "%Y-%m-%d") as date
             FROM ordered_stuff
-            JOIN orders on orders.id = ordered_stuff.order_id
-            JOIN stuff_types on ordered_stuff.stufftype_id = stuff_types.id
-            JOIN stuff on stuff_types.stuff_id = stuff.id
+                JOIN orders on orders.id = ordered_stuff.order_id
+                JOIN traffic on traffic.order_id = orders.id
+                JOIN stuff_types on ordered_stuff.stufftype_id = stuff_types.id
+                JOIN stuff on stuff_types.stuff_id = stuff.id
             WHERE ordered_stuff.order_id = ${orderId}
         `;
         // console.log(sqlStuff);
@@ -236,7 +239,7 @@ const getOrderData = (orderId) => {
             // console.log('Data fetched successfully:', result);
 
             const formattedResult = {
-                price: result[0].price_total,
+                price: priceDivide(result[0].price_total),
                 date: result[0].date,
                 filePath: result[0].pdf_path,
                 types: result.map((row) => {

@@ -5,10 +5,14 @@ import { useParams } from "react-router-dom";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { Loading } from "../components/Loading";
 import BackWTitle from "../components/BackWTitle";
+import SubNavigator from "../components/SubNavigator";
+import TripsForm from "../components/Forms/TripsForm";
 
 export function Events() {
   const axiosPrivate = useAxiosPrivate();
   const [events, setEvents] = useState<any[]>([]);
+  const left = { link: "/data-manegement", text: "Upr. podatkov" };
+  const right = { link: "/trips", text: "Poti" };
   const headers = [
     { key: "date", label: "Datum" },
     { key: "name", label: "Dogodek" },
@@ -25,12 +29,12 @@ export function Events() {
   }, []);
 
   return (
-    <div className="padding-3 flex justify-center align-center">
+    <div className="padding-3 coluflex justify-center align-center">
+      <SubNavigator title="Dogodki" left={left} right={right} />
       <div className="res-width-80">
         <UsefulTable
           headers={headers}
           rows={events}
-          title="Dogodki"
           buttonText="Dodaj dogodek"
           buttonLink="/events/create"
           linkPart="events"
@@ -75,6 +79,8 @@ export function UpdateEvent() {
       <BackWTitle title="Uredi dogodek" />
       <div className="res-width-30">
         <EventsForm event={event} />
+        <h2 className="bright-text text-centers">Poti</h2>
+        <TripsForm eventId={id} />
       </div>
     </div>
   );

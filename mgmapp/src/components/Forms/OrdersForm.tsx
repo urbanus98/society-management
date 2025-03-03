@@ -131,6 +131,7 @@ const OrdersForm = ({ order }: { order?: any }) => {
             placeholder="Vsota"
             value={price}
             classes="w70"
+            step="0.01"
             handleChange={(event) => setPrice(Number(event.target.value))}
           />
         </div>

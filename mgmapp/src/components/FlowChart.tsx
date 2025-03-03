@@ -37,6 +37,8 @@ const FlowChart = ({
     black.cumulative_balance != null ? black.cumulative_balance : "0"
   );
 
+  const chartColor = status[status.length - 1] > 0 ? "#62bf62" : "#e60707";
+
   // console.log(dates);
   // console.log(status);
 
@@ -46,8 +48,8 @@ const FlowChart = ({
       {
         label: "Stanje",
         data: status,
-        backgroundColor: "#d4cb22",
-        borderColor: "#d4cb22",
+        backgroundColor: chartColor,
+        borderColor: chartColor,
       },
     ],
   };
