@@ -32,13 +32,14 @@ CREATE TABLE users (
 CREATE TABLE event_types (
     id int NOT NULL AUTO_INCREMENT,
     name varchar(255),
+    indeks int, 
     PRIMARY KEY (id)
 ); 
 
 CREATE TABLE events (
     id int NOT NULL AUTO_INCREMENT,
     type_id int,
-    name varchar(255),
+    name varchar(255) NULL,
     duration int,
     date date,
     PRIMARY KEY (id),
@@ -78,6 +79,7 @@ CREATE TABLE stuff (
     id int NOT NULL AUTO_INCREMENT,
     name varchar(255),
     image_path varchar(255) NULL,
+    is_sold boolean NULL,
     PRIMARY KEY (id)
 );
 
@@ -190,6 +192,7 @@ CREATE TABLE trips (
 insert into event_types (name) values ('Vaje');
 insert into event_types (name) values ('Intenzivne vaje');
 insert into event_types (name) values ('Nastop');
+insert into event_types (name) values ('Snemanje');
 
 insert into locations (name) values ('Vipava');
 insert into mileage_rates (year, rate) values (2024, 20);

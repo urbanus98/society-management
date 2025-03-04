@@ -7,6 +7,7 @@ import { Loading } from "../components/Loading";
 import BackWTitle from "../components/BackWTitle";
 import SubNavigator from "../components/SubNavigator";
 import TripsForm from "../components/Forms/TripsForm";
+import Alert from "../components/ui/Alert";
 
 export function Events() {
   const axiosPrivate = useAxiosPrivate();
@@ -59,6 +60,9 @@ export function UpdateEvent() {
   const axiosPrivate = useAxiosPrivate();
   const [event, setEvent] = useState<any>();
   const { id } = useParams();
+  const [msg, setMsg] = useState("");
+  const [alertColor, setAlertColor] = useState<any>("success");
+  const [alertVisible, setAlertVisibility] = useState(false);
 
   useEffect(() => {
     const getEvent = async () => {
@@ -79,8 +83,18 @@ export function UpdateEvent() {
       <BackWTitle title="Uredi dogodek" />
       <div className="res-width-30">
         <EventsForm event={event} />
+        {alertVisible && (
+          <Alert color={alertColor} onClose={() => setAlertVisibility(false)}>
+            {msg}
+          </Alert>
+        )}
         <h2 className="bright-text text-centers">Poti</h2>
-        <TripsForm eventId={id} />
+        <TripsForm
+          eventId={id}
+          setMsg={setMsg}
+          setAlertVisibility={setAlertVisibility}
+          setAlertColor={setAlertColor}
+        />
       </div>
     </div>
   );

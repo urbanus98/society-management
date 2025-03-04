@@ -4,10 +4,19 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import SubmButton from "../ui/SubmButton";
 import useAuth from "../../hooks/useAuth";
 
-const TripsForm = ({ eventId }: { eventId: any }) => {
+const TripsForm = ({
+  eventId,
+  setMsg,
+  setAlertVisibility,
+  setAlertColor,
+}: {
+  eventId: any;
+  setMsg?: any;
+  setAlertVisibility?: any;
+  setAlertColor?: any;
+}) => {
   const axiosPrivate = useAxiosPrivate();
   const { auth } = useAuth();
-  //   var removedTripIds: any[] = [];
   const [removedTripIds, setRemovedTripIds] = useState<any[]>([]); // Persist across renders
 
   const [fistInsert, setFirstInsert] = useState<boolean>(true);
@@ -24,7 +33,7 @@ const TripsForm = ({ eventId }: { eventId: any }) => {
     };
     const getTrips = async () => {
       const response = await axiosPrivate.get(`trips/${eventId}`);
-      console.log(response.data);
+      console.log(response?.data);
       const newRows = formatRows(response.data);
       if (newRows.length > 0) {
         setFirstInsert(false);
@@ -146,7 +155,7 @@ const TripsForm = ({ eventId }: { eventId: any }) => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
+    var response: any = {};
     try {
       const formData = {
         details: handleReturn(),
@@ -155,13 +164,18 @@ const TripsForm = ({ eventId }: { eventId: any }) => {
       };
       console.log(formData);
       if (fistInsert) {
-        await axiosPrivate.post("trips", formData);
+        response = await axiosPrivate.post("trips", formData);
       } else {
-        await axiosPrivate.put(`trips/${eventId}`, formData);
+        response = await axiosPrivate.put(`trips/${eventId}`, formData);
       }
+      setAlertColor("success");
     } catch (error) {
       console.log(error);
+      setAlertColor("danger");
     }
+    console.log(response.data);
+    setMsg(response.data);
+    setAlertVisibility(true);
   };
 
   return (

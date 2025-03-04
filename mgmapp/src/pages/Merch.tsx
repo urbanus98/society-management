@@ -3,19 +3,24 @@ import LinkButton from "../components/ui/LinkButton";
 import MerchForm from "../components/Forms/MerchForm";
 import Item from "../components/Item";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import OrdersForm from "../components/Forms/OrdersForm";
 import SalesForm from "../components/Forms/SalesForm";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import SubNavigator from "../components/SubNavigator";
 import { Loading } from "../components/Loading";
 import BackWTitle from "../components/BackWTitle";
+import FuncButton from "../components/ui/FuncButton";
 
 export function Merch() {
   const axiosPrivate = useAxiosPrivate();
   const [merch, setMerch] = useState<any[]>([]);
   const left = { link: "/merch/orders", text: "Naročila" };
   const right = { link: "/merch/sales", text: "Prodaja" };
+  const [showUnsellable, setShowUnsellable] = useState<boolean>(false);
+  const filteredMerch = showUnsellable
+    ? merch
+    : merch.filter((item) => item.isSold);
 
   useEffect(() => {
     axiosPrivate
@@ -35,14 +40,20 @@ export function Merch() {
   return (
     <div className="padding-3 coluflex align-center">
       <SubNavigator left={left} right={right} title="Merch" margin />
-      <div className="flex res-width-40">
+      <div className="flex justify-between res-width-40">
         <LinkButton link="/merch/create" text="Dodaj Merch" />
         {/* <Link to="/merch/create" className="bright-text">
           <p className="link_text">Dodaj merch &rarr;</p>
         </Link> */}
+        <FuncButton
+          color="secondary"
+          onClick={() => setShowUnsellable(!showUnsellable)}
+        >
+          {showUnsellable ? "Skrij privat" : "Pokaži vse"}
+        </FuncButton>
       </div>
       <div className="flex wrap justify-center res-width-80">
-        {merch.map((item) => (
+        {filteredMerch.map((item) => (
           <Item item={item} linkPart="merch" key={item.id} />
         ))}
       </div>
@@ -99,6 +110,7 @@ export function MerchOrders() {
   const headers = [
     { key: "date", label: "Datum" },
     { key: "price", label: "Cena" },
+    // { key: "file", label: "Račun" },
     { key: "id", label: "" },
   ];
 
@@ -131,7 +143,7 @@ export function MerchOrders() {
           headers={headers}
           rows={orders}
           buttonLink="/merch/orders/create"
-          buttonText="Naroci"
+          buttonText="Zabeleži"
           linkPart="merch/orders"
         />
       </div>
@@ -217,7 +229,7 @@ export function MerchSales() {
           headers={headers}
           rows={sales}
           title="Prodaja mercha"
-          buttonText="Zabelezi prodajo"
+          buttonText="Zabeleži"
           buttonLink="create"
           linkPart="merch/sales"
         />

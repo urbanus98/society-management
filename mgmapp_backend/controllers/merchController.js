@@ -28,7 +28,8 @@ exports.getMerch = (req, res) => {
         SELECT 
             s.id AS stuff_id, 
             s.name AS stuff_name, 
-            s.image_path, 
+            s.image_path,
+            s.is_sold,
             st.type AS stuff_type, 
             st.price AS stuff_price
         FROM 
@@ -49,12 +50,12 @@ exports.getMerch = (req, res) => {
 
         // Process data to group types under each stuff
         const groupedData = result.reduce((acc, row) => {
-            const { stuff_id, stuff_name, image_path, stuff_type, stuff_price } = row;
+            const { stuff_id, stuff_name, is_sold, image_path, stuff_type, stuff_price } = row;
 
             // Find existing stuff entry
             let stuff = acc.find(item => item.id === stuff_id);
             if (!stuff) {
-                stuff = { id: stuff_id, name: stuff_name, image_path, types: [] };
+                stuff = { id: stuff_id, name: stuff_name, image_path, isSold: is_sold, types: [] };
                 acc.push(stuff);
             }
 
@@ -74,7 +75,7 @@ exports.getMerch = (req, res) => {
 exports.postMerch = (req, res) => {
     try {
       // Use req.body to get other form data
-        const { name, details } = req.body;
+        const { name, details, isSold } = req.body;
         let imagePath = null;
 
         console.log(req.body);
@@ -83,9 +84,9 @@ exports.postMerch = (req, res) => {
             imagePath = `uploads/${req.file.filename}`;
         }
         const sqlStuff = imagePath
-            ? `INSERT INTO stuff (name, image_path) VALUES (?, ?)`
-            : `INSERT INTO stuff (name) VALUES (?)`;
-        const stuffValues = imagePath ? [name, imagePath] : [name];
+            ? `INSERT INTO stuff (name, image_path, is_sold) VALUES (?, ?, ?)`
+            : `INSERT INTO stuff (name, is_sold) VALUES (?, ?)`;
+        const stuffValues = imagePath ? [name, imagePath, isSold] : [name, isSold];
 
       // Save the file path and other details to the database
       db.query(sqlStuff, stuffValues, (err, stuffResult) => {
@@ -125,7 +126,8 @@ exports.getMerchItem = (req, res) => {
         SELECT 
             s.id AS stuff_id, 
             s.name AS stuff_name, 
-            s.image_path, 
+            s.image_path,
+            s.is_sold,
             st.type AS stuff_type, 
             st.price AS stuff_price
         FROM 
@@ -152,11 +154,11 @@ exports.getMerchItem = (req, res) => {
 
         // Process data to group types under the stuff item
         const groupedData = result.reduce((acc, row) => {
-            const { stuff_id, stuff_name, image_path, stuff_type, stuff_price } = row;
+            const { stuff_id, stuff_name, image_path, is_sold, stuff_type, stuff_price } = row;
 
             // If the stuff object is not created yet, create it
             if (!acc) {
-                acc = { id: stuff_id, name: stuff_name, image_path, types: [] };
+                acc = { id: stuff_id, name: stuff_name, image_path, isSold: is_sold, types: [] };
             }
 
             // Add type and price to the stuff's types array
@@ -175,15 +177,15 @@ exports.getMerchItem = (req, res) => {
 
 exports.putMerch = (req, res)=>{
     const id = req.params.id;
-    var {name, details} = req.body;
+    var {name, isSold, details} = req.body;
     console.log(req.body);
     console.log(id);
 
     if (req.file) {
         const imagePath = `uploads/${req.file.filename}`;
-        var sqlStuffUpdate = `UPDATE stuff SET name = '${name}', image_path = '${imagePath}' WHERE id = ${id}`;
+        var sqlStuffUpdate = `UPDATE stuff SET name = "${name}", image_path = '${imagePath}', is_sold = ${isSold} WHERE id = ${id}`;
     } else {
-        var sqlStuffUpdate = `UPDATE stuff SET name = '${name}' WHERE id = ${id}`;
+        var sqlStuffUpdate = `UPDATE stuff SET name = "${name}", is_sold = ${isSold} WHERE id = ${id}`;
     }
 
     db.query(sqlStuffUpdate, (err, stuffResult) => {

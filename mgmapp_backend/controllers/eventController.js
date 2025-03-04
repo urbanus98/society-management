@@ -16,9 +16,15 @@ exports.getEventTypes = (req, res)=>{
 
 exports.getEvents = (req, res)=>{
     console.log("getEvents called");
-    const sql = `SELECT event_types.name as type, events.name as name, DATE_FORMAT(date, "%d.%m.%Y") as date_formatted, events.id FROM events
-    INNER JOIN event_types ON events.type_id = event_types.id
-    ORDER BY date DESC;
+    const sql = `
+        SELECT 
+            event_types.name as type, 
+            events.name as name, 
+            DATE_FORMAT(date, "%d.%m.%Y") as date_formatted, 
+            events.id 
+        FROM events
+            INNER JOIN event_types ON events.type_id = event_types.id
+        ORDER BY date DESC;
     `;
     db.query(sql, (err, result)=>{
         if (err) {
@@ -27,7 +33,7 @@ exports.getEvents = (req, res)=>{
         }
         const rows = result.map((row) => {
             return {
-              name: row.type + " - " + row.name,
+              name: row.name == "" ? row.type : row.type + " - " + row.name,
               date: row.date_formatted,
               id: row.id,
             };

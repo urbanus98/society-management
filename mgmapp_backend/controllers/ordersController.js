@@ -7,7 +7,8 @@ const getOrders = (req, res)=>{
     const sql = `
         SELECT
             orders.id,
-            traffic.amount, 
+            traffic.amount,
+            orders.pdf_path,
             DATE_FORMAT(orders.date, "%d.%m.%Y") as date
         FROM orders
             JOIN traffic on traffic.order_id = orders.id
@@ -23,39 +24,11 @@ const getOrders = (req, res)=>{
             return {
                 date: row.date,
                 price: priceDivide(row.amount) + " €",
+                // file: row.pdf_path,
                 id: row.id,
             };
         });
         return res.json(rows);
-    });
-};
-
-const insertOrder = (req) => {
-    return new Promise((resolve, reject) => {
-        const { date } = req.body;
-
-        // console.log(req.body);
-        // console.log(details);
-        
-        let filePath = null;
-        if (req.file) {
-            filePath = `uploads/${req.file.filename}`;
-        }
-        const sql = filePath
-            ? `INSERT INTO orders (date, pdf_path) VALUES (?, ?)`
-            : `INSERT INTO orders (date) VALUES (?)`;
-        const values = filePath ? [date, filePath] : [date];
-        // console.log(sql);
-
-        db.query(sql, values, (err, result) => {
-            if (err) {
-                console.error('Error inserting order:', err);
-                return reject('Failed to create order');
-            }
-            console.log('Order inserted successfully:', result);
-
-            resolve(result.insertId);
-        });
     });
 };
 
@@ -119,7 +92,6 @@ const updateOrderTraffic = (orderId, amount, date) => {
     });
 }
 
-
 const updateOrder = (req, orderId) => {
     return new Promise((resolve, reject) => {
         const { date } = req.body;
@@ -129,6 +101,7 @@ const updateOrder = (req, orderId) => {
         } else {
             var sql = `UPDATE orders SET date = '${date}' WHERE id = ${orderId}`;
         }
+        console.log(sql);
 
         db.query(sql, (err, result) => {
             if (err) {
@@ -209,6 +182,34 @@ const insertNewStuffOrdered = (newDetails, orderId) => {
     });
 };
 
+const insertOrder = (req) => {
+    return new Promise((resolve, reject) => {
+        const { date } = req.body;
+
+        // console.log(req.body);
+        // console.log(details);
+        
+        let filePath = null;
+        if (req.file) {
+            filePath = `uploads/${req.file.filename}`;
+        }
+        const sql = filePath
+            ? `INSERT INTO orders (date, pdf_path) VALUES (?, ?)`
+            : `INSERT INTO orders (date) VALUES (?)`;
+        const values = filePath ? [date, filePath] : [date];
+        // console.log(sql);
+
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                console.error('Error inserting order:', err);
+                return reject('Failed to create order');
+            }
+            console.log('Order inserted successfully:', result);
+
+            resolve(result.insertId);
+        });
+    });
+};
 
 const getOrderData = (orderId) => {
     return new Promise((resolve, reject) => {

@@ -1,4 +1,4 @@
-const { performMassInsert, performMassUpdate, performQuery } = require("../services/genericActions");
+const { performMassInsert, performMassUpdate, performQuery, performDelete } = require("../services/genericActions");
 
 const getTripRows = async (req, res) => {
     const sql = `
@@ -70,10 +70,22 @@ const putTrips = async (req, res) => {
             
         const sqlInsert = "INSERT INTO trips (origin_id, destination_id, mileage, user_id, event_id, rate_id) VALUES ?";
         await performMassInsert(sqlInsert, newData, ['origin', 'destination', 'mileage'], [userId, eventId, rateId]);
-        return res.json("success");
+
+        // DELETE THE REST
+        const sqlExisting = "SELECT id FROM trips WHERE event_id = ? and user_id = ?";
+        const existing = await performQuery(sqlExisting, [eventId, userId]);
+
+        const oldIds = oldData.map((detail) => detail.id);
+        const idsToDelete = existing.filter((item) => !oldIds.includes(item.id)).map((item) => item.id);
+
+        if (idsToDelete.length > 0) {
+            const sqlDelete = "DELETE FROM trips WHERE id IN (?)";
+            await performDelete(sqlDelete, [idsToDelete]);
+        }
+        return res.status(200).json("Poti uspešno posodobljene!");
     } catch (error) {
         console.error("Error updating data:", error);
-        return res.status(500).json({ error: "Failed to update data in the database" });
+        return res.status(500).json({ error: "Napaka pri posodobitvi poti!" });
     }
 }
 

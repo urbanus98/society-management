@@ -15,10 +15,10 @@ const storage = multer.diskStorage({
 
     switch (route) {
       case "merch":
-        uniqueName = `${prefix}_${Date.now()}.${type}`;
+        uniqueName = `${prefix}_${Date.now()}${type}`;
         break;
       case "orders":
-        uniqueName = `${originalName}.${type}`;
+        uniqueName = `${originalName}${type}`;
         break;
     }
     cb(null, uniqueName); // Save with the new filename

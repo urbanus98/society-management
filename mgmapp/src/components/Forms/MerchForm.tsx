@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SubmButton from "../ui/SubmButton";
-import ImageUpload from "../ImageUpload";
 import FuncButton from "../ui/FuncButton";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import InputCheckbox from "../Inputs/InputCheckbox";
+import ImageUpload from "../ImageUpload";
 
 interface Row {
   type: string;
@@ -18,6 +19,10 @@ const MerchForm = ({ item }: { item?: any }) => {
   const [isDisabled, setIsDisabled] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isSold, setIsSold] = useState<boolean>(
+    item?.isSold !== undefined ? item.isSold : true
+  );
+  const [name, setName] = useState<string>(item?.name || "");
   const [rows, setRows] = useState<Row[]>(
     item?.details || [{ type: "", price: "" }]
   );
@@ -64,13 +69,8 @@ const MerchForm = ({ item }: { item?: any }) => {
     event.preventDefault(); // Prevent form refresh
     try {
       const formData = new FormData();
-
-      // Append form fields
-      const name = (event.target as HTMLFormElement).elements.namedItem(
-        "name"
-      ) as HTMLInputElement;
-
-      formData.append("name", name.value);
+      formData.append("name", name);
+      formData.append("isSold", isSold ? "1" : "0");
       formData.append("details", JSON.stringify(rows)); // Append rows as JSON
 
       if (imageFile) {
@@ -103,7 +103,8 @@ const MerchForm = ({ item }: { item?: any }) => {
             className="input"
             type="text"
             name="name"
-            defaultValue={item?.name || ""}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             required
           />
         </div>
@@ -169,6 +170,12 @@ const MerchForm = ({ item }: { item?: any }) => {
             ))}
           </tbody>
         </table>
+        <InputCheckbox
+          name="isSold"
+          label="V prodaji"
+          variable={isSold}
+          onChange={setIsSold} // Directly update state
+        />
         <ImageUpload setImage={setImageFile} preview={imagePreview} />
       </div>
       <SubmButton text="Potrdi" />

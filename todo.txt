@@ -1,14 +1,20 @@
 - refactor backend
 - fix same key
-- fix chart labels
+- orders description?
 - debts editable only by own users?
-- more files on order?
 - timestamps?
 - set black
-- add cents
-- create pdf
+- fix chart labels
 - remove table column on responsive
-- add event in sale & invoice
-- orders description?
+- add event in sale & invoice & order
 - add update rate to event update
 - add links to events in trips
+- orders table invoice link
+- gradual table loading
+- create pdf
+
+
+stats:
+- n of events, hours
+- profit by year
+- merch sales
