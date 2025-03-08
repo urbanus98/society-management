@@ -50,7 +50,6 @@ const TrafficUpdateForm = ({ traffic }: Props) => {
         <div className="width-100">
           <Input
             name="name"
-            variable="name"
             label="Namen"
             placeholder="Npr. nakup opreme"
             classes="width-100"
@@ -60,7 +59,6 @@ const TrafficUpdateForm = ({ traffic }: Props) => {
         <div>
           <Input
             name="amount"
-            variable="amount"
             label="Znesek (€)"
             type="number"
             classes="w70"
@@ -70,18 +68,11 @@ const TrafficUpdateForm = ({ traffic }: Props) => {
       </div>
       <div className="flex gap">
         <div className="width-50">
-          <Input
-            name="date"
-            variable="date"
-            type="date"
-            label="Datum"
-            formik={formik}
-          />
+          <Input name="date" type="date" label="Datum" formik={formik} />
         </div>
         <div className="width-50">
           <InputSelect
             name="direction"
-            variable="direction"
             label="Vrsta"
             values={[
               { id: 0, name: "Priliv" },

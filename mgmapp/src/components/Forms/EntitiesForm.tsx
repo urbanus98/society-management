@@ -3,37 +3,34 @@ import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import SubmButton from "../ui/SubmButton";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import FormikInput from "../Inputs/Formik/FormikInput";
 
 interface Props {
-  name?: string;
-  address?: string;
-  postal?: number;
-  place?: string;
-  iban?: string;
-  note?: string;
-  submitLink?: string;
+  entity?: any;
 }
 
-const EntitiesForm = ({ name, address, postal, place, iban, note }: Props) => {
+const EntitiesForm = ({ entity }: Props) => {
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
   const { id } = useParams();
+  console.log("Entity:", entity);
 
   const formik = useFormik({
     initialValues: {
-      name: name || "",
-      address: address || "",
-      postal: postal || "",
-      place: place || "",
-      iban: iban || "",
-      note: note || "",
+      name: entity?.name || "",
+      address: entity?.address || "",
+      postal: entity?.postal || "",
+      city: entity?.city || "",
+      head: entity?.head || "",
+      iban: entity?.iban || "",
+      bank: entity?.bank || "",
+      note: entity?.note || "",
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Ime je obvezno polje"),
       address: Yup.string().required("Naslov je obvezno polje"),
       postal: Yup.number().required("Pošta je obvezno polje"),
-      place: Yup.string().required("Kraj je obvezno polje"),
-      // iban: Yup.string().required("IBAN je obvezno polje"),
+      city: Yup.string().required("Kraj je obvezno polje"),
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
@@ -54,116 +51,71 @@ const EntitiesForm = ({ name, address, postal, place, iban, note }: Props) => {
 
   return (
     <form onSubmit={formik.handleSubmit}>
-      <label
-        htmlFor="name"
-        className={`input_label ${
-          formik.touched.name && formik.errors.name ? "red-text" : "bright-text"
-        }`}
-      >
-        {formik.touched.name && formik.errors.name ? formik.errors.name : "Ime"}
-      </label>
-      <input
-        type="text"
+      <FormikInput
+        label="Ime"
         name="name"
-        value={formik.values.name}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
         placeholder="Ime/naziv društva"
-        className="input width-100"
+        classes="input width-100"
+        formik={formik}
       />
-      <label
-        htmlFor=""
-        className={`input_label ${
-          formik.touched.address && formik.errors.address
-            ? "red-text"
-            : "bright-text"
-        }`}
-      >
-        {formik.touched.address && formik.errors.address
-          ? formik.errors.address
-          : "Naslov"}
-      </label>
-      <input
-        type="text"
+      <FormikInput
+        label="Naslov"
         name="address"
-        value={formik.values.address}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
         placeholder="Naslov društva"
-        className="input width-100"
+        classes="input width-100"
+        formik={formik}
       />
-      <label
-        htmlFor=""
-        className={`input_label ${
-          formik.touched.postal && formik.errors.postal
-            ? "red-text"
-            : "bright-text"
-        }`}
-      >
-        {formik.touched.postal && formik.errors.postal
-          ? formik.errors.postal
-          : "Pošta"}
-      </label>
-      <input
-        type="number"
-        name="postal"
-        value={formik.values.postal}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        placeholder="Poštna številka"
-        className="input width-100"
+      <div className="flex gap">
+        <div className="width-50">
+          <FormikInput
+            label="Pošta"
+            name="postal"
+            placeholder="Poštna številka"
+            classes="input width-100"
+            formik={formik}
+          />
+        </div>
+        <div className="width-50">
+          <FormikInput
+            label="Kraj"
+            name="city"
+            placeholder="Kraj"
+            classes="input width-100"
+            formik={formik}
+          />
+        </div>
+      </div>
+      <FormikInput
+        label="Predsednik"
+        name="head"
+        placeholder="Predsednik"
+        classes="input width-100"
+        formik={formik}
       />
-      <label
-        htmlFor=""
-        className={`input_label ${
-          formik.touched.place && formik.errors.place
-            ? "red-text"
-            : "bright-text"
-        }`}
-      >
-        {formik.touched.place && formik.errors.place
-          ? formik.errors.place
-          : "Kraj"}
-      </label>
-      <input
-        type="text"
-        name="place"
-        value={formik.values.place}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        placeholder="Kraj"
-        className="input width-100"
-      />
-      <label
-        htmlFor=""
-        className={`input_label ${
-          formik.touched.iban && formik.errors.iban ? "red-text" : "bright-text"
-        }`}
-      >
-        {formik.touched.iban && formik.errors.iban ? formik.errors.iban : "TRR"}
-      </label>
-      <input
-        type="text"
-        name="iban"
-        value={formik.values.iban}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        placeholder="TRR"
-        className="input width-100"
-      />
-      <label htmlFor="" className="input_label bright-text">
-        {formik.touched.note && formik.errors.note
-          ? formik.errors.note
-          : "Opombe"}
-      </label>
-      <input
-        type="text"
+      <div className="flex gap">
+        <div className="width-100">
+          <FormikInput
+            label="TRR"
+            name="iban"
+            placeholder="TRR"
+            classes="input"
+            formik={formik}
+          />
+        </div>
+        <FormikInput
+          label="Banka"
+          name="bank"
+          placeholder="Banka društva"
+          classes="input"
+          formik={formik}
+        />
+      </div>
+      <FormikInput
+        label="Opombe"
         name="note"
-        value={formik.values.note}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
         placeholder="So lopovi ipd..."
-        className="input width-100"
+        classes="input width-100"
+        formik={formik}
       />
       <SubmButton text="Dodaj" />
     </form>

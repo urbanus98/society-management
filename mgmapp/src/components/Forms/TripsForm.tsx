@@ -169,12 +169,12 @@ const TripsForm = ({
         response = await axiosPrivate.put(`trips/${eventId}`, formData);
       }
       setAlertColor("success");
+      setMsg(response.data.message);
     } catch (error) {
       console.log(error);
       setAlertColor("danger");
+      setMsg(response.data.error);
     }
-    console.log(response.data);
-    setMsg(response.data);
     setAlertVisibility(true);
   };
 

@@ -56,7 +56,6 @@ const FlowForm = ({ flow }: Props) => {
         <div className="width-100">
           <Input
             name="name"
-            variable="name"
             label="Razlog"
             placeholder="Zakaj in kako"
             classes="width-100"
@@ -66,7 +65,6 @@ const FlowForm = ({ flow }: Props) => {
         <div>
           <Input
             name="amount"
-            variable="amount"
             label="Znesek (€)"
             type="number"
             classes="w70"
@@ -76,18 +74,11 @@ const FlowForm = ({ flow }: Props) => {
       </div>
       <div className="flex gap">
         <div className="width-50">
-          <Input
-            name="date"
-            variable="date"
-            type="date"
-            label="Datum"
-            formik={formik}
-          />
+          <Input name="date" type="date" label="Datum" formik={formik} />
         </div>
         <div className="width-50">
           <InputSelect
             name="direction"
-            variable="direction"
             label="Vrsta"
             values={[
               { id: 0, name: "Priliv" },

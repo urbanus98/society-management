@@ -21,7 +21,7 @@ const getEntitiesRow = (req, res)=>{
         const rows = result.map((row) => {
             return {
                 name: row.name,
-                place: row.place,
+                city: row.city,
                 id: row.id,
             };
           });
@@ -42,10 +42,12 @@ const getEntity = (req, res)=>{
 };
 
 const postEntity = (req, res)=>{
-    var {name, address, postal, place, iban, note} = req.body;
+    var {name, address, postal, city, head, iban, bank, note} = req.body;
     if (iban === '') { iban = null;}
     if (note === '') { note = null;}
-    const sql = `INSERT INTO entities (name, address, postal, place, iban, note) VALUES ('${name}', '${address}', '${postal}', '${place}', '${iban}', '${note}')`;
+    if (bank === '') { bank = null;}
+    if (head === '') { head = null;}
+    const sql = `INSERT INTO entities (name, address, postal, city, head, iban, bank, note) VALUES ('${name}', '${address}', '${postal}', '${city}', '${head}', '${iban}', '${bank}', '${note}')`;
     console.log(sql);
     db.query(sql, (err, result) => {
         if (err) {
@@ -62,8 +64,8 @@ const postEntity = (req, res)=>{
 
 const putEntity = (req, res)=>{
     const id = req.params.id;
-    var {name, address, postal, place, iban, note} = req.body;
-    const sql = `UPDATE entities SET name = '${name}', address = '${address}', postal = '${postal}', place = '${place}', iban = '${iban}', note = '${note}' WHERE id = ${id}`;
+    var {name, address, postal, city, head, iban, bank, note} = req.body;
+    const sql = `UPDATE entities SET name = '${name}', address = '${address}', postal = '${postal}', city = '${city}', head = '${head}', iban = '${iban}', bank = '${bank}', note = '${note}' WHERE id = ${id}`;
     console.log(sql);
     db.query(sql, (err, result) => {
         if (err) {

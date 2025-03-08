@@ -1,12 +1,11 @@
 interface Props {
-  name: string;
   label: string;
-  variable: any;
+  name: any;
   classes?: string;
   formik: any;
 }
 
-const InputCheckbox = ({ name, label, variable, classes, formik }: Props) => {
+const InputCheckbox = ({ name, label, classes, formik }: Props) => {
   return (
     <div className="flex align-center">
       <label htmlFor={name} className="input_label bright-text">
@@ -17,9 +16,9 @@ const InputCheckbox = ({ name, label, variable, classes, formik }: Props) => {
         className={"input bigcheck " + classes}
         type="checkbox"
         name={name}
-        checked={formik.values[variable] === 1}
+        checked={formik.values[name] === 1}
         onChange={(e) => {
-          formik.setFieldValue(variable, e.target.checked ? 1 : 0);
+          formik.setFieldValue(name, e.target.checked ? 1 : 0);
         }}
       />
     </div>

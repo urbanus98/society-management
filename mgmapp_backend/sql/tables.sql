@@ -125,8 +125,10 @@ CREATE TABLE entities (
     name varchar(255),
     address varchar(255),
     postal int,
-    place varchar(255),
+    city varchar(255),
+    head varchar(255),
     iban varchar(255),
+    bank varchar(255),
     note varchar(255) NULL,
     PRIMARY KEY (id)
 ); 
@@ -197,4 +199,4 @@ insert into event_types (name) values ('Snemanje');
 insert into locations (name) values ('Vipava');
 insert into mileage_rates (year, rate) values (2024, 20);
 
-insert into entities (name, address, postal, place, iban, note) values ('TamburaTeam', 'Ulica Milana Bajca 5', 5271, 'Vipava', 'SI56 1234 5678 9101 1121', 'Najbulši štjrje');
+insert into entities (name, address, postal, city, iban, note) values ('TamburaTeam', 'Ulica Milana Bajca 5', 5271, 'Vipava', 'SI56 1234 5678 9101 1121', 'Najbulši štjrje');

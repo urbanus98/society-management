@@ -19,15 +19,15 @@ export const Invoices = () => {
 
   const entityHeaders = [
     { key: "name", label: "Ime" },
-    { key: "place", label: "Kraj" },
+    { key: "city", label: "Kraj" },
     { key: "id", label: "" },
   ];
   const invoiceHeaders = [
-    { key: "date", label: "Št" },
+    { key: "date", label: "Datum" },
+    { key: "number", label: "Št" },
     { key: "entity", label: "Entiteta" },
     { key: "amount", label: "Vsota" },
     { key: "status", label: "Status" },
-    { key: "date", label: "Datum" },
     { key: "id", label: "" },
   ];
 
@@ -94,7 +94,7 @@ export const CreateEntity = () => {
   return (
     <div className="padding-3 coluflex justify-center align-center">
       <BackWTitle title="Dodaj entiteto" />
-      <div className="width-50">
+      <div className="res-width-40">
         <EntitiesForm />
       </div>
     </div>
@@ -126,14 +126,7 @@ export const UpdateEntity = () => {
     <div className="padding-3 coluflex justify-center align-center">
       <BackWTitle title="Uredi entiteto" />
       <div className="width-50">
-        <EntitiesForm
-          name={entity.name}
-          address={entity.address}
-          postal={entity.postal}
-          place={entity.place}
-          iban={entity.iban}
-          note={entity.note}
-        />
+        <EntitiesForm entity={entity} />
       </div>
     </div>
   );

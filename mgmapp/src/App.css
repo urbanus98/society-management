@@ -116,6 +116,10 @@ input::selection{
     cursor: pointer;
 }
 
+.pointer:hover {
+    color: #4492e0;
+}
+
 .bigcheck {
     height: 15pt;
     width: 15pt;

@@ -11,10 +11,10 @@ const getInvoices = async (req, res)=>{
     };
 
     const sql = `
-    SELECT invoices.number, invoices.status, DATE_FORMAT(issue_date, "%d.%m.%Y") as issue_date, entities.name as entity, traffic.name as service, traffic.amount, invoices.id as id FROM invoices
-    INNER JOIN entities ON invoices.payer_id = entities.id
-    INNER JOIN traffic ON invoices.id = traffic.invoice_id
-    ORDER BY invoices.issue_date DESC
+        SELECT invoices.number, invoices.status, DATE_FORMAT(issue_date, "%d.%m.%Y") as issue_date, entities.name as entity, traffic.name as service, traffic.amount, invoices.id as id FROM invoices
+        INNER JOIN entities ON invoices.payer_id = entities.id
+        INNER JOIN traffic ON invoices.id = traffic.invoice_id
+        ORDER BY invoices.issue_date DESC
     `;
     db.query(sql, (err, result)=>{
         if (err) {
@@ -98,8 +98,9 @@ const getInvoice = async (req, res)=>{
         invoices.payer_id as payer_id, 
         traffic.name as service, 
         ROUND(traffic.amount / 100, 2) as amount,
-        invoices.id as id FROM invoices
-    INNER JOIN traffic ON invoices.id = traffic.invoice_id
+        invoices.id as id 
+    FROM invoices
+        INNER JOIN traffic ON invoices.id = traffic.invoice_id
     WHERE invoices.id = ${id}`;
 
     console.log(sql);

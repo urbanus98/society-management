@@ -3,7 +3,6 @@ import Select from "../../ui/Select";
 interface Props {
   name: string;
   label: string;
-  variable: any;
   values: any;
   withDisabled?: boolean;
   withEnabled?: boolean;
@@ -15,7 +14,6 @@ interface Props {
 const Input = ({
   name,
   label,
-  variable,
   values,
   withDisabled = true,
   withEnabled = false,
@@ -28,7 +26,7 @@ const Input = ({
       <label
         htmlFor={name}
         className={`input_label ${
-          formik.touched[variable] && formik.errors[variable]
+          formik.touched[name] && formik.errors[name]
             ? "red-text"
             : "bright-text"
         }`}
@@ -41,7 +39,7 @@ const Input = ({
         classes={classes}
         withDisabled={withDisabled}
         withEnabled={withEnabled}
-        defaultvalue={String(formik.values[variable])}
+        defaultvalue={String(formik.values[name])}
         onChange={formik.handleChange}
         name={name}
       />

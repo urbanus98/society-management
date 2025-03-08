@@ -80,7 +80,6 @@ const EventsForm = ({ event }: Props) => {
           <Input
             label="Ime"
             name="name"
-            variable="name"
             placeholder="Prepoznaven naslov..."
             formik={formik}
           />
@@ -89,7 +88,6 @@ const EventsForm = ({ event }: Props) => {
           <Input
             label="Trajanje (h)"
             name="duration"
-            variable="duration"
             type="number"
             classes="w80"
             formik={formik}
@@ -102,7 +100,6 @@ const EventsForm = ({ event }: Props) => {
           <InputSelect
             label="Tip dogodka"
             name="typeId"
-            variable={"typeId"}
             values={evenTypes}
             withDisabled={false}
             classes="width-100"
@@ -113,7 +110,6 @@ const EventsForm = ({ event }: Props) => {
           <Input
             label="Datum dogodka"
             name="date"
-            variable="date"
             type="date"
             formik={formik}
           />
@@ -127,7 +123,6 @@ const EventsForm = ({ event }: Props) => {
         <InputSelect
           label="Racun"
           name="eInvoiceId"
-          variable={"eInvoiceId"}
           values={invoiceIds}
           classes="width-100"
           withEnabled={true}
@@ -139,7 +134,6 @@ const EventsForm = ({ event }: Props) => {
         <InputSelect
           label="Prodaja"
           name="eSaleId"
-          variable={"eSaleId"}
           values={saleIds}
           classes="width-100"
           withEnabled={true}

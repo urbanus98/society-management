@@ -52,7 +52,6 @@ const InvoicesForm = ({ entities }: Props) => {
     <form onSubmit={formik.handleSubmit}>
       <InputSelect
         name="entity_id"
-        variable="entity_id"
         label="Entiteta"
         classes="width-100"
         values={entities}
@@ -62,17 +61,11 @@ const InvoicesForm = ({ entities }: Props) => {
 
       <div className="flex gap">
         <div className="width-100">
-          <Input
-            name="serviceName"
-            variable="serviceName"
-            label="Naziv storitve"
-            formik={formik}
-          />
+          <Input name="serviceName" label="Naziv storitve" formik={formik} />
         </div>
 
         <Input
           name="amount"
-          variable="amount"
           label="Cena (&euro;)"
           type="number"
           classes="w60"
@@ -82,12 +75,7 @@ const InvoicesForm = ({ entities }: Props) => {
       </div>
 
       <div className="flex justify-end margin-tb2">
-        <InputCheckbox
-          name="type"
-          variable="type"
-          label="Spletni račun"
-          formik={formik}
-        />
+        <InputCheckbox name="type" label="Spletni račun" formik={formik} />
       </div>
 
       <SubmButton text="Ustvari" margin="2" />

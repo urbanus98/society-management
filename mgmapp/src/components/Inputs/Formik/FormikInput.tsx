@@ -1,7 +1,6 @@
 interface Props {
   name: string;
   label: string;
-  variable: any;
   placeholder?: string;
   type?: string;
   step?: string;
@@ -12,7 +11,6 @@ interface Props {
 const FormikInput = ({
   name,
   label,
-  variable,
   placeholder,
   type = "text",
   classes,
@@ -24,7 +22,7 @@ const FormikInput = ({
       <label
         htmlFor={name}
         className={`input_label ${
-          formik.touched[variable] && formik.errors[variable]
+          formik.touched[name] && formik.errors[name]
             ? "red-text"
             : "bright-text"
         }`}
@@ -37,7 +35,7 @@ const FormikInput = ({
         type={type}
         name={name}
         {...(placeholder && { placeholder: placeholder })}
-        value={formik.values[variable]}
+        value={formik.values[name]}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
         step={step}

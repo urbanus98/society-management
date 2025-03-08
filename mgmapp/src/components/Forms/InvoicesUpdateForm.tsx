@@ -1,12 +1,13 @@
+import { useFormik } from "formik";
+import { useNavigate, useParams } from "react-router-dom";
+import { statuses } from "../misc";
+import * as Yup from "yup";
+import SubmButton from "../ui/SubmButton";
 import Input from "../Inputs/Formik/FormikInput";
 import InputSelect from "../Inputs/Formik/FormikSelect";
 import InputCheckbox from "../Inputs/Formik/FormikCheckbox";
-import { useFormik } from "formik";
-import { useNavigate, useParams } from "react-router-dom";
-import * as Yup from "yup";
-import { statuses } from "../misc";
-import SubmButton from "../ui/SubmButton";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { generateInvoicePDF } from "../../functions/generateInvoicePDF";
 
 interface Props {
   entities: any[];
@@ -47,11 +48,26 @@ const InvoicesForm = ({ entities, invoice }: Props) => {
     },
   });
 
+  const handlePdfCreation = async () => {
+    try {
+      const issuingEntityRes = await axiosPrivate.get(`entities/1`);
+      const payingEntityRes = await axiosPrivate.get(
+        `entities/${invoice.payer_id}`
+      );
+      const issuer = issuingEntityRes.data;
+      const payer = payingEntityRes.data;
+      console.log("Issuer:", issuer);
+      console.log("Payer:", payer);
+      generateInvoicePDF(invoice, issuer[0], payer[0]); // Call the function directly
+    } catch (error) {
+      console.error("Error fetching entities:", error);
+    }
+  };
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <InputSelect
         name="entity_id"
-        variable="entity_id"
         label="Entiteta"
         classes="width-100"
         values={entities}
@@ -60,20 +76,14 @@ const InvoicesForm = ({ entities, invoice }: Props) => {
       />
       <div className="flex gap">
         <div className="width-100">
-          <Input
-            name="serviceName"
-            variable="serviceName"
-            label="Naziv storitve"
-            formik={formik}
-          />
+          <Input name="serviceName" label="Naziv storitve" formik={formik} />
         </div>
 
         <Input
           name="amount"
-          variable="amount"
           label="Cena (&euro;)"
           type="number"
-          classes="w60"
+          classes="w70"
           step="0.01"
           formik={formik}
         />
@@ -83,7 +93,6 @@ const InvoicesForm = ({ entities, invoice }: Props) => {
         <div>
           <Input
             name="number"
-            variable="number"
             label="Zap. št."
             type="number"
             classes="w60"
@@ -93,7 +102,6 @@ const InvoicesForm = ({ entities, invoice }: Props) => {
         <div className="width-100">
           <Input
             name="issueDate"
-            variable="issueDate"
             type="date"
             label="Datum izdaje računa"
             formik={formik}
@@ -103,7 +111,6 @@ const InvoicesForm = ({ entities, invoice }: Props) => {
           <InputSelect
             name="status"
             values={statuses}
-            variable="status"
             label="Status:"
             withDisabled={false}
             formik={formik}
@@ -111,13 +118,16 @@ const InvoicesForm = ({ entities, invoice }: Props) => {
         </div>
       </div>
 
-      <div className="flex justify-end margin-tb2">
-        <InputCheckbox
-          name="type"
-          variable="type"
-          label="Spletni račun"
-          formik={formik}
-        />
+      <div className="flex justify-between align-center margin-tb2">
+        <label
+          className="input_label bright-text pointer"
+          style={{ margin: 0 }}
+          onClick={handlePdfCreation}
+        >
+          Natisni račun
+        </label>
+
+        <InputCheckbox name="type" label="Spletni račun" formik={formik} />
       </div>
 
       <SubmButton text="Posodobi" margin="2" />

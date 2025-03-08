@@ -23,3 +23,11 @@ export function getDate() {
   const today = new Date();
   return today.toISOString().split("T")[0];
 }
+
+export const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr);
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  return `${day}.${month}.${year}`;
+};
