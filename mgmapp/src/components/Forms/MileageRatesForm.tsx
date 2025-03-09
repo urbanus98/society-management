@@ -53,9 +53,9 @@ const MileageRatesForm = ({
     event.preventDefault();
     try {
       const formData = { details: rows };
-      console.log(formData);
-      await axiosPrivate.put("data/mileage-rates", formData);
-      setMsg("Letne postavke posodobljene");
+      console.log(formData.details);
+      const response = await axiosPrivate.put("data/mileage-rates", formData);
+      setMsg(response.data.message);
       setAlertColor("success");
     } catch (error) {
       setMsg("Napaka pri posodabljanju postavk");

@@ -1,6 +1,5 @@
 - refactor backend
 - fix same key
-- orders description?
 - debts editable only by own users?
 - timestamps?
 - set black

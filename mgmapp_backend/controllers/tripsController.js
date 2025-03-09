@@ -37,10 +37,10 @@ const postTrips = async (req, res) => {
         const sql = "INSERT INTO trips (origin_id, destination_id, mileage, user_id, event_id, rate_id) VALUES ?";
         await performMassInsert(sql, details, ['origin', 'destination', 'mileage'], [userId, eventId, rateId]);
 
-        return res.status(201).json({ message: "Data stored successfully" });
+        return res.status(201).json({ message: "Poti uspešno vnešene!" });
     } catch (error) {
         console.error("Error inserting data:", error);
-        return res.status(500).json({ error: "Failed to store data in the database" });
+        return res.status(500).json({ error: "Napaka pri vnašanju poti!" });
     }
 }
 

@@ -26,13 +26,17 @@ CREATE TABLE users (
     refresh_token varchar(255) NULL,
     email varchar(255) NULL,
     role varchar(255) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE event_types (
     id int NOT NULL AUTO_INCREMENT,
     name varchar(255),
-    indeks int, 
+    indeks int,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 ); 
 
@@ -42,6 +46,8 @@ CREATE TABLE events (
     name varchar(255) NULL,
     duration int,
     date date,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (type_id) REFERENCES event_types(id)
 );
@@ -50,6 +56,8 @@ CREATE TABLE sales (
     id int NOT NULL AUTO_INCREMENT,
     event_id int NULL UNIQUE,
     date date,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (event_id) REFERENCES events(id)
 );
@@ -58,6 +66,8 @@ CREATE TABLE debts (
     id int NOT NULL AUTO_INCREMENT,
     user_id int NULL,
     amount int,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -70,6 +80,8 @@ CREATE TABLE black_traffic (
     amount int,
     direction boolean,
     date DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (sale_id) REFERENCES sales(id),
     FOREIGN KEY (debt_id) REFERENCES debts(id)
@@ -80,6 +92,8 @@ CREATE TABLE stuff (
     name varchar(255),
     image_path varchar(255) NULL,
     is_sold boolean NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
 
@@ -88,6 +102,8 @@ CREATE TABLE stuff_types (
     stuff_id int,
     type varchar(255),
     price int,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (stuff_id) REFERENCES stuff(id)
 );
@@ -98,6 +114,8 @@ CREATE TABLE stuff_sold (
     stufftype_id int,
     quantity int,
     price_actual int,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (sale_id) REFERENCES sales(id),
     FOREIGN KEY (stufftype_id) REFERENCES stuff_types(id)
@@ -107,6 +125,8 @@ CREATE TABLE orders (
     id int NOT NULL AUTO_INCREMENT,
     date date,
     pdf_path varchar(255) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
 
@@ -115,6 +135,8 @@ CREATE TABLE ordered_stuff (
     order_id int,
     stufftype_id int,
     amount int,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (stufftype_id) REFERENCES stuff_types(id),
     FOREIGN KEY (order_id) REFERENCES orders(id)
@@ -130,6 +152,8 @@ CREATE TABLE entities (
     iban varchar(255),
     bank varchar(255),
     note varchar(255) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 ); 
 
@@ -142,6 +166,8 @@ CREATE TABLE invoices (
     status tinyint,
     type tinyint,
     issue_date timestamp,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (event_id) REFERENCES events(id),
     FOREIGN KEY (payer_id) REFERENCES entities(id),
@@ -156,6 +182,8 @@ CREATE TABLE traffic (
     amount int,
     direction boolean,
     date DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (order_id) REFERENCES orders(id),
     FOREIGN KEY (invoice_id) REFERENCES invoices(id)
@@ -165,6 +193,8 @@ CREATE TABLE locations (
     id int NOT NULL AUTO_INCREMENT,
     name varchar(255) NOT NULL,
     distance int NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
 
@@ -172,6 +202,8 @@ CREATE TABLE mileage_rates (
     id int NOT NULL AUTO_INCREMENT,
     year int NOT NULL,
     rate int NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
 
@@ -183,6 +215,8 @@ CREATE TABLE trips (
     origin_id int NULL,
     destination_id int NULL,
     mileage int NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (event_id) REFERENCES events(id),
     FOREIGN KEY (rate_id) REFERENCES mileage_rates(id),

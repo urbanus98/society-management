@@ -42,21 +42,57 @@ const getDebts = async (req, res) => {
     
 }
 
-const getDebtRows = (req, res) => {
+const getDebtRows = async (req, res) => {
+    try {
+        // const sql = `
+        //     SELECT 
+        //         black_traffic.date, debts.id as id, debts.amount, black_traffic.name as flowName, direction, users.name as userName
+        //     FROM debts 
+        //         JOIN black_traffic ON black_traffic.debt_id = debts.id
+        //         JOIN users ON debts.user_id = users.id
+        //     ORDER BY date DESC, id DESC;
+        // `;
     const sql = `
         SELECT 
-            black_traffic.date, debts.id as id, debts.amount, black_traffic.name as flowName, direction, users.name as userName
-        FROM debts 
-        JOIN black_traffic ON black_traffic.debt_id = debts.id
-        JOIN users ON debts.user_id = users.id
-        ORDER BY date DESC, id DESC;
-    `;
+            date,
+            id,
+            amount,
+            flowName,
+            userName,
+            direction
+        FROM (
+            -- Query for debts
+            SELECT 
+                black_traffic.date,
+                debts.id as id,
+                debts.amount,
+                black_traffic.name as flowName,
+                black_traffic.direction,
+                users.name as userName
+            FROM debts 
+            JOIN black_traffic ON black_traffic.debt_id = debts.id
+            JOIN users ON debts.user_id = users.id
 
-    db.query(sql, (err, result) => {
-        if (err) {
-            console.error('Error fetching data from database:', err);
-            return res.status(500).json({ error: 'Failed to fetch data from the database' });
-        }
+            UNION ALL
+
+            -- Query for trip costs grouped by year
+            SELECT 
+                STR_TO_DATE(CONCAT(YEAR(e.date), '-12-31'), '%Y-%m-%d') as date,
+                NULL as id,
+                ROUND(SUM((mr.rate * t.mileage) / 100)) as amount,
+                'Potni stroški' as flowName,
+                0 as direction,
+                u.name as userName
+            FROM trips t
+            JOIN events e ON t.event_id = e.id
+            JOIN users u ON u.id = t.user_id
+            JOIN mileage_rates mr ON mr.id = t.rate_id
+            GROUP BY u.name, YEAR(e.date), STR_TO_DATE(CONCAT(YEAR(e.date), '-12-31'), '%Y-%m-%d')
+        ) combined
+        ORDER BY date DESC;
+    `;
+        const result = await performQuery(sql);
+
         const rows = result.map((row) => {
             return {
                 date: row.date.toLocaleDateString('en-GB').replace(/\//g, '.'),
@@ -68,7 +104,10 @@ const getDebtRows = (req, res) => {
             };
         });
         return res.json(rows);
-    });  
+    } catch (error) {
+        console.error("Error fetching data from database:", error);
+        return res.status(500).json({ error: "Failed to fetch data from the database" });
+    }   
 }
 
 const insertPay = async (req, res) => {

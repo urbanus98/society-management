@@ -54,9 +54,9 @@ const LocationsForm = ({
     event.preventDefault();
     try {
       const formData = { details: rows };
-      console.log(formData);
-      await axiosPrivate.put("data/locations", formData);
-      setMsg("Lokacije posodobljene");
+      console.log(formData.details);
+      const response = await axiosPrivate.put("data/locations", formData);
+      setMsg(response.data.message);
       setAlertColor("success");
     } catch (error) {
       setMsg("Napaka pri posodabljanju lokacij");

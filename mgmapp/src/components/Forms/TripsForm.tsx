@@ -173,7 +173,7 @@ const TripsForm = ({
     } catch (error) {
       console.log(error);
       setAlertColor("danger");
-      setMsg(response.data.error);
+      setMsg(response.data.error ?? "Napaka pri posodabljanju poti");
     }
     setAlertVisibility(true);
   };
