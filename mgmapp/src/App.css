@@ -38,6 +38,14 @@ html, body {
     height: 100%;
 }
 
+.height-50 {
+    height: 50%;
+}
+
+.h350 {
+    height: 350pt;
+}
+
 .width-100 {
     width: 100%;
 }
@@ -134,6 +142,14 @@ table {
     border-spacing: 3pt !important;
 }
 
+.abs {
+    position: absolute;
+}
+
+.width-hp {
+    max-width: 1600px;
+}
+
 .mh600 {
     max-height: 600pt;
 }
@@ -178,6 +194,10 @@ table {
     height: 40pt;
 }
 
+.h200 {
+    height: 150pt;
+}
+
 .w40 {
     width: 40pt;
 }
@@ -210,6 +230,14 @@ table {
     min-width: 100pt;
 }
 
+.minh200 {
+    min-height: 200pt;
+}
+
+.minh300 {
+    min-height: 300pt;
+}
+
 .block {
     display: block;
 }
@@ -240,10 +268,41 @@ table {
     gap: 1rem;
 }
 
+.gap-s {
+    gap: .5rem;
+}
+
+.pad-1r {
+    padding: 1.5rem;
+}
+
 @media (max-width: 900px) {
     .gap {
         gap: 0.5rem;
     }
+    .pad-1r {
+        padding: 1rem;
+    }
+    .gap-s {
+        gap: .2rem;
+    }
+}
+
+@media (min-width: 600px) {
+    .res-hide {
+        display: block !important;
+    }
+    .res-show {
+        display: none !important;
+    }
+}
+
+.res-show {
+    display: block;
+}
+
+.res-hide {
+    display: none;
 }
 
 .margin-none {
@@ -306,6 +365,10 @@ table {
     padding: 5pt;
 }
 
+.padding-20 {
+    padding: 20pt;
+}
+
 .padding-03 {
     padding: 0 3pt;
 }
@@ -349,6 +412,10 @@ table {
     align-items: center;
 }
 
+.align-between {
+    align-items: space-between;
+}
+
 .align-selfcenter {
     align-self: center;
 }
@@ -358,7 +425,7 @@ table {
 }
 
 .black-back {
-    background-color: #222;
+    background-color: #1c1c1c;
 }
 
 .black-back2 {
@@ -391,13 +458,14 @@ table {
     text-decoration: none;
 }
 
-.dark-back {
-    background-color: #212224
-}   
-
 .dark-text {
     color: #1e1f20
 }
+
+.dark-back {
+    /* background-color: #212224 */
+    background-color: #292a2b
+}   
 
 .no-decor {
     text-decoration: none !important;
@@ -451,6 +519,13 @@ a {
     .grid-3 {
         grid-template-columns: 1fr 1fr 1fr;
     }
+    .span-2c {
+        grid-column: span 2;
+    }
+}
+
+.span-2r {
+    grid-row: span 2;
 }
 
 /* .grid-item {

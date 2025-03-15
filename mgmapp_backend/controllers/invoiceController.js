@@ -11,10 +11,10 @@ const getInvoices = async (req, res)=>{
     };
 
     const sql = `
-        SELECT invoices.number, invoices.status, DATE_FORMAT(issue_date, "%d.%m.%Y") as issue_date, entities.name as entity, traffic.name as service, traffic.amount, invoices.id as id FROM invoices
+        SELECT invoices.number, invoices.status, DATE_FORMAT(traffic.date, "%d.%m.%Y") as issue_date, entities.name as entity, traffic.name as service, traffic.amount, invoices.id as id FROM invoices
         INNER JOIN entities ON invoices.payer_id = entities.id
         INNER JOIN traffic ON invoices.id = traffic.invoice_id
-        ORDER BY invoices.issue_date DESC
+        ORDER BY issue_date DESC
     `;
     db.query(sql, (err, result)=>{
         if (err) {
@@ -48,7 +48,7 @@ const postInvoice = async (req, res) => {
             number += 1; 
         }
         
-        const invoiceId = await insertInvoice(entity_id, number, status, issue_date, type);
+        const invoiceId = await insertInvoice(entity_id, number, status, type);
         await insertTraffic(invoiceId, null, serviceName, amount, 0, issue_date);
         
         return res.json({ message: 'Invoice and service created successfully' });
@@ -63,7 +63,7 @@ const putInvoice = async (req, res)=>{
     const id = req.params.id;
     var {entity_id, serviceName, amount, type, number, status, issueDate} = req.body;
 
-    const sql = `UPDATE invoices SET payer_id = '${entity_id}', status = '${status}', issue_date = '${issueDate}', type = '${type}', number = '${number}' WHERE id = ${id}`;
+    const sql = `UPDATE invoices SET payer_id = '${entity_id}', status = '${status}', type = '${type}', number = '${number}' WHERE id = ${id}`;
     
     db.query(sql, (err, result) => {
         if (err) {
@@ -94,7 +94,7 @@ const getInvoice = async (req, res)=>{
         invoices.number, 
         invoices.status, 
         invoices.type, 
-        DATE_FORMAT(issue_date, "%Y-%m-%d") as issue_date, 
+        DATE_FORMAT(traffic.date, "%Y-%m-%d") as issue_date, 
         invoices.payer_id as payer_id, 
         traffic.name as service, 
         ROUND(traffic.amount / 100, 2) as amount,
@@ -119,7 +119,8 @@ async function getInvoiceNumber() {
     const sql = `
         SELECT MAX(number) AS highestInvoiceNumber 
         FROM invoices 
-        WHERE YEAR(issue_date) = YEAR(CURDATE())`;
+        INNER JOIN traffic ON invoices.id = traffic.invoice_id
+        WHERE YEAR(traffic.date) = YEAR(CURDATE())`;
 
     return new Promise((resolve, reject) => {
         db.query(sql, (err, result) => {
@@ -135,8 +136,8 @@ async function getInvoiceNumber() {
 module.exports = { getInvoices, postInvoice, putInvoice, getInvoice };
 
 
-const insertInvoice = (entity_id, number, status, issue_date, type) => {
-    const sql = `INSERT INTO invoices (payer_id, receiver_id, number, status, type, issue_date) VALUES ('${entity_id}', '1', '${number}', '${status}', '${type}', '${issue_date}')`;
+const insertInvoice = (entity_id, number, status, type) => {
+    const sql = `INSERT INTO invoices (payer_id, receiver_id, number, status, type) VALUES ('${entity_id}', '1', '${number}', '${status}', '${type}')`;
     // console.log(sql);
 
     return new Promise((resolve, reject) => {

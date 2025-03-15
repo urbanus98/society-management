@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import SubNavigator from "../components/SubNavigator";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import FlowChart from "../components/FlowChart";
+import FlowChart from "../components/charts/FlowChart";
 import FlowForm from "../components/Forms/FlowForm";
 import { useParams } from "react-router-dom";
 import BackWTitle from "../components/BackWTitle";

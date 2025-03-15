@@ -9,10 +9,10 @@ const getOrders = (req, res)=>{
             orders.id,
             traffic.amount,
             orders.pdf_path,
-            DATE_FORMAT(orders.date, "%d.%m.%Y") as date
+            DATE_FORMAT(traffic.date, "%d.%m.%Y") as date
         FROM orders
             JOIN traffic on traffic.order_id = orders.id
-        ORDER BY orders.date DESC, id DESC
+        ORDER BY date DESC, id DESC
     `;
     db.query(sql, (err, result)=>{
         if (err) {
@@ -60,11 +60,13 @@ const getOrder = async (req, res)=>{
     }
 };
 
-const putOrder = async (req, res)=>{
+const putOrder = async (req, res)=> {
     const orderId = req.params.id;
     const { price, date, details } = req.body;
 
-    await updateOrder(req, orderId);
+    if (req.file) {
+        await updateOrder(req, orderId);
+    }
     await updateOrderTraffic(orderId, price, date);
 
     const orderedStuffIDs = await getOrderedStuffIDs(orderId);
@@ -94,13 +96,8 @@ const updateOrderTraffic = (orderId, amount, date) => {
 
 const updateOrder = (req, orderId) => {
     return new Promise((resolve, reject) => {
-        const { date } = req.body;
-        if (req.file) {
-            const filePath = `uploads/${req.file.filename}`;
-            var sql = `UPDATE orders SET date = '${date}', pdf_path = '${filePath}' WHERE id = ${orderId}`;
-        } else {
-            var sql = `UPDATE orders SET date = '${date}' WHERE id = ${orderId}`;
-        }
+        const filePath = `uploads/${req.file.filename}`;
+        var sql = `UPDATE orders SET pdf_path = '${filePath}' WHERE id = ${orderId}`;
         console.log(sql);
 
         db.query(sql, (err, result) => {
@@ -193,10 +190,8 @@ const insertOrder = (req) => {
         if (req.file) {
             filePath = `uploads/${req.file.filename}`;
         }
-        const sql = filePath
-            ? `INSERT INTO orders (date, pdf_path) VALUES (?, ?)`
-            : `INSERT INTO orders (date) VALUES (?)`;
-        const values = filePath ? [date, filePath] : [date];
+        const sql = `INSERT INTO orders (pdf_path) VALUES (?)`;
+        const values = filePath ? [filePath] : [null];
         // console.log(sql);
 
         db.query(sql, values, (err, result) => {
@@ -222,7 +217,7 @@ const getOrderData = (orderId) => {
                 stuff.name as name,
                 traffic.amount as price_total,
                 orders.pdf_path,
-                DATE_FORMAT(orders.date, "%Y-%m-%d") as date
+                DATE_FORMAT(traffic.date, "%Y-%m-%d") as date
             FROM ordered_stuff
                 JOIN orders on orders.id = ordered_stuff.order_id
                 JOIN traffic on traffic.order_id = orders.id

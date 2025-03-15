@@ -1,5 +1,6 @@
 interface Props {
-  children: any;
+  children?: any;
+  label?: string;
   onClick?: () => void;
   isDisabled?: boolean;
   color?:
@@ -15,6 +16,7 @@ interface Props {
 
 const FuncButton = ({
   children,
+  label = "",
   color = "primary",
   isDisabled = false,
   onClick,
@@ -26,6 +28,7 @@ const FuncButton = ({
       disabled={isDisabled}
       onClick={onClick}
     >
+      {label}
       {children}
     </button>
   );

@@ -15,13 +15,21 @@ export const Navbar = () => {
     navigate("/login");
   };
 
+  console.log("Menu open:", menuOpen);
+
   return (
     <nav>
-      <Link to={"/"} className="title">
+      <Link
+        to={"/"}
+        className="title"
+        onClick={() => {
+          setMenuOpen(false);
+        }}
+      >
         Society Management
       </Link>
       <div
-        className="menu"
+        className={`menu ${menuOpen ? "open" : ""}`}
         onClick={() => {
           setMenuOpen(!menuOpen);
         }}
@@ -32,27 +40,64 @@ export const Navbar = () => {
       </div>
       {auth.accessToken && (
         <ul className={menuOpen ? "open" : ""}>
-          {auth.role == "admin" && (
+          {auth.role === "admin" && (
             <li>
-              <NavLink to={"/admin"}>AdminPanel</NavLink>
+              <NavLink
+                to={"/admin"}
+                onClick={() => {
+                  setMenuOpen(false);
+                }}
+              >
+                AdminPanel
+              </NavLink>
             </li>
           )}
           <li>
-            <NavLink to={"/events"}>Dogodki</NavLink>
+            <NavLink
+              to={"/events"}
+              onClick={() => {
+                setMenuOpen(false);
+              }}
+            >
+              Dogodki
+            </NavLink>
           </li>
           <li>
-            <NavLink to={"/merch"}>Merch</NavLink>
+            <NavLink
+              to={"/merch"}
+              onClick={() => {
+                setMenuOpen(false);
+              }}
+            >
+              Merch
+            </NavLink>
           </li>
           <li>
-            <NavLink to={"/invoices"}>Računi</NavLink>
+            <NavLink
+              to={"/invoices"}
+              onClick={() => {
+                setMenuOpen(false);
+              }}
+            >
+              Računi
+            </NavLink>
           </li>
           <li>
-            <NavLink to={"/black"}>Črnu</NavLink>
+            <NavLink
+              to={"/black"}
+              onClick={() => {
+                setMenuOpen(false);
+              }}
+            >
+              Črnu
+            </NavLink>
           </li>
-          {/* <li>
-            <NavLink to={"/stats"}>Stats</NavLink>
-          </li> */}
-          <li className="user-menu">
+          <li
+            className="user-menu"
+            onClick={() => {
+              setMenuOpen(false);
+            }}
+          >
             <a onClick={signOut} style={{ cursor: "pointer" }}>
               <i>Logout</i>
             </a>

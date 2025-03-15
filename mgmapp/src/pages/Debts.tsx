@@ -3,11 +3,11 @@ import DebtActionGrid from "../components/DebtActionGrid";
 import DebtForm from "../components/Forms/DebtForm";
 import SubNavigator from "../components/SubNavigator";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import DebtChart from "../components/DebtChart";
 import FinanceTable from "../components/ui/FinanceTable";
 import { useParams } from "react-router-dom";
 import { Loading } from "../components/Loading";
 import BackWTitle from "../components/BackWTitle";
+import BarChart from "../components/charts/BarChart";
 
 export const Debts = () => {
   const axiosPrivate = useAxiosPrivate();
@@ -21,6 +21,12 @@ export const Debts = () => {
     { key: "name", label: "Razlog" },
     { key: "user", label: "Zakrivil" },
     { key: "id", label: "" },
+  ];
+  const chartColors = ["#fcce03", "#32a852", "#8a1313"];
+  const chartLabels = [
+    { key: "tripCosts", label: "Potni stroški" },
+    { key: "credit", label: "Prilivi" },
+    { key: "debt", label: "Odlivi" },
   ];
 
   useEffect(() => {
@@ -39,8 +45,15 @@ export const Debts = () => {
     <div className="padding-3">
       <SubNavigator left={left} right={right} title="Dolgovi" />
       <div className=" coluflex justify-center align-center height-full">
-        <div className="white-back2 padding-5 border-radius flex justify-center mw700 width-100">
-          <DebtChart debtData={debts} />
+        <div className="white-back2 padding-5 border-radius flex justify-center mw700 width-100 h350">
+          <BarChart
+            labels={chartLabels}
+            chartData={debts}
+            labelKey="name"
+            title="Dolgovi"
+            monetary={true}
+            colors={chartColors}
+          />
         </div>
         <div className="flex padding-tb2" key={"debtdiv"}>
           {debts.map((debt: any) => (
@@ -52,7 +65,10 @@ export const Debts = () => {
                 {debt.name}:
               </h3>
               <h4 className="bright-text" key={debt.id}>
-                {debt.credit - debt.debt + Number(debt.tripCosts)} €
+                {Number(debt.credit) +
+                  Number(debt.debt) +
+                  Number(debt.tripCosts)}{" "}
+                €
               </h4>
             </div>
           ))}

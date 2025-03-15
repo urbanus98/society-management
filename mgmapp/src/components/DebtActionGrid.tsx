@@ -26,7 +26,7 @@ const DebtActionGrid = () => {
           <h4 className="bright-text">Plačilo storitve</h4>
           <p className="bright-text">
             {auth.name} namesto banda iz svojega žepa plača (npr. pijačo ali
-            boost na fb postu...)
+            boost na fb...) ali pridobi beli fond.
           </p>
         </div>
       </NavLink>

@@ -1,7 +1,7 @@
 - refactor backend
 - fix same key
 - debts editable only by own users?
-- timestamps?
+- dynamic table onChange
 - set black
 - fix chart labels
 - remove table column on responsive
@@ -10,9 +10,20 @@
 - add links to events in trips
 - orders table invoice link
 - gradual table loading
+- search
+- add to event/choose event
+- add sales description
 
-
-stats:
+home page:
 - n of events, hours
-- profit by year
-- merch sales
+- pi chart event types
+- traffic by year
+- km/year
+- merch sales by year
+- most frequent place
+- zelenjava
+- STANJE
+- links add event, sale, debt
+
+
+- last invoices?

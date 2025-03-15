@@ -57,6 +57,7 @@ app.use('/debts', require('./routes/debts'));
 app.use('/black', require('./routes/black'));
 app.use('/data', require('./routes/data'));
 app.use('/trips', require('./routes/trips'));
+app.use('/stats', require('./routes/stats'));
 
 app.get('/dummy', (req, res) => {
     const sql = "SELECT 1";

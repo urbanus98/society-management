@@ -1,4 +1,4 @@
-import FlowChart from "./FlowChart";
+import FlowChart from "./charts/FlowChart";
 
 const ChartWStatus = ({
   status,

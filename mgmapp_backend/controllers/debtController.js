@@ -8,7 +8,7 @@ const getDebts = async (req, res) => {
             users.name,
             users.id,
             SUM(CASE WHEN black_traffic.direction = 0 THEN debts.amount ELSE 0 END) AS credit,
-            SUM(CASE WHEN black_traffic.direction = 1 THEN debts.amount ELSE 0 END) AS debt
+            SUM(CASE WHEN black_traffic.direction = 1 THEN debts.amount ELSE 0 END) * (-1) AS debt
         FROM debts
             JOIN black_traffic ON debts.id = black_traffic.debt_id
             JOIN users ON debts.user_id = users.id
