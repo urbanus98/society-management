@@ -15,8 +15,6 @@ export const Navbar = () => {
     navigate("/login");
   };
 
-  console.log("Menu open:", menuOpen);
-
   return (
     <nav>
       <Link
@@ -74,12 +72,12 @@ export const Navbar = () => {
           </li>
           <li>
             <NavLink
-              to={"/invoices"}
+              to={"/traffic"}
               onClick={() => {
                 setMenuOpen(false);
               }}
             >
-              Računi
+              Finance
             </NavLink>
           </li>
           <li>

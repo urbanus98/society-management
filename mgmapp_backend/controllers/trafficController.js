@@ -18,12 +18,12 @@ const getTraffic = (req, res)=> {
             console.error('Error fetching data from database:', error);
             return res.status(500).json({ error: 'Failed to fetch data from the database' });
         }
-        console.log('Data fetched successfully:', result);
+        // console.log('Data fetched successfully:', result);
         return res.json(result.map((traffic) => {
             return {
                 date: traffic.date,
                 name: traffic.name,
-                amount: traffic.amount + " €",
+                amount: traffic.amount + "€",
                 direction: traffic.direction,
                 id: traffic.id,
             }
@@ -62,7 +62,7 @@ const putTraffic = async (req, res) => {
     const id = req.params.id;
     var { name, amount, direction, date } = req.body;
 
-    await updateTraffic(id, name, priceMultiply(amount), direction, date);
+    await updateTraffic(id, name, amount, direction, date);
 
     return res.status(200).json({ message: 'Data updated successfully' });
 };
@@ -72,7 +72,7 @@ const insertTraffic = (invoiceId, orderId, name, amount, direction, date) => {
         const sql = `
             INSERT INTO 
                 traffic (invoice_id, order_id, name, amount, direction, date) 
-            VALUES (${invoiceId}, ${orderId}, '${name}', '${priceMultiply(amount)}', '${direction}', '${date}')
+            VALUES (${invoiceId}, ${orderId}, "${name}", '${priceMultiply(amount)}', '${direction}', '${date}')
         `;
         console.log(sql);
         db.query(sql, (err, result) => {
@@ -89,7 +89,7 @@ const insertTraffic = (invoiceId, orderId, name, amount, direction, date) => {
 
 const updateTraffic = (trafficId, name, amount, direction, date) => {
     return new Promise((resolve, reject) => {
-        const sql = `UPDATE traffic SET name = '${name}', amount = '${priceMultiply(amount)}', direction = '${direction}', date = '${date}' WHERE id = ${trafficId}`;
+        const sql = `UPDATE traffic SET name = "${name}", amount = '${priceMultiply(amount)}', direction = '${direction}', date = '${date}' WHERE id = ${trafficId}`;
         // console.log(sql);
         db.query(sql, (err, result) => {
             if (err) {

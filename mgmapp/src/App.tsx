@@ -9,7 +9,9 @@ import {
   Events,
   CreateEvent,
   UpdateEvent,
-  Invoices,
+  Finance,
+  CreateProforma,
+  UpdateProforma,
   UpdateInvoice,
   CreateInvoice,
   CreateEntity,
@@ -37,7 +39,7 @@ import {
   CreateBlackFlow,
   UpdateBlackFlow,
   Trips,
-  DataManegement,
+  DataManagement,
 } from "./pages";
 import "./App.css";
 
@@ -56,11 +58,13 @@ function App() {
           <Route path="/traffic" element={<Traffic />} />
           <Route path="/traffic/create" element={<CreateTraffic />} />
           <Route path="/traffic/:id/edit" element={<UpdateTraffic />} />
-          <Route path="/invoices" element={<Invoices />} />
+          <Route path="/finance" element={<Finance />} />
           <Route path="/entities/create" element={<CreateEntity />} />
           <Route path="/entities/:id/edit" element={<UpdateEntity />} />
-          <Route path="/invoices/create" element={<CreateInvoice />} />
+          <Route path="/invoices/create/:id" element={<CreateInvoice />} />
           <Route path="/invoices/:id/edit" element={<UpdateInvoice />} />
+          <Route path="/proforma/create" element={<CreateProforma />} />
+          <Route path="/proforma/:id/edit" element={<UpdateProforma />} />
           <Route path="/merch" element={<Merch />} />
           <Route path="/merch/create" element={<CreateMerch />} />
           <Route path="/merch/:id/edit" element={<UpdateMerch />} />
@@ -84,7 +88,7 @@ function App() {
           <Route path="/debts/cashout" element={<DebtCashout />} />
           <Route path="/debts/status" element={<Debts />} />
           <Route path="/trips" element={<Trips />} />
-          <Route path="/data-manegement" element={<DataManegement />} />
+          <Route path="/data-management" element={<DataManagement />} />
         </Route>
       </Routes>
     </div>

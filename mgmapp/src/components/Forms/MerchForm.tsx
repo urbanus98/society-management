@@ -6,6 +6,8 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import InputCheckbox from "../Inputs/InputCheckbox";
 import ImageUpload from "../ImageUpload";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 interface Row {
   type: string;
   price: string;
@@ -39,7 +41,7 @@ const MerchForm = ({ item }: { item?: any }) => {
       setIsDisabled(true);
 
       if (item?.image_path) {
-        setImagePreview(`http://localhost:8081/${item.image_path}`);
+        setImagePreview(`${API_URL}/${item.image_path}`);
       }
     }
   }, [item]);

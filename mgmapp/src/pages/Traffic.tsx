@@ -13,7 +13,7 @@ export function Traffic() {
   const axiosPrivate = useAxiosPrivate();
   const [traffic, setTraffic] = useState<any>({});
   const [loading, setLoading] = useState(true);
-  const left = { link: "/invoices", text: "Računi" };
+  const left = { link: "/finance", text: "Računi" };
   const right = { link: "/traffic", text: "Promet" };
   const [status, setStatus] = useState(0);
   const [traffiC, setTraffiC] = useState<any[]>([]);

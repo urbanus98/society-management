@@ -1,45 +1,59 @@
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
-import { statuses } from "../misc";
+import { getDate, statuses } from "../misc";
 import * as Yup from "yup";
 import SubmButton from "../ui/SubmButton";
 import Input from "../Inputs/Formik/FormikInput";
-import InputSelect from "../Inputs/Formik/FormikSelect";
+import FormikSelect from "../Inputs/Formik/FormikSelect";
 import InputCheckbox from "../Inputs/Formik/FormikCheckbox";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { generateInvoicePDF } from "../../functions/generateInvoicePDF";
+import { generatePDF } from "../../functions/generatePDF";
+import { useEffect, useState } from "react";
 
 interface Props {
-  entities: any[];
   invoice: any;
 }
 
-const InvoicesForm = ({ entities, invoice }: Props) => {
+const InvoicesForm = ({ invoice }: Props) => {
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
   const { id } = useParams();
+  const [entities, setEntities] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchEntities = async () => {
+      try {
+        const response = await axiosPrivate.get("entities");
+        setEntities(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchEntities();
+  }, [axiosPrivate]);
 
   const formik = useFormik({
     initialValues: {
-      id: invoice.id,
-      serviceName: invoice.service,
+      id: invoice.invoiceId,
+      serviceName: invoice.name,
       amount: invoice.amount,
-      entity_id: invoice.payer_id,
-      status: invoice.status,
-      number: invoice.number,
-      type: invoice.type,
-      issueDate: invoice.issue_date,
+      entityId: invoice.payerId,
+      status: invoice.status ?? 0,
+      number: invoice.invoiceNumber,
+      type: invoice.type ?? 0,
+      issueDate: invoice.issueDate,
+      serviceDate: invoice?.serviceDate ?? getDate(),
     },
     validationSchema: Yup.object({
       serviceName: Yup.string().required("Naziv storitve"),
       amount: Yup.number().required("Cena"),
-      entity_id: Yup.number().required("Prosimo izberite entiteto"),
+      entityId: Yup.number().required("Prosimo izberite entiteto"),
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
         await axiosPrivate.put(`invoices/${id}`, values);
         resetForm();
-        navigate("/invoices");
+        navigate("/finance");
       } catch (error) {
         console.error("Error updating form data:", error);
       } finally {
@@ -52,13 +66,13 @@ const InvoicesForm = ({ entities, invoice }: Props) => {
     try {
       const issuingEntityRes = await axiosPrivate.get(`entities/1`);
       const payingEntityRes = await axiosPrivate.get(
-        `entities/${invoice.payer_id}`
+        `entities/${invoice.payerId}`
       );
       const issuer = issuingEntityRes.data;
       const payer = payingEntityRes.data;
       console.log("Issuer:", issuer);
       console.log("Payer:", payer);
-      generateInvoicePDF(invoice, issuer[0], payer[0]); // Call the function directly
+      generatePDF(invoice, issuer, payer, "invoice");
     } catch (error) {
       console.error("Error fetching entities:", error);
     }
@@ -66,14 +80,27 @@ const InvoicesForm = ({ entities, invoice }: Props) => {
 
   return (
     <form onSubmit={formik.handleSubmit}>
-      <InputSelect
-        name="entity_id"
-        label="Entiteta"
-        classes="width-100"
-        values={entities}
-        withDisabled={false}
-        formik={formik}
-      />
+      <div className="flex gap">
+        <div style={{ width: "60%" }}>
+          <FormikSelect
+            name="entityId"
+            label="Entiteta"
+            classes="width-100"
+            values={entities}
+            withDisabled={false}
+            formik={formik}
+          />{" "}
+        </div>
+        <div style={{ width: "40%" }}>
+          <Input
+            name="serviceDate"
+            type="date"
+            label="Datum storitve"
+            classes="width-100"
+            formik={formik}
+          />
+        </div>
+      </div>
       <div className="flex gap">
         <div className="width-100">
           <Input name="serviceName" label="Naziv storitve" formik={formik} />
@@ -103,12 +130,12 @@ const InvoicesForm = ({ entities, invoice }: Props) => {
           <Input
             name="issueDate"
             type="date"
-            label="Datum izdaje računa"
+            label="Datum izdaje"
             formik={formik}
           />
         </div>
         <div>
-          <InputSelect
+          <FormikSelect
             name="status"
             values={statuses}
             label="Status:"
@@ -130,7 +157,7 @@ const InvoicesForm = ({ entities, invoice }: Props) => {
         <InputCheckbox name="type" label="Spletni račun" formik={formik} />
       </div>
 
-      <SubmButton text="Posodobi" margin="2" />
+      <SubmButton margin="2" />
     </form>
   );
 };

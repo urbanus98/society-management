@@ -1,4 +1,4 @@
-import InputSelect from "../Inputs/Formik/FormikSelect";
+import FormikSelect from "../Inputs/Formik/FormikSelect";
 import Input from "../Inputs/Formik/FormikInput";
 import InputCheckbox from "../Inputs/Formik/FormikCheckbox";
 import { useFormik } from "formik";
@@ -7,19 +7,24 @@ import * as Yup from "yup";
 import { getDate } from "../misc";
 import SubmButton from "../ui/SubmButton";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { useEffect, useState } from "react";
 
-interface Entity {
-  id: string;
-  name: string;
-}
-
-interface Props {
-  entities: Entity[];
-}
-
-const InvoicesForm = ({ entities }: Props) => {
+const InvoicesForm = () => {
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
+  const [entities, setEntities] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchEntities = async () => {
+      try {
+        const response = await axiosPrivate.get("entities");
+        setEntities(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchEntities();
+  }, [axiosPrivate]);
 
   const formik = useFormik({
     initialValues: {
@@ -39,7 +44,7 @@ const InvoicesForm = ({ entities }: Props) => {
       try {
         await axiosPrivate.post("invoices", values);
         resetForm();
-        navigate("/invoices");
+        navigate("/finance");
       } catch (error) {
         console.error("Error submitting form data:", error);
       } finally {
@@ -50,7 +55,7 @@ const InvoicesForm = ({ entities }: Props) => {
 
   return (
     <form onSubmit={formik.handleSubmit}>
-      <InputSelect
+      <FormikSelect
         name="entity_id"
         label="Entiteta"
         classes="width-100"

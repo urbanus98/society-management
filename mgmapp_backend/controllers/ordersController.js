@@ -12,7 +12,7 @@ const getOrders = (req, res)=>{
             DATE_FORMAT(traffic.date, "%d.%m.%Y") as date
         FROM orders
             JOIN traffic on traffic.order_id = orders.id
-        ORDER BY date DESC, id DESC
+        ORDER BY traffic.date DESC, id DESC
     `;
     db.query(sql, (err, result)=>{
         if (err) {
@@ -146,10 +146,10 @@ const handleOrderedStuff = async (orderId, alreadyOrderedStuffIDs, details) => {
 
 const updateOldStuffOrdered = (oldDetails, stuffSoldIDs) => {
     return Promise.all(
-        oldDetails.map(({ stuffType_id, amount }, index) => {
-            const sql = `UPDATE ordered_stuff SET amount = ?, stufftype_id = ? WHERE id = ?`;
+        oldDetails.map(({ stuffType_id, quantity }, index) => {
+            const sql = `UPDATE ordered_stuff SET quantity = ?, stufftype_id = ? WHERE id = ?`;
             return new Promise((resolve, reject) => {
-                db.query(sql, [amount, stuffType_id, stuffSoldIDs[index].id], (err, result) => {
+                db.query(sql, [quantity, stuffType_id, stuffSoldIDs[index].id], (err, result) => {
                     if (err) {
                         console.error('Error updating ordered stuff:', err);
                         return reject("Failed to update ordered stuff records");
@@ -166,8 +166,8 @@ const insertNewStuffOrdered = (newDetails, orderId) => {
         const details = parseJSON(newDetails);
         if (details.length === 0) return resolve(); // No new items to insert
 
-        const values = details.map(({ stuffType_id, amount }) => [orderId, stuffType_id, amount]);
-        const sql = `INSERT INTO ordered_stuff (order_id, stufftype_id, amount) VALUES ?`;
+        const values = details.map(({ stuffType_id, quantity }) => [orderId, stuffType_id, quantity]);
+        const sql = `INSERT INTO ordered_stuff (order_id, stufftype_id, quantity) VALUES ?`;
 
         db.query(sql, [values], (err, result) => {
             if (err) {
@@ -211,7 +211,7 @@ const getOrderData = (orderId) => {
         const sqlStuff = `
             SELECT 
                 ordered_stuff.id as id, 
-                ordered_stuff.amount as amount, 
+                ordered_stuff.quantity as quantity, 
                 ordered_stuff.stufftype_id, 
                 stuff_types.type as type, 
                 stuff.name as name,
@@ -242,7 +242,7 @@ const getOrderData = (orderId) => {
                     return {
                         name: row.name + " - " + row.type,
                         id: row.id,
-                        amount: row.amount,
+                        quantity: row.quantity,
                         stufftype_id: row.stufftype_id,
                     };
                 }),

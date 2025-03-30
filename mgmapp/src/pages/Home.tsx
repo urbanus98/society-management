@@ -7,6 +7,7 @@ import PieChart from "../components/charts/PieChart";
 import FuncButton from "../components/ui/FuncButton";
 import LinkButton from "../components/ui/LinkButton";
 import ImageLink from "../components/ui/ImageLink";
+import { Link } from "react-router-dom";
 
 export const Home = () => {
   const axiosPrivate = useAxiosPrivate();
@@ -132,6 +133,7 @@ export const Home = () => {
     };
     const getYearlyTraffic = async () => {
       const response = await axiosPrivate.get(`stats/${year}/monthly-balances`);
+      console.log(response.data.traffic);
       setYearlyTraffic(response.data.traffic);
       setYearlyBlackTraffic(response.data.black_traffic);
     };
@@ -142,7 +144,19 @@ export const Home = () => {
 
   return (
     <div className="padding-3">
-      <h1 className="bright-text text-center mar-btm30">Nadzorna plošča</h1>
+      <div className="flex justify-between">
+        <div style={{ width: 45, paddingTop: 5 }}>
+          <Link to={"data-management"}>
+            <img
+              src="/public/images/settings_s.png"
+              width={45}
+              className="pointer"
+            />
+          </Link>
+        </div>
+        <h1 className="bright-text text-center mar-btm30">Nadzorna plošča</h1>
+        <div style={{ width: 45 }}></div>
+      </div>
 
       <div className="grid-3 gap">
         <div className="black-back pad-1r border-radius mw700 width-100 span-2r coluflex gap justify-between">

@@ -155,7 +155,8 @@ const getEitherTrafficStats = async (tableName) => {
                 ROUND(SUM(CASE WHEN direction = 0 THEN amount ELSE 0 END)[DIVISION]) AS inflow,
                 ROUND(SUM(CASE WHEN direction = 1 THEN amount ELSE 0 END)[DIVISION]) * (-1) AS outflow
             FROM [TABLE_NAME]
-            GROUP BY year
+            GROUP BY year 
+            ORDER BY year
         `;
         var sql = sqlTemplate.replace(/\[TABLE_NAME\]/g, tableName);
         if (tableName === 'traffic') {
@@ -176,7 +177,21 @@ async function getMonthlyBalance(tableName, year) {
     if (!validTables.includes(tableName)) {
         throw new Error('Invalid table name. Must be "traffic" or "black_traffic".');
     }
-
+    const monthLabels = {
+        "01": "Jan",
+        "02": "Feb",
+        "03": "Mar",
+        "04": "Apr",
+        "05": "Maj",
+        "06": "Jun",
+        "07": "Jul",
+        "08": "Avg",
+        "09": "Sep",
+        "10": "Okt",
+        "11": "Nov",
+        "12": "Dec",
+    };
+    
     try {
         const sqlTemplate = `
             WITH all_months AS (
@@ -236,10 +251,17 @@ async function getMonthlyBalance(tableName, year) {
             sql = sql.replace(/\[DIVISION\]/g,"");
         }
 
-        const params = Array(14).fill(year); // 14 placeholders
+        const params = Array(14).fill(year);
 
         const rows = await performQuery(sql, params);
-        return rows;
+        const modifiedRows = rows.map((row) => {
+          const label = monthLabels[row.month.split('-')[1]]; 
+          return {
+            ...row,
+            month: label
+          }
+        })
+        return modifiedRows;
     } catch (error) {
         console.error('Database query error:', error);
         throw error;

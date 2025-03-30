@@ -49,6 +49,7 @@ app.use('/register', require('./routes/Auth/register'));
 app.use('/events', require('./routes/events'));
 app.use('/sales', require('./routes/sales'));
 app.use('/invoices', require('./routes/invoices'));
+app.use('/proforma', require('./routes/proforma'));
 app.use('/entities', require('./routes/entities'));
 app.use('/merch', require('./routes/merch'));
 app.use('/orders', require('./routes/orders'));

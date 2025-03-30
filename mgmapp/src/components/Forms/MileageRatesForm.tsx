@@ -3,15 +3,17 @@ import DynamicTable from "../ui/DynamicTable";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import SubmButton from "../ui/SubmButton";
 
+interface Props {
+  setMsg: any;
+  setAlertVisibility: any;
+  setAlertColor?: any;
+}
+
 const MileageRatesForm = ({
   setMsg,
   setAlertVisibility,
   setAlertColor,
-}: {
-  setMsg: any;
-  setAlertVisibility: any;
-  setAlertColor?: any;
-}) => {
+}: Props) => {
   const axiosPrivate = useAxiosPrivate();
   const [rows, setRows] = useState<any[]>([{}]);
 

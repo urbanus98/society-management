@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 interface Props {
   item: any;
   linkPart: string;
@@ -21,8 +23,8 @@ const Item = ({ item, linkPart }: Props) => {
     <div className="coluflex justify-between white post">
       <img
         {...(item.image_path
-          ? { src: `http://localhost:8081/${item.image_path}` }
-          : { src: `http://localhost:8081/assets/tt_black.png` })}
+          ? { src: `${API_URL}/${item.image_path}` }
+          : { src: `${API_URL}/assets/tt_black.png` })}
         alt={item.name}
         className="border-radius width-100 margin-5"
       />

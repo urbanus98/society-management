@@ -1,5 +1,6 @@
 const db = require('../db');
 const { insertBlackFlow } = require('../services/blackDebtService');
+const { performInsert, performUpdate } = require('../services/genericActions');
 const { updateBlackSaleFlow } = require('./blackController');
 
 // ** MERCH SALES **
@@ -9,6 +10,7 @@ const getSalesRows = async (req, res)=>{
         var sql = `
         SELECT
             id,
+            note,
             DATE_FORMAT(date, "%d.%m.%Y") as date
         FROM
             sales
@@ -20,6 +22,7 @@ const getSalesRows = async (req, res)=>{
             return {
                 date: row.date,
                 price: row.total + " €",
+                note: row.note,
                 id: row.id,
             };
         }));
@@ -31,11 +34,11 @@ const getSalesRows = async (req, res)=>{
 
 const postSale = async (req, res)=>{
     try {
-        var { date, sold } = req.body;
+        var { date, note, sold } = req.body;
 
-        const saleId = await insertSale(date);
+        const saleId = await insertSale(date, note);
         await insertStuffSold(sold, saleId);
-        await insertBlackFlow(saleId, null, "Merch Sale", sold.reduce((acc, { amount, price }) => acc + amount * price, 0), 0, date);
+        await insertBlackFlow(saleId, null, "Merch Sale", sold.reduce((acc, { quantity, price }) => acc + quantity * price, 0), 0, date);
 
         return res.status(201).json({ message: 'Data created successfully' });
     } catch (error) {
@@ -45,23 +48,21 @@ const postSale = async (req, res)=>{
 };
 
 const getSale = async (req, res)=>{
-
     const result = await getSaleData(req.params.id);
-
     return res.json(result);
 };
 
 const putSale = async (req, res)=>{
     try {
         const id = req.params.id;
-        var { date, sold } = req.body;
+        var { date, note, sold } = req.body;
 
-        await updateSale(date, id);
+        await updateSale(date, note, id);
 
         const stuffSold = await getSaleStuffSold(id);
         await handleStuffSold(id, stuffSold, sold);
 
-        await updateBlackSaleFlow(sold.reduce((acc, { amount, price }) => acc + amount * price, 0), date, id);
+        await updateBlackSaleFlow(sold.reduce((acc, { quantity, price }) => acc + quantity * price, 0), date, id);
 
         return res.status(200).json({ message: 'Data updated successfully' });
     } catch (error) {
@@ -133,28 +134,17 @@ const formatAndAggregateSales = async (sales) => {
     return(salesWithAmounts);
 }
 
-const insertSale = (date) => {
-    return new Promise((resolve, reject) => {
-        const sqlSale = `INSERT INTO sales (date) VALUES ('${date}')`;
-        console.log(sqlSale);
-
-        db.query(sqlSale, (err, saleResult) => {
-            if (err) {
-                console.error('Error inserting sale:', err);
-                return reject('Failed to create sale');
-            }
-            console.log('Sale inserted successfully:', saleResult);
-
-            resolve(saleResult.insertId);
-        });
-    });
+const insertSale = async (date, note) => {
+    const sql = `INSERT INTO sales (date, note) VALUES (?, ?)`;
+    const result = await performInsert(sql, [date, note]);
+    return result.insertId;
 };
 
 const insertStuffSold = (newDetails, saleId) => {
     return new Promise((resolve, reject) => {
         if (newDetails.length === 0) return resolve();
 
-        const values = newDetails.map(({ stuffType_id, amount, price }) => [saleId, stuffType_id, amount, price]);
+        const values = newDetails.map(({ stuffType_id, quantity, price }) => [saleId, stuffType_id, quantity, price]);
         const sql = `INSERT INTO stuff_sold (sale_id, stufftype_id, quantity, price_actual) VALUES ?`;
 
         db.query(sql, [values], (err, result) => {
@@ -167,19 +157,9 @@ const insertStuffSold = (newDetails, saleId) => {
     });
 };
 
-const updateSale = (date, id) => {
-    return new Promise((resolve, reject) => {
-        const sqlSale = `UPDATE sales SET date = '${date}' WHERE id = ${id}`;
-        // console.log(sqlSale);
-        db.query(sqlSale, (err, saleResult) => {
-            if (err) {
-                console.error('Error updating sale:', err);
-                reject('Failed to update sale');
-            }
-            console.log('Sale updated successfully:', saleResult);
-            resolve(saleResult);
-        });
-    });
+const updateSale = async (date, note, id) => {
+    const sql = `UPDATE sales SET date = '${date}', note = '${note}' WHERE id = ${id}`;
+    const result = await performUpdate(sql);
 };
 
 const getSaleStuffSold = (id) => {
@@ -218,10 +198,10 @@ const handleStuffSold = async (saleId, stuffSoldResult, sold) => {
 
 const updateOldStuffSold = (oldDetails, stuffSoldResult) => {
     return Promise.all(
-        oldDetails.map(({ stuffType_id, amount, price }, index) => {
+        oldDetails.map(({ stuffType_id, quantity, price }, index) => {
             const sql = `UPDATE stuff_sold SET quantity = ?, price_actual = ?, stufftype_id = ? WHERE id = ?`;
             return new Promise((resolve, reject) => {
-                db.query(sql, [amount, price, stuffType_id, stuffSoldResult[index].id], (err, result) => {
+                db.query(sql, [quantity, price, stuffType_id, stuffSoldResult[index].id], (err, result) => {
                     if (err) {
                         console.error("Error updating stuff sold:", err);
                         return reject("Failed to update stuff sold records");
@@ -242,12 +222,13 @@ const getSaleData = (saleId) => {
                 stuff_sold.price_actual as price, 
                 stuff_types.type as type, 
                 stuff.name as name,
-                DATE_FORMAT(sales.date, "%Y-%m-%d") as date
-            FROM stuff_sold
-            JOIN stuff_types on stuff_sold.stufftype_id = stuff_types.id
-            JOIN stuff on stuff_types.stuff_id = stuff.id
-            JOIN sales on sales.id = stuff_sold.sale_id
-            WHERE stuff_sold.sale_id = ${saleId}
+                DATE_FORMAT(sales.date, "%Y-%m-%d") as date,
+                sales.note
+            FROM sales
+            LEFT JOIN stuff_sold on sales.id = stuff_sold.sale_id
+            LEFT JOIN stuff_types on stuff_sold.stufftype_id = stuff_types.id
+            LEFT JOIN stuff on stuff_types.stuff_id = stuff.id
+            WHERE sales.id = ${saleId}
         `;
         // console.log(sqlStuffSold);
 
@@ -256,15 +237,16 @@ const getSaleData = (saleId) => {
                 console.error('Error fetching sale:', err);
                 reject(err);
             }
-            // console.log('Data fetched successfully:', resultStuffSold);
+            console.log('Data fetched successfully:', resultStuffSold);
 
             const formattedResult = {
                 date: resultStuffSold[0].date,
+                note: resultStuffSold[0].note,
                 types: resultStuffSold.map((row) => {
                     // console.log(row.type_id);
                     return {
                         name: row.name + " - " + row.type,
-                        amount: row.quantity,
+                        quantity: row.quantity,
                         stufftype_id: row.type_id,
                         price: row.price,
                     };

@@ -151,7 +151,7 @@ const ifDebt = (blackId) => {
 
 const updateBlackFlow = (name, amount, date, direction, id) => {
     return new Promise((resolve, reject) => {
-        const sql = `UPDATE black_traffic SET name = '${name}', amount = ${amount}, date = '${date}', direction = ${direction} WHERE id = ${id};`;
+        const sql = `UPDATE black_traffic SET name = "${name}", amount = ${amount}, date = '${date}', direction = ${direction} WHERE id = ${id};`;
         db.query(sql, (err, result) => {
             if (err) {
                 console.error('Error updating data in database:', err);

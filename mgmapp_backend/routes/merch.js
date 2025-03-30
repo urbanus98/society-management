@@ -4,7 +4,7 @@ const fileUpload = require('../middleware/fileUpload');
 
 const { getMerch, postMerch, getMerchItem, putMerch, getStuffTypes } = require('../controllers/merchController');
 
-router.get('/types', getStuffTypes);
+router.get('/types/:forSales', getStuffTypes);
 
 router.get('/', getMerch);
 router.post('/', fileUpload.single('image'), postMerch);

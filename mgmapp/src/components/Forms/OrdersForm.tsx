@@ -7,6 +7,8 @@ import { getDate } from "../misc";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import FileUpload from "../FileUpload";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const OrdersForm = ({ order }: { order?: any }) => {
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ const OrdersForm = ({ order }: { order?: any }) => {
 
   useEffect(() => {
     axiosPrivate
-      .get(`merch/types`)
+      .get(`merch/types/false`)
       .then((response) => {
         setStuffTypes(response.data);
         // console.log(response.data);
@@ -35,14 +37,14 @@ const OrdersForm = ({ order }: { order?: any }) => {
       const newRows = order.types.map((type: any) => ({
         id: type.id,
         name: type.name,
-        amount: type.amount,
+        quantity: type.quantity,
         stuffType_id: type.stufftype_id, // column key
       }));
       setRows(newRows);
       setIsDisabled(true);
 
       if (order?.filePath) {
-        setFilePreview(`http://localhost:8081/${order.filePath}`);
+        setFilePreview(`${API_URL}/${order.filePath}`);
       }
     }
   }, [order]);
@@ -53,30 +55,25 @@ const OrdersForm = ({ order }: { order?: any }) => {
     placeholder: string;
     values?: any[];
     type: string;
+    classes?: string;
+    required?: boolean;
     onChange?: () => void;
   }[] = [
-    // {
-    //   header: "Izdelek",
-    //   key: "stuff",
-    //   placeholder: "Izdelek",
-    //   values: stuff,
-    //   type: "select",
-    //   onChange: () => {
-    //     console.log("stuff changed");
-    //   },
-    // },
     {
       header: "Izdelek",
       key: "stuffType_id",
       placeholder: "Izdelek",
       values: stuffTypes,
       type: "select",
+      required: true,
     },
     {
       header: "Kolicina",
-      key: "amount",
+      key: "quantity",
       placeholder: "Kolicina",
       type: "number",
+      required: true,
+      classes: "w100",
     },
   ];
 
@@ -113,8 +110,8 @@ const OrdersForm = ({ order }: { order?: any }) => {
   return (
     <form encType="multipart/form-data" onSubmit={handleSubmit}>
       <div className="coluflex">
-        <div className="flex gap padding-03">
-          <div className=" width-100">
+        <div className="flex gap-sc padding-03">
+          <div className="width-100">
             <Input
               name="date"
               type="date"

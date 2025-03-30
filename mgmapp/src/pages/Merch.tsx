@@ -202,14 +202,14 @@ export function MerchSales() {
   const headers = [
     { key: "date", label: "Datum" },
     { key: "price", label: "Zaslužek" },
+    { key: "note", label: "Opomba" },
     { key: "id", label: "" },
   ];
 
   useEffect(() => {
     axiosPrivate
-      .get(`sales`) // Use the id from the URL
+      .get(`sales`)
       .then((response) => {
-        console.log(response.data);
         setSales(response.data);
       })
       .catch((error) => {
@@ -242,7 +242,7 @@ export function CreateSale() {
   return (
     <div className="padding-3 coluflex justify-center align-center">
       <BackWTitle title="Prodaj merch" />
-      <div className="res-width-30">
+      <div className="res-width-40">
         <SalesForm />
       </div>
     </div>

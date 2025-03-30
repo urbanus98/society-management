@@ -1,7 +1,12 @@
 const db = require("../db");
 
 const getEntities = (req, res)=>{
-    const sql = "SELECT * FROM entities";
+    const sql = `
+        SELECT 
+            id, 
+            name as name
+            -- short as name
+        FROM entities where id > 1 ORDER BY name`;
     db.query(sql, (err, result)=>{
         if (err) {
             console.error('Error fetching data from database:', err);
@@ -31,23 +36,35 @@ const getEntitiesRow = (req, res)=>{
 
 const getEntity = (req, res)=>{
     const id = req.params.id;
-    const sql = `SELECT * FROM entities WHERE id = ${id}`;
+    const sql = `
+        SELECT 
+            entities.name,
+            entities.short,
+            entities.address,
+            entities.postal,
+            entities.city,
+            entities.tin,
+            entities.note,
+            society_info.bank,
+            society_info.iban,
+            society_info.head,
+            society_info.registry
+        FROM entities
+        LEFT JOIN society_info ON entities.id = society_info.entity_id
+        WHERE entities.id = ${id}
+    `;
     db.query(sql, (err, result)=>{
         if (err) {
             console.error('Error fetching data from database:', err);
             return res.status(500).json({ error: 'Failed to fetch data from the database' });
         }
-        return res.json(result);
+        return res.json(result[0]);
     });
 };
 
 const postEntity = (req, res)=>{
-    var {name, address, postal, city, head, iban, bank, note} = req.body;
-    if (iban === '') { iban = null;}
-    if (note === '') { note = null;}
-    if (bank === '') { bank = null;}
-    if (head === '') { head = null;}
-    const sql = `INSERT INTO entities (name, address, postal, city, head, iban, bank, note) VALUES ('${name}', '${address}', '${postal}', '${city}', '${head}', '${iban}', '${bank}', '${note}')`;
+    var {name, short, address, postal, city, tin, note} = req.body;
+    const sql = `INSERT INTO entities (name, short, address, postal, city, tin, note) VALUES ("${name}", '${short}', '${address}', '${postal}', '${city}', '${tin}', '${note}')`;
     console.log(sql);
     db.query(sql, (err, result) => {
         if (err) {
@@ -64,8 +81,8 @@ const postEntity = (req, res)=>{
 
 const putEntity = (req, res)=>{
     const id = req.params.id;
-    var {name, address, postal, city, head, iban, bank, note} = req.body;
-    const sql = `UPDATE entities SET name = '${name}', address = '${address}', postal = '${postal}', city = '${city}', head = '${head}', iban = '${iban}', bank = '${bank}', note = '${note}' WHERE id = ${id}`;
+    var {name, short, address, postal, city, tin, note} = req.body;
+    const sql = `UPDATE entities SET name = "${name}", short = '${short}', address = '${address}', postal = '${postal}', city = '${city}', tin = '${tin}', note = '${note}' WHERE id = ${id}`;
     console.log(sql);
     db.query(sql, (err, result) => {
         if (err) {

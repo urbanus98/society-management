@@ -25,8 +25,8 @@ const DebtActionGrid = () => {
         <div className="grid-b-item coluflex justify-between no-decor glow-hover height-100 dark-back">
           <h4 className="bright-text">Plačilo storitve</h4>
           <p className="bright-text">
-            {auth.name} namesto banda iz svojega žepa plača (npr. pijačo ali
-            boost na fb...) ali pridobi beli fond.
+            {auth.name} iz svojega žepa plača (npr. pijačo, boost na fb...) ali
+            prinese v bel fond.
           </p>
         </div>
       </NavLink>
@@ -49,7 +49,7 @@ const DebtActionGrid = () => {
         <div className="grid-b-item coluflex justify-between no-decor glow-hover height-100 dark-back">
           <h4 className="bright-text">Nabava na društvo</h4>
           <p className="bright-text">
-            {auth.name} si kupi nekaj na društvo. To društvo kupi z belim fondom
+            {auth.name} si nekaj kupi na društvo. To društvo kupi z belim fondom
             in se na črnem ne pozna.
           </p>
         </div>
@@ -58,8 +58,8 @@ const DebtActionGrid = () => {
         <div className="grid-b-item coluflex justify-between no-decor glow-hover height-100 dark-back">
           <h4 className="bright-text">Keš na roko</h4>
           <p className="bright-text">
-            Zaradi finančne stiske ali trdo zasluženega vložka {auth.name} vzame
-            določen znesek iz črnega fonda.
+            Zaradi finančne stiske ali trdo zasluženega vložka si {auth.name}{" "}
+            izplača določen znesek iz črnega fonda.
           </p>
         </div>
       </NavLink>

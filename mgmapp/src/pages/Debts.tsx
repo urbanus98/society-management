@@ -13,12 +13,12 @@ export const Debts = () => {
   const axiosPrivate = useAxiosPrivate();
   const [debts, setDebts] = useState<any[]>([]);
   const [debtRows, setDebtsRows] = useState<any[]>([]);
-  const left = { link: "/black", text: "Črn fond" };
+  const left = { link: "/black", text: "Črni fond" };
   const right = { link: "/debt-actions", text: "Vnesi dolg" };
   const headers = [
     { key: "date", label: "Datum" },
     { key: "amount", label: "Znesek" },
-    { key: "name", label: "Razlog" },
+    { key: "name", label: "Razlog", hideOnMobile: true },
     { key: "user", label: "Zakrivil" },
     { key: "id", label: "" },
   ];

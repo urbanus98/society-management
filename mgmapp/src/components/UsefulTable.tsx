@@ -11,6 +11,8 @@ interface Props {
   buttonText?: string;
   buttonLink?: string;
   linkPart: string;
+  wordLink?: string;
+  wordLinkTo?: string;
 }
 
 const UsefulTable = ({
@@ -20,6 +22,7 @@ const UsefulTable = ({
   buttonText,
   buttonLink,
   linkPart,
+  wordLink,
 }: Props) => {
   return (
     <div>
@@ -32,7 +35,12 @@ const UsefulTable = ({
         )}
       </div>
       <div className="mh450 scrollable">
-        <VersatileTable headers={headers} rows={rows} linkPart={linkPart} />
+        <VersatileTable
+          headers={headers}
+          rows={rows}
+          linkPart={linkPart}
+          wordLink={wordLink}
+        />
       </div>
     </div>
   );

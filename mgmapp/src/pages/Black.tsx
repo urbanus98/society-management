@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import SubNavigator from "../components/SubNavigator";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import FlowChart from "../components/charts/FlowChart";
-import FlowForm from "../components/Forms/FlowForm";
 import { useParams } from "react-router-dom";
 import BackWTitle from "../components/BackWTitle";
 import UsefulFinanceTable from "../components/UsefulFinanceTable";
 import ChartWStatus from "../components/ChartWStatus";
+import BlackTrafficForm from "../components/Forms/BlackTrafficForm";
 
 const left = { link: "/debt-actions", text: "Vnesi dolg" };
 const right = { link: "/debts", text: "Dolgovi" };
@@ -20,7 +19,7 @@ export const Black = () => {
     { key: "date", label: "Datum" },
     { key: "amount", label: "Znesek" },
     { key: "name", label: "Razlog" },
-    { key: "user", label: "Uporabnik" },
+    { key: "user", label: "Uporabnik", hideOnMobile: true },
     { key: "id", label: "" },
   ];
 
@@ -63,10 +62,10 @@ export const Black = () => {
 
 export const CreateBlackFlow = () => {
   return (
-    <div className="padding-3">
+    <div className="padding-3 coluflex justify-center align-center">
       <BackWTitle title="Zabeleži črni promet" />
-      <div className="flex justify-center align-center height-100">
-        <FlowForm />
+      <div className="res-width-30">
+        <BlackTrafficForm />
       </div>
     </div>
   );
@@ -88,10 +87,10 @@ export const UpdateBlackFlow = () => {
   }, []);
 
   return (
-    <div className="padding-3">
+    <div className="padding-3 coluflex justify-center align-center">
       <BackWTitle title="Uredi črni promet" />
-      <div className="flex justify-center align-center height-100">
-        <FlowForm flow={flow} />
+      <div className="res-width-30">
+        <BlackTrafficForm flow={flow} />
       </div>
     </div>
   );

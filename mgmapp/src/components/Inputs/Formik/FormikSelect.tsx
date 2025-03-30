@@ -11,7 +11,7 @@ interface Props {
   formik: any;
 }
 
-const Input = ({
+const FormikSelect = ({
   name,
   label,
   values,
@@ -47,4 +47,4 @@ const Input = ({
   );
 };
 
-export default Input;
+export default FormikSelect;

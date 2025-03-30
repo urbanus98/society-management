@@ -8,11 +8,12 @@ import BackWTitle from "../components/BackWTitle";
 import SubNavigator from "../components/SubNavigator";
 import TripsForm from "../components/Forms/TripsForm";
 import Alert from "../components/ui/Alert";
+import EventInvoiceForm from "../components/Forms/EventInvoiceForm";
 
 export function Events() {
   const axiosPrivate = useAxiosPrivate();
   const [events, setEvents] = useState<any[]>([]);
-  const left = { link: "/data-manegement", text: "Upr. podatkov" };
+  const left = { link: "/data-management", text: "Upr. pod." };
   const right = { link: "/trips", text: "Poti" };
   const headers = [
     { key: "date", label: "Datum" },
@@ -49,7 +50,7 @@ export function CreateEvent() {
   return (
     <div className="padding-3 coluflex justify-center align-center">
       <BackWTitle title="Ustvari dogodek" />
-      <div className="res-width-30">
+      <div className="res-width-40">
         <EventsForm />
       </div>
     </div>
@@ -81,14 +82,22 @@ export function UpdateEvent() {
   return (
     <div className="padding-3 coluflex justify-center align-center">
       <BackWTitle title="Uredi dogodek" />
-      <div className="res-width-30">
+      <div className="res-width-40">
         <EventsForm event={event} />
+
         {alertVisible && (
           <Alert color={alertColor} onClose={() => setAlertVisibility(false)}>
             {msg}
           </Alert>
         )}
-        <h2 className="bright-text text-centers">Poti</h2>
+
+        <EventInvoiceForm
+          event={event}
+          setMsg={setMsg}
+          setAlertVisibility={setAlertVisibility}
+          setAlertColor={setAlertColor}
+        />
+
         <TripsForm
           eventId={id}
           setMsg={setMsg}

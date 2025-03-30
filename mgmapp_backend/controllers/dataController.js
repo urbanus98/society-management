@@ -1,5 +1,5 @@
 
-const { performQuery, performMassUpdate, performMassInsertO } = require("../services/genericActions");
+const { performQuery, performMassUpdate, performMassInsertO, performUpdate } = require("../services/genericActions");
 
 const getLocations = async (req, res) => {
     try {
@@ -19,6 +19,19 @@ const getMileageRates = async (req, res) => {
         
         const result = await performQuery(sql);
         return res.json(result);
+    } catch (error) {
+        console.error("Error fetching data from database:", error);
+        return res.status(500).json({ error: "Failed to fetch data from the database" });
+    }
+}
+
+const getSociety = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const sql = `SELECT * FROM society_info where id = ${id}`;
+        
+        const result = await performQuery(sql);
+        return res.json(result[0]);
     } catch (error) {
         console.error("Error fetching data from database:", error);
         return res.status(500).json({ error: "Failed to fetch data from the database" });
@@ -63,7 +76,22 @@ const updateLocations = async (req, res) => {
     }
 }
 
-module.exports = { getLocations, getMileageRates, updateMileageRates, updateLocations };
+const updateSociety = async (req, res) => {
+    try {
+        const { bank, iban, head, registry } = req.body;
+
+        const updateSql = `UPDATE society_info SET bank = ?, iban = ?, head = ?, registry = ? WHERE id = ?`;
+        await performUpdate(updateSql, [bank, iban, head, registry, 1]);
+
+        return res.status(200).json({ message: "Podatki o društvu so bili uspešno posodobljeni!" });
+    }
+    catch(error) {
+        console.error("Error updating society:", error);
+        return res.status(500).json({ error: "Napaka pri posodobitvi podatkov o društvu!" });
+    }
+}
+
+module.exports = { getLocations, getMileageRates, getSociety, updateMileageRates, updateLocations, updateSociety };
 
 const convertRatesToCents = (details, key) => {
     const updateDetails = details.map((detail) => {

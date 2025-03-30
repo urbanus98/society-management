@@ -54,9 +54,12 @@ html, body {
     width: 50%;
 }
 
-.res-width,
+
 .res-width-30,
-.res-width-3 {
+.res-width-40,
+.res-width-50,
+.res-width-60,
+.res-width-80 {
     width: 100%;
 }
 
@@ -66,6 +69,9 @@ html, body {
     }
     .res-width-40 {
         width: 40%;
+    }
+    .res-width-50 {
+        width: 50%;
     }
     .res-width-60 {
         width: 60%;
@@ -269,6 +275,10 @@ table {
 }
 
 .gap-s {
+    gap: .5rem;
+}
+
+.gap-sc {
     gap: .5rem;
 }
 
@@ -489,7 +499,7 @@ a {
 
 .grid-b {
     display: grid;
-    grid-template-columns: 1fr 4fr 4fr 1fr;
+    grid-template-columns: 1fr 5fr 5fr 1fr;
     gap: 1rem;
 }
 
@@ -550,7 +560,83 @@ a {
     color: #fff;
     background-color: #d0211c;
     border-color: #c51f1a;
-  }
+}
 
 
+
+
+/* DYNAMIC TABLE CLASSES */
+
+/* Ensure the table takes the full width of its parent */
+.dynamic-table {
+    width: 100%;
+    border-spacing: 0;
+    table-layout: auto; /* Allows columns to adjust based on content and CSS */
+}
   
+  /* Style for table headers and cells */
+.dynamic-table th,
+.dynamic-table td {
+    /* padding: 5px; */
+    /* text-align: center; */
+}
+
+  /* Ensure inputs and selects take full width of their cells */
+.dynamic-table .input {
+    width: 100%;
+    box-sizing: border-box; /* Ensures padding doesn't affect width */
+}
+  
+/* Optional: Style for the button column */
+.dynamic-table th:last-child,
+.dynamic-table td:last-child {
+    width: 40px; /* Fixed width for the add/remove button column */
+}
+
+.header-long {
+    display: inline;
+}
+  
+.header-short {
+    display: none;
+}
+
+  /* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .th-mileage,
+    .td-mileage {
+      width: 70px !important; /* Smaller width for small screens */
+    }
+    .th-quantity,
+    .td-quantity {
+        width: 90px !important;
+    }
+    .th-price,
+    .td-price {
+        width: 90px !important;
+    }
+    .header-long {
+        display: none !important;
+    }
+    .header-short {
+        display: inline !important;
+    }
+}
+  
+
+
+/* TRIPS TABLE */
+/* Ensure select elements in origin and destination columns fill remaining space */
+.th-origin,
+.td-origin,
+.th-destination,
+.td-destination {
+    width: auto; /* Allow these columns to take remaining space */
+}
+
+/* Mileage column (Km) */
+.th-mileage,
+.td-mileage {
+    width: 110px; /* Default width for large screens */
+}
+    

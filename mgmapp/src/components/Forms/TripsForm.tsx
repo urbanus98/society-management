@@ -4,22 +4,26 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import SubmButton from "../ui/SubmButton";
 import useAuth from "../../hooks/useAuth";
 
+interface Props {
+  eventId: any;
+  setMsg?: any;
+  setAlertVisibility?: any;
+  setAlertColor?: any;
+}
+
 const TripsForm = ({
   eventId,
   setMsg,
   setAlertVisibility,
   setAlertColor,
-}: {
-  eventId: any;
-  setMsg?: any;
-  setAlertVisibility?: any;
-  setAlertColor?: any;
-}) => {
+}: Props) => {
   const axiosPrivate = useAxiosPrivate();
   const { auth } = useAuth();
   const [removedTripIds, setRemovedTripIds] = useState<any[]>([]); // Persist across renders
 
-  const [fistInsert, setFirstInsert] = useState<boolean>(true);
+  const [tripsVisible, setTripsVisible] = useState(false);
+
+  const [firstInsert, setFirstInsert] = useState<boolean>(true);
   const [locations, setLocations] = useState<any[]>([{}]);
   const [rows, setRows] = useState<any[]>([
     { origin: 1, destination: "", mileage: "", return: true },
@@ -28,7 +32,7 @@ const TripsForm = ({
   useEffect(() => {
     const getLocations = async () => {
       const response = await axiosPrivate.get("data/locations");
-      //   console.log(response.data);
+      console.log(response.data);
       setLocations(response.data);
     };
     const getTrips = async () => {
@@ -38,6 +42,7 @@ const TripsForm = ({
       if (newRows.length > 0) {
         setFirstInsert(false);
         setRows(newRows);
+        setTripsVisible(true);
       }
     };
 
@@ -97,26 +102,31 @@ const TripsForm = ({
 
   const columns: {
     header: string;
+    shortHeader?: string;
     key: string;
     placeholder?: string;
     values?: any[];
     type: string;
     classes?: string;
-    onChange?: () => void;
+    disabled?: boolean;
+    disabledOption?: boolean;
+    onChange?: (rowIndex: number, selectedValue: string) => void;
   }[] = [
     {
       header: "Povratna",
+      shortHeader: "Povr.",
       key: "return",
       type: "checkbox",
       classes: "bigcheck",
     },
     {
-      header: "Izvor",
+      header: "Start",
       key: "origin",
       placeholder: "Začetna lokacija",
       type: "select",
       values: locations,
-      classes: "w150",
+      classes: "width-100",
+      // classes: "w150",
     },
     {
       header: "Cilj",
@@ -124,15 +134,41 @@ const TripsForm = ({
       placeholder: "Končna lokacija",
       type: "select",
       values: locations,
-      classes: "w150",
+      classes: "width-100",
+      disabledOption: true,
+      onChange: (rowIndex: number, selectedValue: string) => {
+        changePrice(rowIndex, selectedValue);
+      },
     },
     {
       header: "Kilometraža",
+      shortHeader: "Km",
       key: "mileage",
       placeholder: "Razdalja",
       type: "number",
+      classes: "w100",
     },
   ];
+
+  const changePrice = (rowIndex: number, selectedValue: string) => {
+    console.log("rowIndex: " + rowIndex);
+    console.log("selectedValue: " + selectedValue);
+    // Find the selected stuff type
+    const selectedLocation = locations.find(
+      (location) => location.id.toString() === selectedValue
+    );
+    if (selectedLocation && selectedLocation.distance) {
+      // Update the distance for this row
+      setRows((prevRows) => {
+        const newRows = [...prevRows];
+        newRows[rowIndex] = {
+          ...newRows[rowIndex],
+          mileage: selectedLocation.distance,
+        };
+        return newRows;
+      });
+    }
+  };
 
   const handleReturn = () => {
     let counter = 0;
@@ -162,8 +198,8 @@ const TripsForm = ({
         userId: auth.id,
         eventId: eventId,
       };
-      console.log(formData);
-      if (fistInsert) {
+      // console.log(formData);
+      if (firstInsert) {
         response = await axiosPrivate.post("trips", formData);
       } else {
         response = await axiosPrivate.put(`trips/${eventId}`, formData);
@@ -182,12 +218,20 @@ const TripsForm = ({
     <form
       encType="multipart/form-data"
       onSubmit={handleSubmit}
-      className="flex justify-center"
+      className="coluflex width-100 margin-tb1"
     >
-      <div>
-        <DynamicTable rows={rows} columns={columns} setRows={setRows} />
-        <SubmButton />
-      </div>
+      <h4
+        className="bright-text pointer"
+        onClick={() => setTripsVisible(!tripsVisible)}
+      >
+        Poti
+      </h4>
+      {tripsVisible && (
+        <div className="width-100">
+          <DynamicTable rows={rows} columns={columns} setRows={setRows} />
+          <SubmButton />
+        </div>
+      )}
     </form>
   );
 };

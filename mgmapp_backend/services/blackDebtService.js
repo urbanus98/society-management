@@ -33,7 +33,7 @@ const updateDebt = (debtId, amount) => {
 
 const updateFlow = (name, amount, date, debtId) => {
     return new Promise((resolve, reject) => {
-        const sql = `UPDATE black_traffic SET name = '${name}', amount = ${amount}, date = '${date}' WHERE debt_id = ${debtId};`;
+        const sql = `UPDATE black_traffic SET name = "${name}", amount = ${amount}, date = '${date}' WHERE debt_id = ${debtId};`;
         db.query(sql, (err, result) => {
             if (err) {
                 console.error('Error updating data in database:', err);

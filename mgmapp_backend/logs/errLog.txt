@@ -2,3 +2,6 @@
 2024-12-18 17:04:55		26f699f3-0f2b-4e3b-93a8-ed73529ef892	Error: Not allowed by CORS
 2024-12-19 10:35:15		e4a45cc7-5f2d-43bc-90ac-414b9ec2b93e	TypeError: Cannot read properties of undefined (reading 'filename')
 2025-02-11 08:17:18		a8ed2a35-e8f4-449a-b4b5-f0034ac47796	ReferenceError: sql is not defined
+2025-03-19 15:28:49		e97da183-a4f3-43f7-b3f4-4b9e64f8e557	ReferenceError: sql is not defined
+2025-03-19 15:28:52		8de7efd5-9db4-44e3-a5f1-f0a18431249e	ReferenceError: sql is not defined
+2025-03-19 15:28:52		3ed1511f-89c5-4226-8feb-7fc9da746f35	ReferenceError: sql is not defined

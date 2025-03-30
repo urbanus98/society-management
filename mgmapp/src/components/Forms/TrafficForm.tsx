@@ -1,5 +1,5 @@
 import Input from "../Inputs/Formik/FormikInput";
-import InputSelect from "../Inputs/Formik/FormikSelect";
+import FormikSelect from "../Inputs/Formik/FormikSelect";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
@@ -74,7 +74,7 @@ const TrafficForm = ({ traffic }: Props) => {
           <Input name="date" type="date" label="Datum" formik={formik} />
         </div>
         <div className="width-50">
-          <InputSelect
+          <FormikSelect
             name="direction"
             label="Vrsta"
             values={[

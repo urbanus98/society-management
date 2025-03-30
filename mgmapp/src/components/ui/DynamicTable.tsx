@@ -3,16 +3,17 @@ import FuncButton from "./FuncButton";
 
 interface Column<T> {
   header: string;
-  key: keyof T; // Ensure the key corresponds to a property of the generic type
+  shortHeader?: string;
+  key: keyof T;
   placeholder?: string;
-  values?: string[];
-  // values?: { id: string | number; name: string }[];
+  values?: { id: string | number; name: string }[];
   type?: string;
   step?: string;
-  // updateAColumn?: (index: number, field: keyof T, value: string) => void;
   required?: boolean;
   classes?: string;
-  onChange?: () => void;
+  disabled?: boolean;
+  disabledOption?: boolean;
+  onChange?: (rowIndex: number, selectedValue: string) => void;
 }
 
 interface DynamicTableProps<T> {
@@ -35,12 +36,13 @@ const DynamicTable = <T extends Record<string, any>>({
   ) => {
     const updatedRows = [...rows];
     updatedRows[index][field] = value as any;
-    // if (typeof updatedRows[index][field] === "boolean") {
-    //   updatedRows[index][field] = Boolean(value) as T[keyof T];
-    // } else {
-    //   updatedRows[index][field] = value as T[keyof T];
-    // }
     setRows(updatedRows);
+
+    // Call onChange if it exists for this column
+    const column = columns.find((col) => col.key === field);
+    if (column?.onChange && typeof value === "string") {
+      column.onChange(index, value);
+    }
   };
 
   const handleAddRow = () => {
@@ -56,12 +58,19 @@ const DynamicTable = <T extends Record<string, any>>({
   };
 
   return (
-    <table style={{ borderSpacing: "0px" }}>
+    <table className="dynamic-table">
       <thead>
         <tr>
           {columns.map((col) => (
-            <th key={col.key.toString()}>
-              <label className="input_label bright-text">{col.header}</label>
+            <th key={col.key.toString()} className={`th-${String(col.key)}`}>
+              <label className="input_label bright-text" style={{ margin: 3 }}>
+                <span className="header-long">{col.header}</span>
+                {col.shortHeader ? (
+                  <span className="header-short">{col.shortHeader}</span>
+                ) : (
+                  <span className="header-short">{col.header}</span>
+                )}
+              </label>
             </th>
           ))}
           <th></th>
@@ -71,29 +80,28 @@ const DynamicTable = <T extends Record<string, any>>({
         {rows.map((row, index) => (
           <tr key={index}>
             {columns.map((col) => (
-              <td key={col.key.toString()} className={"text-centers"}>
+              <td
+                key={col.key.toString()}
+                className={`td-${String(col.key)} ${col.classes ?? ""}`}
+              >
                 {(() => {
                   switch (col.type) {
                     case "select":
                       return (
                         <select
                           className={
-                            "input padding-5" +
-                            (col.classes
-                              ? ` ${col.classes}`
-                              : " width-100 minw100")
+                            "input padding-5 " +
+                            (col.classes ? `${col.classes}` : "width-100")
                           }
                           value={row[col.key] || ""}
                           onChange={(e) => {
                             handleRowChange(index, col.key, e.target.value);
-                            if (col.onChange) {
-                              col.onChange();
-                            }
                           }}
                           required={col.required}
+                          disabled={col.disabled}
                         >
-                          <option disabled value="">
-                            Izberi vrednost
+                          <option disabled={col.disabledOption} value="">
+                            Izberi iz seznama
                           </option>
                           {col.values?.map((value: any) => (
                             <option key={value.id} value={value.id}>
@@ -107,7 +115,7 @@ const DynamicTable = <T extends Record<string, any>>({
                         <input
                           className={"input " + (col.classes ?? "")}
                           type="checkbox"
-                          checked={Boolean(row[col.key])} // Ensure it's always a boolean
+                          checked={Boolean(row[col.key])}
                           onChange={(e) =>
                             handleRowChange(index, col.key, e.target.checked)
                           }
@@ -117,7 +125,7 @@ const DynamicTable = <T extends Record<string, any>>({
                       return (
                         <input
                           className={
-                            "input " + (col.classes ? col.classes : " w80")
+                            "input " + (col.classes ? col.classes : "width-100")
                           }
                           type="number"
                           placeholder={col.placeholder || ""}

@@ -18,12 +18,11 @@ const EntitiesForm = ({ entity }: Props) => {
   const formik = useFormik({
     initialValues: {
       name: entity?.name || "",
+      short: entity?.short || "",
       address: entity?.address || "",
       postal: entity?.postal || "",
       city: entity?.city || "",
-      head: entity?.head || "",
-      iban: entity?.iban || "",
-      bank: entity?.bank || "",
+      tin: entity?.tin || "",
       note: entity?.note || "",
     },
     validationSchema: Yup.object({
@@ -40,7 +39,7 @@ const EntitiesForm = ({ entity }: Props) => {
           await axiosPrivate.post("entities", values);
         }
         resetForm();
-        navigate("/invoices");
+        navigate("/finance");
       } catch (error) {
         console.error("Error submitting form data:", error);
       } finally {
@@ -58,6 +57,26 @@ const EntitiesForm = ({ entity }: Props) => {
         classes="input width-100"
         formik={formik}
       />
+      <div className="flex gap">
+        <div className="width-50">
+          <FormikInput
+            label="Kratko ime"
+            name="short"
+            placeholder="Okrajšava"
+            classes="input"
+            formik={formik}
+          />
+        </div>
+        <div className="width-50">
+          <FormikInput
+            label="Davčna številka"
+            name="tin"
+            placeholder="Davčna številka"
+            classes="input"
+            formik={formik}
+          />
+        </div>
+      </div>
       <FormikInput
         label="Naslov"
         name="address"
@@ -86,38 +105,13 @@ const EntitiesForm = ({ entity }: Props) => {
         </div>
       </div>
       <FormikInput
-        label="Predsednik"
-        name="head"
-        placeholder="Predsednik"
-        classes="input width-100"
-        formik={formik}
-      />
-      <div className="flex gap">
-        <div className="width-100">
-          <FormikInput
-            label="TRR"
-            name="iban"
-            placeholder="TRR"
-            classes="input"
-            formik={formik}
-          />
-        </div>
-        <FormikInput
-          label="Banka"
-          name="bank"
-          placeholder="Banka društva"
-          classes="input"
-          formik={formik}
-        />
-      </div>
-      <FormikInput
         label="Opombe"
         name="note"
         placeholder="So lopovi ipd..."
         classes="input width-100"
         formik={formik}
       />
-      <SubmButton text="Dodaj" />
+      <SubmButton />
     </form>
   );
 };

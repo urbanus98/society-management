@@ -1,6 +1,6 @@
 interface Props {
   values: any[];
-  defaultvalue: string;
+  defaultvalue: string | number;
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onClick?: () => void;
   name?: string;

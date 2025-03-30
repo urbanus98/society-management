@@ -2,11 +2,23 @@ const db = require('../db');
 const parseJSON = require('../services/misc').parseJSON;
 
 exports.getStuffTypes = (req, res)=>{
-    const sql = `
-    SELECT stuff_types.id, stuff.name, stuff_types.type 
-    FROM stuff_types 
-    JOIN stuff on stuff_types.stuff_id = stuff.id
-    order by stuff_id`;
+    const { forSales } = req.params;
+    const sqlTemplate = `
+        SELECT 
+            stuff_types.id, 
+            stuff.name,
+            stuff_types.price,
+            stuff_types.type 
+        FROM stuff_types 
+            JOIN stuff on stuff_types.stuff_id = stuff.id
+            [CONDITION]
+        ORDER BY stuff_id
+    `;
+    if (forSales === 'true') {
+        var sql = sqlTemplate.replace(/\[CONDITION\]/g, "WHERE stuff.is_sold = 1");
+    } else {
+        var sql = sqlTemplate.replace(/\[CONDITION\]/g,"");
+    }
     db.query(sql, (err, result)=>{
         if (err) {
             console.error('Error fetching data from database:', err);
@@ -15,10 +27,11 @@ exports.getStuffTypes = (req, res)=>{
         const formattedResults = result.map((row) => {
             return {
               name: row.name + " - " + row.type,
+              price: row.price,
               id: row.id,
             };
         });
-        console.log('Data fetched successfully:', result);
+        // console.log('Data fetched successfully:', result);
         return res.json(formattedResults);
     });
 };

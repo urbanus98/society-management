@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS `black_traffic`;
 DROP TABLE IF EXISTS `debts`;
 DROP TABLE IF EXISTS `sales`;
 DROP TABLE IF EXISTS `occasions`;
+DROP TABLE IF EXISTS `proforma`;
 DROP TABLE IF EXISTS `invoices`;
 DROP TABLE IF EXISTS `events`;
 DROP TABLE IF EXISTS `event_types`;
@@ -56,6 +57,7 @@ CREATE TABLE sales (
     id int NOT NULL AUTO_INCREMENT,
     event_id int NULL UNIQUE,
     date date,
+    note VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
@@ -134,7 +136,7 @@ CREATE TABLE ordered_stuff (
     id int NOT NULL AUTO_INCREMENT,
     order_id int,
     stufftype_id int,
-    amount int,
+    quantity int,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
@@ -145,17 +147,29 @@ CREATE TABLE ordered_stuff (
 CREATE TABLE entities (
     id int NOT NULL AUTO_INCREMENT,
     name varchar(255),
+    short varchar(255),
     address varchar(255),
     postal int,
     city varchar(255),
-    head varchar(255),
-    iban varchar(255),
-    bank varchar(255),
+    tin varchar(255),
     note varchar(255) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
-); 
+);
+
+CREATE TABLE society_info (
+    id int NOT NULL AUTO_INCREMENT,
+    entity_id int,
+    bank varchar(255),
+    iban varchar(255),
+    head varchar(255),
+    registry varchar(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (entity_id) REFERENCES entities(id)
+);
 
 CREATE TABLE invoices (
     id int NOT NULL AUTO_INCREMENT,
@@ -163,15 +177,29 @@ CREATE TABLE invoices (
     payer_id int,
     receiver_id int,
     number int,
+    issue_date DATE,
     status tinyint,
     type tinyint,
-    issue_date timestamp,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (event_id) REFERENCES events(id),
     FOREIGN KEY (payer_id) REFERENCES entities(id),
     FOREIGN KEY (receiver_id) REFERENCES entities(id)
+);
+
+CREATE TABLE proforma (
+    id int NOT NULL AUTO_INCREMENT,
+    invoice_id int,
+    number int,
+    name varchar(255),
+    amount int,
+    issue_date DATE,
+    service_date DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (invoice_id) REFERENCES invoices(id)
 );
 
 CREATE TABLE traffic (
@@ -233,4 +261,5 @@ insert into event_types (name) values ('Snemanje');
 insert into locations (name) values ('Vipava');
 insert into mileage_rates (year, rate) values (2024, 20);
 
-insert into entities (name, address, postal, city, iban, note) values ('TamburaTeam', 'Ulica Milana Bajca 5', 5271, 'Vipava', 'SI56 1234 5678 9101 1121', 'Najbulši štjrje');
+insert into entities (name, short, address, postal, city, tin, note) values ('TamburaTeam', 'Ulica Milana Bajca 5', 5271, 'Vipava', 'SI56 1234 5678 9101 1121', 'Najbulši štjrje');
+insert into society_info (bank, iban, head, registry) values ('OTP', 'SI56 1234 5678 9101 1121', '', '');
