@@ -1,8 +1,8 @@
-const statusMap = {
-  0: "Plačano",
-  1: "Neplačano",
-  2: "Rok potekel",
-};
+// const statusMap = {
+//   0: "Plačano",
+//   1: "Neplačano",
+//   2: "Rok potekel",
+// };
 
 export const statuses = [
   {

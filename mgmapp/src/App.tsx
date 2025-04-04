@@ -40,6 +40,7 @@ import {
   UpdateBlackFlow,
   Trips,
   DataManagement,
+  UpdateUser,
 } from "./pages";
 import "./App.css";
 
@@ -89,6 +90,7 @@ function App() {
           <Route path="/debts/status" element={<Debts />} />
           <Route path="/trips" element={<Trips />} />
           <Route path="/data-management" element={<DataManagement />} />
+          <Route path="/users/:id/edit" element={<UpdateUser />} />
         </Route>
       </Routes>
     </div>

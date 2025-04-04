@@ -38,7 +38,6 @@ const LineChart = ({
   monetary,
   title,
   colors = ["#32a852", "#8a1313"],
-  chartHeight = "",
 }: Props) => {
   const barLabels = chartData.map((row) => row[labelKey]);
   const dataSets = labels.map((data) => {

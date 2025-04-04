@@ -8,9 +8,11 @@ import FuncButton from "../components/ui/FuncButton";
 import LinkButton from "../components/ui/LinkButton";
 import ImageLink from "../components/ui/ImageLink";
 import { Link } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
 
 export const Home = () => {
   const axiosPrivate = useAxiosPrivate();
+  const { auth } = useAuth();
 
   // * GENERAL *
   const [years, setYears] = useState([]);
@@ -145,17 +147,25 @@ export const Home = () => {
   return (
     <div className="padding-3">
       <div className="flex justify-between">
-        <div style={{ width: 45, paddingTop: 5 }}>
+        <div style={{ width: 40, paddingTop: 5 }}>
           <Link to={"data-management"}>
             <img
               src="/public/images/settings_s.png"
-              width={45}
+              width={40}
               className="pointer"
             />
           </Link>
         </div>
         <h1 className="bright-text text-center mar-btm30">Nadzorna plošča</h1>
-        <div style={{ width: 45 }}></div>
+        <div style={{ width: 40, paddingTop: 5 }}>
+          <Link to={`users/${auth.id}/edit`}>
+            <img
+              src="/public/images/profile_s.png"
+              width={40}
+              className="pointer"
+            />
+          </Link>
+        </div>
       </div>
 
       <div className="grid-3 gap">

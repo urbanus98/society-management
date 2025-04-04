@@ -59,6 +59,7 @@ app.use('/black', require('./routes/black'));
 app.use('/data', require('./routes/data'));
 app.use('/trips', require('./routes/trips'));
 app.use('/stats', require('./routes/stats'));
+app.use('/users', require('./routes/users'));
 
 app.get('/dummy', (req, res) => {
     const sql = "SELECT 1";
@@ -71,16 +72,7 @@ app.get('/dummy', (req, res) => {
     });
 });
 
-app.get('/users', (req, res)=>{
-    const sql = "SELECT * FROM users";
-    db.query(sql, (err, result)=>{
-        if (err) {
-            console.error('Error fetching data from database:', err);
-            return res.status(500).json({ error: 'Failed to fetch data from the database' });
-        }
-        return res.json(result);
-    });
-});
+
 
 app.all('*', (req, res) => {
     res.status(404).json({ error: 'Invalid route' });

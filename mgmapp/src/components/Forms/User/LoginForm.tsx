@@ -12,7 +12,7 @@ const LoginForm = () => {
   if (!context) {
     throw new Error("AuthContext must be used within an AuthProvider");
   }
-  const { setAuth, persist, setPersist } = context;
+  const { setAuth, persist } = context;
   const userRef = useRef<HTMLInputElement | null>(null);
   const errorRef = useRef<HTMLInputElement | null>(null);
   const [alertVisible, setAlertVisibility] = useState(false);
@@ -72,11 +72,6 @@ const LoginForm = () => {
       setAlertVisibility(true);
       errorRef.current?.focus();
     }
-  };
-
-  const togglePersist = () => {
-    setPersist(!persist);
-    // localStorage.setItem("persist", JSON.stringify(!persist));
   };
 
   useEffect(() => {

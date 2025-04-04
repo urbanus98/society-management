@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import SubmButton from "../ui/SubmButton";
 import { getDate } from "../misc";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
@@ -13,7 +13,6 @@ interface Props {
 const EventsForm = ({ event }: Props) => {
   const axiosPrivate = useAxiosPrivate();
   const { id } = useParams();
-  const navigate = useNavigate();
   const [evenTypes, setEvenTypes] = useState<any[]>([]);
   const [disabledSubmit, setDisabledSubmit] = useState(true);
 

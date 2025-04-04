@@ -31,8 +31,8 @@ export default function VersatileTable({
   rows,
   linkPart,
   wordLink,
-  wordLinkTo,
-}: Props) {
+}: // wordLinkTo,
+Props) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
