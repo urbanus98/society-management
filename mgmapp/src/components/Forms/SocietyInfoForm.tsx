@@ -22,7 +22,7 @@ const SocietyInfoForm = ({
 
   useEffect(() => {
     const getSocietyData = async () => {
-      const response = await axiosPrivate.get(`data/society/1`);
+      const response = await axiosPrivate.get(`/data/society/1`);
       const data = response.data;
       console.log(response.data);
       setBank(data.bank);
@@ -42,7 +42,7 @@ const SocietyInfoForm = ({
         head,
         registry,
       };
-      const response = await axiosPrivate.put(`data/society/1`, formData);
+      const response = await axiosPrivate.put(`/data/society/1`, formData);
       setMsg(response.data.message);
       setAlertColor("success");
     } catch (error) {

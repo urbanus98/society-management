@@ -27,7 +27,7 @@ export const Home = () => {
     { key: "inflow", label: "Prihodki" },
     { key: "outflow", label: "Stroški" },
   ];
-  const chartTitle = trafficType === "traffic" ? "Promet" : "Črni promet";
+  const chartTitle = trafficType === "traffic" ? " " : " ";
   const currentTotalTraffic =
     trafficType === "traffic" ? totalTraffic : totalBlackTraffic;
 
@@ -75,15 +75,15 @@ export const Home = () => {
 
   useEffect(() => {
     const getYears = async () => {
-      const response = await axiosPrivate.get(`stats/years`);
+      const response = await axiosPrivate.get(`/stats/years`);
       setYears(response.data);
     };
     const getSalesBySize = async () => {
-      const response = await axiosPrivate.get(`stats/sizes`);
+      const response = await axiosPrivate.get(`/stats/sizes`);
       setSizeSales(response.data);
     };
     const getTotalSalesProfit = async () => {
-      const response = await axiosPrivate.get(`stats/sales-profit`);
+      const response = await axiosPrivate.get(`/stats/sales-profit`);
       const result = response.data.reduce((acc: any, item: any) => {
         acc[item.year] = item.profit;
         return acc;
@@ -92,7 +92,7 @@ export const Home = () => {
     };
     const getTraffic = async () => {
       try {
-        const response = await axiosPrivate.get("stats/traffic");
+        const response = await axiosPrivate.get("/stats/traffic");
         setTotalTraffic(response.data.traffic);
         setTotalBlackTraffic(response.data.black_traffic);
 
@@ -103,7 +103,7 @@ export const Home = () => {
       }
     };
     const getMileages = async () => {
-      const response = await axiosPrivate.get(`stats/mileage`);
+      const response = await axiosPrivate.get(`/stats/mileage`);
       const result = response.data.reduce((acc: any, item: any) => {
         acc[item.year] = item.totalKm;
         return acc;
@@ -111,7 +111,7 @@ export const Home = () => {
       setMileages(result);
     };
     const getMZZFunds = async () => {
-      const response = await axiosPrivate.get(`stats/mzz`);
+      const response = await axiosPrivate.get(`/stats/mzz`);
       const result = response.data.reduce((acc: any, item: any) => {
         acc[item.year] = item.funds;
         return acc;
@@ -129,12 +129,14 @@ export const Home = () => {
 
   useEffect(() => {
     const getEvents = async () => {
-      const response = await axiosPrivate.get(`stats/${year}/event`);
+      const response = await axiosPrivate.get(`/stats/${year}/event`);
       setYearlyEvents(response.data.typeCount);
       setYearlyHours(response.data.typeHours);
     };
     const getYearlyTraffic = async () => {
-      const response = await axiosPrivate.get(`stats/${year}/monthly-balances`);
+      const response = await axiosPrivate.get(
+        `/stats/${year}/monthly-balances`
+      );
       console.log(response.data.traffic);
       setYearlyTraffic(response.data.traffic);
       setYearlyBlackTraffic(response.data.black_traffic);
@@ -149,21 +151,13 @@ export const Home = () => {
       <div className="flex justify-between">
         <div style={{ width: 40, paddingTop: 5 }}>
           <Link to={"data-management"}>
-            <img
-              src="/public/images/settings_s.png"
-              width={40}
-              className="pointer"
-            />
+            <img src="/images/settings_s.png" width={40} className="pointer" />
           </Link>
         </div>
         <h1 className="bright-text text-center mar-btm30">Nadzorna plošča</h1>
         <div style={{ width: 40, paddingTop: 5 }}>
           <Link to={`users/${auth.id}/edit`}>
-            <img
-              src="/public/images/profile_s.png"
-              width={40}
-              className="pointer"
-            />
+            <img src="/images/profile_s.png" width={40} className="pointer" />
           </Link>
         </div>
       </div>
@@ -172,7 +166,10 @@ export const Home = () => {
         <div className="black-back pad-1r border-radius mw700 width-100 span-2r coluflex gap justify-between">
           <div className="flex justify-between">
             <div className="flex gap align-center">
-              <h4 className="bright-text margin-none">Podatki za leto:</h4>
+              <h4 className="bright-text margin-none">
+                <span className="break-mobile">Podatki</span>{" "}
+                <span>za leto:</span>
+              </h4>
               <Select
                 defaultvalue={String(year)}
                 onChange={(e) => setYear(parseInt(e.target.value))}
@@ -233,7 +230,7 @@ export const Home = () => {
                   />
                 </div>
                 <div className="coluflex gap-s" style={{ padding: 10 }}>
-                  <h5 className="bright-text">Dogodki v letu {year}</h5>
+                  <h5 className="bright-text">Dogodki v {year}</h5>
                   {Array.isArray(eventsData) &&
                     eventsData.map((event) => (
                       <div key={event.type}>
@@ -261,7 +258,7 @@ export const Home = () => {
                 <ImageLink
                   text="Dodaj dogodek"
                   link="/events/create"
-                  imagePath="/public/images/event_w.png"
+                  imagePath="/images/event_w.png"
                   dark={true}
                 />
               </div>
@@ -325,7 +322,7 @@ export const Home = () => {
               <ImageLink
                 text="Vnesi dolg"
                 link="/debt-actions"
-                imagePath="/public/images/debt_w.png"
+                imagePath="/images/debt_w.png"
                 dark={true}
               />
             </div>
@@ -333,7 +330,7 @@ export const Home = () => {
               <ImageLink
                 text="Zabeleži prodajo"
                 link="/merch/sales/create"
-                imagePath="/public/images/sell_w.png"
+                imagePath="/images/sell_w.png"
                 dark={true}
               />
             </div>

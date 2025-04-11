@@ -86,7 +86,7 @@ export const proformaHTML = (proforma: any, issuer: any, payer: any) => {
     <div style="display:flex; justify-content: end;">
       <div style="display: flex; flex-direction: column;">
         <p>Predsednik društva: ${issuer?.head ?? "ISSUER_HEAD"}</p>
-        <img src="../../public/images/s1.png" alt="Podpis" style="width: 280px; height: 150px;"/>
+        <img src="/images/s1.png" alt="Podpis" style="width: 280px; height: 150px;"/>
       </div>
     </div>
     </body>

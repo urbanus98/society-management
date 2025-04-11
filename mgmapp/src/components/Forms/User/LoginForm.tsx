@@ -66,6 +66,8 @@ const LoginForm = () => {
         setErrorMsg("Missing username or password");
       } else if (error.response.status === 401) {
         setErrorMsg("Invalid username or password");
+      } else if (error.response.status === 429) {
+        setErrorMsg("Too many attempts. Try again later.");
       } else {
         setErrorMsg("Something went wrong");
       }

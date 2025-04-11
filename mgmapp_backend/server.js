@@ -4,6 +4,8 @@ const cookieParser = require('cookie-parser');
 const express = require('express');
 const cors = require('cors');
 const path = require("path");
+const https = require('https');
+const fs = require('fs');
 
 const errorHandler = require('./middleware/errorHandler');
 const credentials = require('./middleware/credentials');
@@ -15,12 +17,24 @@ const PORT = process.env.PORT;
 const db = require('./db');
 const app = express();
 
+const options = {
+  key: fs.readFileSync(process.env.KEY_PATH),
+  cert: fs.readFileSync(process.env.CERT_PATH),
+};
+
 // middleware for logging
 app.use(logger);
 
 // Handle options credentials check - before CORS!
 // and fetch cookies credentials requirement
 app.use(credentials);
+
+// serve React frontend
+app.use(express.static(path.join(__dirname, 'dist')));
+// serve static files
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/assets", express.static(path.join(__dirname, "assets")));
+app.use("/public", express.static(path.join(__dirname, "public")));
 
 //Cross Origin Resource Sharing
 app.use(cors(corsOptions));
@@ -33,10 +47,6 @@ app.use(express.json());
 
 // middleware for cookies
 app.use(cookieParser());
-
-// serve static files
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use("/assets", express.static(path.join(__dirname, "assets")));
 
 // routes
 app.use('/auth', require('./routes/Auth/auth'));
@@ -72,16 +82,14 @@ app.get('/dummy', (req, res) => {
     });
 });
 
-
-
-app.all('*', (req, res) => {
-    res.status(404).json({ error: 'Invalid route' });
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
+// Error handler
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+https.createServer(options, app).listen(5000, () => {
+  console.log('Server running on ${PORT}...');
 });
 
-  

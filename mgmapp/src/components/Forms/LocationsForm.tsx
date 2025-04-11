@@ -19,7 +19,7 @@ const LocationsForm = ({
 
   useEffect(() => {
     const getLocations = async () => {
-      const response = await axiosPrivate.get("data/locations");
+      const response = await axiosPrivate.get("/data/locations");
       console.log(response.data);
       setRows(response.data);
     };
@@ -57,7 +57,7 @@ const LocationsForm = ({
     try {
       const formData = { details: rows };
       console.log(formData.details);
-      const response = await axiosPrivate.put("data/locations", formData);
+      const response = await axiosPrivate.put("/data/locations", formData);
       setMsg(response.data.message);
       setAlertColor("success");
     } catch (error) {

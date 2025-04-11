@@ -4,6 +4,8 @@ import "./Navbar.css";
 import useAuth from "./hooks/useAuth";
 import useLogout from "./hooks/useLogout";
 
+const TITLE = import.meta.env.VITE_TITLE;
+
 export const Navbar = () => {
   const navigate = useNavigate();
   const logout = useLogout();
@@ -24,7 +26,7 @@ export const Navbar = () => {
           setMenuOpen(false);
         }}
       >
-        Society Management
+        {TITLE ? TITLE : "Society Management"}
       </Link>
       <div
         className={`menu ${menuOpen ? "open" : ""}`}

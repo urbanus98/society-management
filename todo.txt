@@ -16,6 +16,10 @@
 - admin set system images
 - disband flowchart
 
+- whitelist .env
+- static files folder
+- cors
+
 home page:
 - n of events, hours
 - pi chart event types

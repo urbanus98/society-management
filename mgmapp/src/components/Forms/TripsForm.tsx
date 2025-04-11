@@ -31,12 +31,12 @@ const TripsForm = ({
 
   useEffect(() => {
     const getLocations = async () => {
-      const response = await axiosPrivate.get("data/locations");
+      const response = await axiosPrivate.get("ldata/locations");
       console.log(response.data);
       setLocations(response.data);
     };
     const getTrips = async () => {
-      const response = await axiosPrivate.get(`trips/${eventId}`);
+      const response = await axiosPrivate.get(`ltrips/${eventId}`);
       console.log(response?.data);
       const newRows = formatRows(response.data);
       if (newRows.length > 0) {
@@ -200,9 +200,9 @@ const TripsForm = ({
       };
       // console.log(formData);
       if (firstInsert) {
-        response = await axiosPrivate.post("trips", formData);
+        response = await axiosPrivate.post("/trips", formData);
       } else {
-        response = await axiosPrivate.put(`trips/${eventId}`, formData);
+        response = await axiosPrivate.put(`/trips/${eventId}`, formData);
       }
       setAlertColor("success");
       setMsg(response.data.message);

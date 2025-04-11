@@ -296,6 +296,9 @@ table {
     .gap-s {
         gap: .2rem;
     }
+    .break-mobile {
+        display: block; /* Forces "Podatki" to take the full line, pushing "za leto:" to the next line */
+      }
 }
 
 @media (min-width: 600px) {

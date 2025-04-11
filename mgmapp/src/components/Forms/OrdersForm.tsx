@@ -24,7 +24,7 @@ const OrdersForm = ({ order }: { order?: any }) => {
 
   useEffect(() => {
     axiosPrivate
-      .get(`merch/types/false`)
+      .get(`/merch/types/false`)
       .then((response) => {
         setStuffTypes(response.data);
         // console.log(response.data);
@@ -93,11 +93,11 @@ const OrdersForm = ({ order }: { order?: any }) => {
       formData.append("details", JSON.stringify(rows));
 
       if (id) {
-        await axiosPrivate.put(`orders/${id}`, formData, {
+        await axiosPrivate.put(`/orders/${id}`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       } else {
-        await axiosPrivate.post("orders", formData, {
+        await axiosPrivate.post("/orders", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       }

@@ -24,7 +24,7 @@ export function Merch() {
 
   useEffect(() => {
     axiosPrivate
-      .get(`merch`)
+      .get(`/merch`)
       .then((response) => {
         setMerch(response.data);
       })
@@ -79,7 +79,7 @@ export function UpdateMerch() {
 
   useEffect(() => {
     axiosPrivate
-      .get(`merch/${id}`)
+      .get(`/merch/${id}`)
       .then((response) => {
         setMerch(response.data);
       })
@@ -116,7 +116,7 @@ export function MerchOrders() {
 
   useEffect(() => {
     axiosPrivate
-      .get(`orders`)
+      .get(`/orders`)
       .then((response) => {
         // console.log(response.data);
         setOrders(response.data);
@@ -169,7 +169,7 @@ export function UpdateOrder() {
 
   useEffect(() => {
     axiosPrivate
-      .get(`orders/${id}`)
+      .get(`/orders/${id}`)
       .then((response) => {
         setOrderData(response.data);
         console.log(response.data);
@@ -208,7 +208,7 @@ export function MerchSales() {
 
   useEffect(() => {
     axiosPrivate
-      .get(`sales`)
+      .get(`/sales`)
       .then((response) => {
         setSales(response.data);
       })
@@ -256,7 +256,7 @@ export function UpdateSale() {
 
   useEffect(() => {
     axiosPrivate
-      .get(`sales/${id}`)
+      .get(`/sales/${id}`)
       .then((response) => {
         console.log(response.data);
         setSale(response.data);

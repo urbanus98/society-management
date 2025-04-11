@@ -1,3 +1,0 @@
-2024-12-18 15:01:35	b7f9d74f-83eb-488a-aef2-c6cdce0004ce	Hello World
-2024-12-18 15:02:04		c5de0012-c859-45c1-aefe-ef48870c50cc	Hello World
-2024-12-18 15:06:23		a50a2a7b-c2c7-45b4-b80a-1d3dda14e69d	Hello World

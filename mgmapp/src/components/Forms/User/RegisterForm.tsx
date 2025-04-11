@@ -25,7 +25,7 @@ const RegisterForm = () => {
     event.preventDefault();
 
     try {
-      await axiosPrivate.post("register", user);
+      await axiosPrivate.post("/register", user);
       navigate("/admin");
     } catch (error: any) {
       console.error(error);

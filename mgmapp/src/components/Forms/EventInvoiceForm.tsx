@@ -29,7 +29,7 @@ const EventInvoiceForm = ({
 
   const applyInvoiceChange = async (value: any) => {
     try {
-      const response = await axiosPrivate.put(`events/${id}/invoice`, {
+      const response = await axiosPrivate.put(`/events/${id}/invoice`, {
         invoiceId: value,
       });
       setInvoiceId(value);
@@ -46,7 +46,7 @@ const EventInvoiceForm = ({
 
   const applySaleChange = async (value: any) => {
     try {
-      const response = await axiosPrivate.put(`events/${id}/sale`, {
+      const response = await axiosPrivate.put(`/events/${id}/sale`, {
         saleId: value,
       });
       setSaleId(value);
@@ -62,7 +62,7 @@ const EventInvoiceForm = ({
 
   useEffect(() => {
     const fetchEventIds = axiosPrivate.get(
-      "events/ids/" + (id != undefined ? id : -1)
+      "/events/ids/" + (id != undefined ? id : -1)
     );
     console.log(id);
 

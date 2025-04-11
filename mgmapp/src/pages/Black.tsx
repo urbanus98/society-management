@@ -25,13 +25,13 @@ export const Black = () => {
 
   useEffect(() => {
     const getBlackFlow = async () => {
-      const response = await axiosPrivate.get("black");
+      const response = await axiosPrivate.get("/black");
       setBlack(response.data);
       // console.log(response.data);
     };
 
     const getBlackChart = async () => {
-      const response = await axiosPrivate.get("black/chart");
+      const response = await axiosPrivate.get("/black/chart");
       setBlackC(response.data);
       console.log(response.data);
       setBlackStatus(
@@ -78,7 +78,7 @@ export const UpdateBlackFlow = () => {
 
   useEffect(() => {
     const getBlackFlow = async () => {
-      const response = await axiosPrivate.get(`black/flow/${id}`);
+      const response = await axiosPrivate.get(`/black/flow/${id}`);
       console.log(response.data);
       setFlow(response.data);
     };

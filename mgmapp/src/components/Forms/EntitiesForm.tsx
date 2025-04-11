@@ -34,9 +34,9 @@ const EntitiesForm = ({ entity }: Props) => {
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
         if (id) {
-          await axiosPrivate.put(`entities/${id}`, values);
+          await axiosPrivate.put(`/entities/${id}`, values);
         } else {
-          await axiosPrivate.post("entities", values);
+          await axiosPrivate.post("/entities", values);
         }
         resetForm();
         navigate("/finance");

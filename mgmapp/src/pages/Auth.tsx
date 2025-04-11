@@ -28,7 +28,7 @@ export function RegisterUser() {
 export function LoginUser() {
   return (
     <div className="padding-3 coluflex justify-center align-center">
-      <BackWTitle title="Prijava" />
+      <h1 className="text-center bright-text">Prijava</h1>
       <div className="res-width-30">
         <LoginForm />
       </div>

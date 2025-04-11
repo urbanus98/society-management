@@ -21,14 +21,14 @@ export function Traffic() {
   const headers = [
     { key: "date", label: "Datum" },
     { key: "amount", label: "Znesek" },
-    { key: "name", label: "Namen" },
+    { key: "name", label: "Namen", hideOnMobile: true },
     { key: "id", label: "" },
   ];
 
   useEffect(() => {
     const getTraffic = async () => {
       try {
-        const response = await axiosPrivate.get("traffic");
+        const response = await axiosPrivate.get("/traffic");
         setTraffic(response.data);
         setLoading(false);
       } catch (err) {
@@ -37,7 +37,7 @@ export function Traffic() {
     };
 
     const getBlackChart = async () => {
-      const response = await axiosPrivate.get("traffic/chart");
+      const response = await axiosPrivate.get("/traffic/chart");
       setTraffiC(response.data);
       console.log(response.data);
       setStatus(response.data[response.data.length - 1].cumulative_balance);
@@ -86,7 +86,7 @@ export const UpdateTraffic = () => {
   useEffect(() => {
     const fetchTraffic = async () => {
       try {
-        const response = await axiosPrivate.get(`traffic/${id}`);
+        const response = await axiosPrivate.get(`/traffic/${id}`);
         setTraffic(response.data);
       } catch (err) {
         console.error(err);

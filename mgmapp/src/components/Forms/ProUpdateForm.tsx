@@ -22,7 +22,7 @@ const ProUpdateForm = ({ proforma }: Props) => {
   useEffect(() => {
     const fetchEntities = async () => {
       try {
-        const response = await axiosPrivate.get("entities");
+        const response = await axiosPrivate.get("/entities");
         setEntities(response.data);
       } catch (err) {
         console.error(err);
@@ -47,7 +47,7 @@ const ProUpdateForm = ({ proforma }: Props) => {
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
-        await axiosPrivate.put(`proforma/${proforma.id}`, values);
+        await axiosPrivate.put(`/proforma/${proforma.id}`, values);
         resetForm();
         navigate("/finance");
       } catch (error) {
@@ -60,9 +60,9 @@ const ProUpdateForm = ({ proforma }: Props) => {
 
   const handlePdfCreation = async () => {
     try {
-      const issuingEntityRes = await axiosPrivate.get(`entities/1`);
+      const issuingEntityRes = await axiosPrivate.get(`/entities/1`);
       const payingEntityRes = await axiosPrivate.get(
-        `entities/${proforma.payerId}`
+        `/entities/${proforma.payerId}`
       );
       const issuer = issuingEntityRes.data;
       const payer = payingEntityRes.data;

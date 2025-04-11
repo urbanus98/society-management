@@ -22,7 +22,7 @@ const EventsForm = ({ event }: Props) => {
   const [duration, setDuration] = useState(event?.duration ?? 0);
 
   useEffect(() => {
-    const fetchEventTypes = axiosPrivate.get("events/types");
+    const fetchEventTypes = axiosPrivate.get("/events/types");
 
     fetchEventTypes
       .then((typesResponse) => {
@@ -48,9 +48,9 @@ const EventsForm = ({ event }: Props) => {
         typeId,
       };
       if (id) {
-        await axiosPrivate.put(`events/${id}`, data);
+        await axiosPrivate.put(`/events/${id}`, data);
       } else {
-        await axiosPrivate.post("events", data);
+        await axiosPrivate.post("/events", data);
       }
       // navigate("/events");
       setDisabledSubmit(true);
