@@ -16,6 +16,9 @@ mgmapp_backend/uploads/
 dist/
 dist-ssr/
 
+# certificate folder
+certificates/
+
 # Environment variables
 .env*
 

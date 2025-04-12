@@ -82,14 +82,22 @@ app.get('/dummy', (req, res) => {
     });
 });
 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
+// app.all('*', (req, res) => {
+//     res.status(404).json({ error: 'Invalid route' });
+// });
 
 // Error handler
 app.use(errorHandler);
 
-https.createServer(options, app).listen(5000, () => {
-  console.log('Server running on ${PORT}...');
+// app.listen(PORT, () => {
+//     console.log(`Server listening on port ${PORT}`);
+// });
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+https.createServer(options, app).listen(PORT, () => {
+  console.log(`Server running on ${PORT}...`);
 });
 

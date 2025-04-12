@@ -1,14 +1,11 @@
-import { useNavigate } from "react-router-dom";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import editIcon from "../../assets/icons/edit_bs.png";
 import { useState, useEffect } from "react";
-import useLogout from "../../hooks/useLogout";
+import { Link } from "react-router-dom";
 
 const Users = () => {
-  const navigate = useNavigate();
-  // const location = useLocation();
   const [users, setUsers] = useState([]);
   const axiosPrivate = useAxiosPrivate();
-  const logout = useLogout();
 
   useEffect(() => {
     let isMounted = true;
@@ -35,25 +32,34 @@ const Users = () => {
     };
   }, []);
 
-  const signOut = async () => {
-    await logout();
-    navigate("/login");
-  };
-
   return (
     <article>
-      <h2>User list</h2>
-
       {users?.length ? (
-        <ul>
-          {users.map((user: any) => (
-            <li key={user.id}>{user.username}</li>
-          ))}
-        </ul>
+        <div className="black-back pad-1r border-radius width-100 coluflex gap justify-between">
+          <table className="bright-text">
+            <tr>
+              <th>ID</th>
+              <th>Upor. ime</th>
+              <th>Ime</th>
+              <th></th>
+            </tr>
+            {users.map((user: any) => (
+              <tr key={user.id}>
+                <td key={`${user.id}-id`}>{user.id}</td>
+                <td key={`${user.id}-un`}>{user.username}</td>
+                <td key={`${user.id}-name`}>{user.name}</td>
+                <td key={`${user.id}-edit`}>
+                  <Link to={`/users/${user.id}/edit`}>
+                    <img src={editIcon} alt="edit" width={20} />
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </table>
+        </div>
       ) : (
         <p>No users found</p>
       )}
-      <button onClick={signOut}>Logout</button>
     </article>
   );
 };

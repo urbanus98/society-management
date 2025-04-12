@@ -31,12 +31,12 @@ const TripsForm = ({
 
   useEffect(() => {
     const getLocations = async () => {
-      const response = await axiosPrivate.get("ldata/locations");
+      const response = await axiosPrivate.get("/data/locations");
       console.log(response.data);
       setLocations(response.data);
     };
     const getTrips = async () => {
-      const response = await axiosPrivate.get(`ltrips/${eventId}`);
+      const response = await axiosPrivate.get(`/trips/${eventId}`);
       console.log(response?.data);
       const newRows = formatRows(response.data);
       if (newRows.length > 0) {
