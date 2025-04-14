@@ -33,9 +33,9 @@ const DebtForm = ({ debt, action }: Props) => {
       // console.log("auth", auth);
       // console.log("formData", formData);
       if (id) {
-        await axiosPrivate.put(`/debts/${id}`, formData);
+        await axiosPrivate.put(`/api/debts/${id}`, formData);
       } else {
-        await axiosPrivate.post(`/debts/${action}`, formData);
+        await axiosPrivate.post(`/api/debts/${action}`, formData);
       }
       navigate(`/debts`);
     } catch (error) {

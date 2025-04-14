@@ -36,9 +36,9 @@ const BlackTrafficForm = ({ flow }: Props) => {
       console.log(values);
       try {
         if (id) {
-          await axiosPrivate.put(`/black/flow/${id}`, values);
+          await axiosPrivate.put(`/api/black/flow/${id}`, values);
         } else {
-          await axiosPrivate.post("/black/flow", values);
+          await axiosPrivate.post("/api/black/flow", values);
         }
         resetForm();
         navigate("/black");

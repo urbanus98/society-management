@@ -16,7 +16,7 @@ const ProForm = () => {
   useEffect(() => {
     const fetchEntities = async () => {
       try {
-        const response = await axiosPrivate.get("/entities");
+        const response = await axiosPrivate.get("/api/entities");
         setEntities(response.data);
       } catch (err) {
         console.error(err);
@@ -40,7 +40,7 @@ const ProForm = () => {
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
-        await axiosPrivate.post("/proforma", values);
+        await axiosPrivate.post("/api/proforma", values);
         resetForm();
         navigate("/finance");
       } catch (error) {

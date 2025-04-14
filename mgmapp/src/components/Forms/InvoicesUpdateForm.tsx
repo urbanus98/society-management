@@ -23,7 +23,7 @@ const InvoicesForm = ({ invoice }: Props) => {
   useEffect(() => {
     const fetchEntities = async () => {
       try {
-        const response = await axiosPrivate.get("/entities");
+        const response = await axiosPrivate.get("/api/entities");
         setEntities(response.data);
       } catch (err) {
         console.error(err);
@@ -51,7 +51,7 @@ const InvoicesForm = ({ invoice }: Props) => {
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
-        await axiosPrivate.put(`/invoices/${id}`, values);
+        await axiosPrivate.put(`/api/invoices/${id}`, values);
         resetForm();
         navigate("/finance");
       } catch (error) {
@@ -64,7 +64,7 @@ const InvoicesForm = ({ invoice }: Props) => {
 
   const handlePdfCreation = async () => {
     try {
-      const issuingEntityRes = await axiosPrivate.get(`/entities/1`);
+      const issuingEntityRes = await axiosPrivate.get(`/api/entities/1`);
       const payingEntityRes = await axiosPrivate.get(
         `/entities/${invoice.payerId}`
       );

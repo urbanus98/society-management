@@ -13,14 +13,9 @@ const { logger } = require('./middleware/logEvents');
 const verifyJWT = require('./middleware/verifyJWT');
 
 const corsOptions = require('./config/corsOptions');
+const DEV_MODE = process.env.DEV_MODE === 'true';
 const PORT = process.env.PORT;
-const db = require('./db');
 const app = express();
-
-const options = {
-  key: fs.readFileSync(process.env.KEY_PATH),
-  cert: fs.readFileSync(process.env.CERT_PATH),
-};
 
 // middleware for logging
 app.use(logger);
@@ -29,7 +24,7 @@ app.use(logger);
 // and fetch cookies credentials requirement
 app.use(credentials);
 
-// serve React frontend
+// serve static files
 app.use(express.static(path.join(__dirname, 'dist')));
 // serve static files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -48,56 +43,35 @@ app.use(express.json());
 // middleware for cookies
 app.use(cookieParser());
 
-// routes
+// public routes
 app.use('/auth', require('./routes/Auth/auth'));
 app.use('/refresh', require('./routes/Auth/refresh'));
 app.use('/logout', require('./routes/Auth/logout'));
 
 app.use(verifyJWT);
 
-app.use('/register', require('./routes/Auth/register'));
-app.use('/events', require('./routes/events'));
-app.use('/sales', require('./routes/sales'));
-app.use('/invoices', require('./routes/invoices'));
-app.use('/proforma', require('./routes/proforma'));
-app.use('/entities', require('./routes/entities'));
-app.use('/merch', require('./routes/merch'));
-app.use('/orders', require('./routes/orders'));
-app.use('/traffic', require('./routes/traffic'));
-app.use('/debts', require('./routes/debts'));
-app.use('/black', require('./routes/black'));
-app.use('/data', require('./routes/data'));
-app.use('/trips', require('./routes/trips'));
-app.use('/stats', require('./routes/stats'));
-app.use('/users', require('./routes/users'));
+// private routes
+app.use('/api', require('./routes/api'));
 
-app.get('/dummy', (req, res) => {
-    const sql = "SELECT 1";
-    db.query(sql, (err, result) => {
-        if (err) {
-            console.error('Error fetching data from database:', err);
-            return res.status(500).json({ error: 'Failed to fetch data from the database' });
-        }
-        return res.json(result);
-    });
-});
-
-// app.all('*', (req, res) => {
-//     res.status(404).json({ error: 'Invalid route' });
-// });
-
-// Error handler
-app.use(errorHandler);
-
-// app.listen(PORT, () => {
-//     console.log(`Server listening on port ${PORT}`);
-// });
-
+// serve React frontend
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-https.createServer(options, app).listen(PORT, () => {
-  console.log(`Server running on ${PORT}...`);
-});
+// Error handler
+app.use(errorHandler);
+
+if (DEV_MODE) {
+    app.listen(PORT, () => {
+        console.log(`HTTP Server running on http://localhost:${PORT}`);
+    });
+} else {
+    const options = {
+        key: fs.readFileSync(process.env.KEY_PATH),
+        cert: fs.readFileSync(process.env.CERT_PATH),
+    };
+    https.createServer(options, app).listen(PORT, () => {
+    console.log(`HTTPS Server running on port ${PORT}`);
+    });
+}
 

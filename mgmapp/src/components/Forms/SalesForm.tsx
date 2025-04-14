@@ -18,7 +18,7 @@ const SalesForm = ({ sale }: { sale?: any }) => {
 
   useEffect(() => {
     axiosPrivate
-      .get(`/merch/types/true`)
+      .get(`/api/merch/types/true`)
       .then((response) => {
         if (sale) {
           const newRows = sale.types.map((type: any) => ({
@@ -119,9 +119,9 @@ const SalesForm = ({ sale }: { sale?: any }) => {
     };
 
     if (sale) {
-      await axiosPrivate.put(`/sales/${id}`, data);
+      await axiosPrivate.put(`/api/sales/${id}`, data);
     } else {
-      await axiosPrivate.post(`/sales`, data);
+      await axiosPrivate.post(`/api/sales`, data);
     }
     navigate("/merch/sales");
   };

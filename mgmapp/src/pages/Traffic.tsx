@@ -28,7 +28,7 @@ export function Traffic() {
   useEffect(() => {
     const getTraffic = async () => {
       try {
-        const response = await axiosPrivate.get("/traffic");
+        const response = await axiosPrivate.get("/api/traffic");
         setTraffic(response.data);
         setLoading(false);
       } catch (err) {
@@ -37,7 +37,7 @@ export function Traffic() {
     };
 
     const getBlackChart = async () => {
-      const response = await axiosPrivate.get("/traffic/chart");
+      const response = await axiosPrivate.get("/api/traffic/chart");
       setTraffiC(response.data);
       console.log(response.data);
       setStatus(response.data[response.data.length - 1].cumulative_balance);
@@ -86,7 +86,7 @@ export const UpdateTraffic = () => {
   useEffect(() => {
     const fetchTraffic = async () => {
       try {
-        const response = await axiosPrivate.get(`/traffic/${id}`);
+        const response = await axiosPrivate.get(`/api/traffic/${id}`);
         setTraffic(response.data);
       } catch (err) {
         console.error(err);

@@ -34,9 +34,9 @@ const TrafficForm = ({ traffic }: Props) => {
       console.log(values);
       try {
         if (id) {
-          await axiosPrivate.put(`/traffic/${id}`, values);
+          await axiosPrivate.put(`/api/traffic/${id}`, values);
         } else {
-          await axiosPrivate.post("/traffic", values);
+          await axiosPrivate.post("/api/traffic", values);
         }
         resetForm();
         navigate("/traffic");

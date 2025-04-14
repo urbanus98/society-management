@@ -20,6 +20,7 @@ const TripsForm = ({
   const axiosPrivate = useAxiosPrivate();
   const { auth } = useAuth();
   const [removedTripIds, setRemovedTripIds] = useState<any[]>([]); // Persist across renders
+  const [refresh, setRefresh] = useState(false);
 
   const [tripsVisible, setTripsVisible] = useState(false);
 
@@ -31,14 +32,15 @@ const TripsForm = ({
 
   useEffect(() => {
     const getLocations = async () => {
-      const response = await axiosPrivate.get("/data/locations");
-      console.log(response.data);
+      const response = await axiosPrivate.get("/api/data/locations");
       setLocations(response.data);
     };
     const getTrips = async () => {
-      const response = await axiosPrivate.get(`/trips/${eventId}`);
+      const response = await axiosPrivate.get(`/api/trips/${eventId}`);
       console.log(response?.data);
-      const newRows = formatRows(response.data);
+      const newRows = formatRows(
+        response.data.filter((trip: any) => trip.user_id == auth.id) // show only this user's trips
+      );
       if (newRows.length > 0) {
         setFirstInsert(false);
         setRows(newRows);
@@ -48,56 +50,51 @@ const TripsForm = ({
 
     getLocations();
     getTrips();
-  }, []);
+  }, [refresh]);
 
   const formatRows = (rows: any) => {
     const newRows: any[] = [];
     const seen = new Set();
 
-    rows.forEach((trip: any, index: number) => {
-      if (seen.has(index)) return; // Skip rows that were already paired
+    rows.forEach((trip: any) => {
+      if (seen.has(trip.id)) return; // Skip rows that were already paired
 
-      const nextTrip = rows[index + 1];
+      // Find a trip with switched origin and destination
+      const tripBack = rows.find(
+        (tripBack: any) =>
+          tripBack.origin_id === trip.destination_id &&
+          tripBack.destination_id === trip.origin_id &&
+          !seen.has(tripBack.id)
+      );
 
-      if (isThisUsers(trip)) {
-        if (
-          nextTrip &&
-          trip.origin_id === nextTrip.destination_id &&
-          trip.destination_id === nextTrip.origin_id
-        ) {
-          // Mark the first occurrence as a return trip
-          newRows.push({
-            id: trip.id,
-            origin: trip.origin_id,
-            destination: trip.destination_id,
-            mileage: trip.mileage,
-            return: true,
-          });
+      if (tripBack) {
+        // Mark the first occurrence as a return trip
+        newRows.push({
+          id: trip.id,
+          origin: trip.origin_id,
+          destination: trip.destination_id,
+          mileage: trip.mileage,
+          return: true,
+        });
 
-          // Mark the second row as processed
-          seen.add(index + 1);
-          //   removedTripIds.push(nextTrip.id);
-          setRemovedTripIds((prev) => [...prev, nextTrip.id]); // Correctly updates state
-          console.log(removedTripIds);
-        } else {
-          // Push as normal if there's no return pair
-          newRows.push({
-            id: trip.id,
-            origin: trip.origin_id,
-            destination: trip.destination_id,
-            mileage: trip.mileage,
-            return: false,
-          });
-        }
+        // Mark the second row as processed
+        seen.add(tripBack.id);
+        setRemovedTripIds((prev) => [...prev, tripBack.id]); // Correctly updates state
+        console.log(removedTripIds);
+      } else {
+        // Push as normal if there's no return pair
+        newRows.push({
+          id: trip.id,
+          origin: trip.origin_id,
+          destination: trip.destination_id,
+          mileage: trip.mileage,
+          return: false,
+        });
       }
     });
 
     console.log(newRows);
     return newRows;
-  };
-
-  const isThisUsers = (row: any) => {
-    return row.user_id == auth.id;
   };
 
   const columns: {
@@ -110,6 +107,7 @@ const TripsForm = ({
     classes?: string;
     disabled?: boolean;
     disabledOption?: boolean;
+    required?: boolean;
     onChange?: (rowIndex: number, selectedValue: string) => void;
   }[] = [
     {
@@ -126,7 +124,7 @@ const TripsForm = ({
       type: "select",
       values: locations,
       classes: "width-100",
-      // classes: "w150",
+      required: true,
     },
     {
       header: "Cilj",
@@ -135,9 +133,10 @@ const TripsForm = ({
       type: "select",
       values: locations,
       classes: "width-100",
+      required: true,
       disabledOption: true,
       onChange: (rowIndex: number, selectedValue: string) => {
-        changePrice(rowIndex, selectedValue);
+        changeDistance(rowIndex, selectedValue);
       },
     },
     {
@@ -146,11 +145,12 @@ const TripsForm = ({
       key: "mileage",
       placeholder: "Razdalja",
       type: "number",
+      required: true,
       classes: "w100",
     },
   ];
 
-  const changePrice = (rowIndex: number, selectedValue: string) => {
+  const changeDistance = (rowIndex: number, selectedValue: string) => {
     console.log("rowIndex: " + rowIndex);
     console.log("selectedValue: " + selectedValue);
     // Find the selected stuff type
@@ -171,16 +171,15 @@ const TripsForm = ({
   };
 
   const handleReturn = () => {
-    let counter = 0;
     return rows.flatMap((row: any) => {
       if (row.return) {
         return [
           row,
           {
-            ...row,
-            id: removedTripIds[counter++],
             origin: row.destination,
             destination: row.origin,
+            mileage: row.mileage,
+            return: true,
           },
         ];
       } else {
@@ -198,14 +197,15 @@ const TripsForm = ({
         userId: auth.id,
         eventId: eventId,
       };
-      // console.log(formData);
+      console.log(formData);
       if (firstInsert) {
-        response = await axiosPrivate.post("/trips", formData);
+        response = await axiosPrivate.post("/api/trips", formData);
       } else {
-        response = await axiosPrivate.put(`/trips/${eventId}`, formData);
+        response = await axiosPrivate.put(`/api/trips/${eventId}`, formData);
       }
       setAlertColor("success");
       setMsg(response.data.message);
+      setRefresh((prev) => !prev);
     } catch (error) {
       console.log(error);
       setAlertColor("danger");

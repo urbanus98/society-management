@@ -75,15 +75,15 @@ export const Home = () => {
 
   useEffect(() => {
     const getYears = async () => {
-      const response = await axiosPrivate.get(`/stats/years`);
+      const response = await axiosPrivate.get(`/api/stats/years`);
       setYears(response.data);
     };
     const getSalesBySize = async () => {
-      const response = await axiosPrivate.get(`/stats/sizes`);
+      const response = await axiosPrivate.get(`/api/stats/sizes`);
       setSizeSales(response.data);
     };
     const getTotalSalesProfit = async () => {
-      const response = await axiosPrivate.get(`/stats/sales-profit`);
+      const response = await axiosPrivate.get(`/api/stats/sales-profit`);
       const result = response.data.reduce((acc: any, item: any) => {
         acc[item.year] = item.profit;
         return acc;
@@ -92,7 +92,7 @@ export const Home = () => {
     };
     const getTraffic = async () => {
       try {
-        const response = await axiosPrivate.get("/stats/traffic");
+        const response = await axiosPrivate.get("/api/stats/traffic");
         setTotalTraffic(response.data.traffic);
         setTotalBlackTraffic(response.data.black_traffic);
 
@@ -103,7 +103,7 @@ export const Home = () => {
       }
     };
     const getMileages = async () => {
-      const response = await axiosPrivate.get(`/stats/mileage`);
+      const response = await axiosPrivate.get(`/api/stats/mileage`);
       const result = response.data.reduce((acc: any, item: any) => {
         acc[item.year] = item.totalKm;
         return acc;
@@ -111,7 +111,7 @@ export const Home = () => {
       setMileages(result);
     };
     const getMZZFunds = async () => {
-      const response = await axiosPrivate.get(`/stats/mzz`);
+      const response = await axiosPrivate.get(`/api/stats/mzz`);
       const result = response.data.reduce((acc: any, item: any) => {
         acc[item.year] = item.funds;
         return acc;
@@ -129,13 +129,13 @@ export const Home = () => {
 
   useEffect(() => {
     const getEvents = async () => {
-      const response = await axiosPrivate.get(`/stats/${year}/event`);
+      const response = await axiosPrivate.get(`/api/stats/${year}/event`);
       setYearlyEvents(response.data.typeCount);
       setYearlyHours(response.data.typeHours);
     };
     const getYearlyTraffic = async () => {
       const response = await axiosPrivate.get(
-        `/stats/${year}/monthly-balances`
+        `/api/stats/${year}/monthly-balances`
       );
       console.log(response.data.traffic);
       setYearlyTraffic(response.data.traffic);
@@ -277,44 +277,48 @@ export const Home = () => {
         <div className="coluflex width-100 gap">
           <div className="black-back border-radius pad-1r justify-center coluflex">
             <table className="bright-text">
-              <tr>
-                <th></th>
-                <th>Leta {year}</th>
-                <th>Skupaj</th>
-              </tr>
-              <tr>
-                <td>Prevoženih:</td>
-                <td>{mileages[year] ?? 0} km</td>
-                <td>
-                  {Object.values(mileages).reduce((sum, totalKm) => {
-                    return sum + (Number(totalKm) || 0);
-                  }, 0)}
-                  {" km"}
-                </td>
-              </tr>
-              <tr>
-                <td>Merch profit:</td>
-                <td>{totalSalesProfit[year] ?? 0} €</td>
-                <td>
-                  {Object.values(totalSalesProfit).reduce((sum, profit) => {
-                    return sum + (Number(profit) || 0);
-                  }, 0)}{" "}
-                  €
-                </td>
-              </tr>
-              <tr>
-                <td>MZZ:</td>
-                <td>
-                  {totalMMZFunds[year] ?? 0}
-                  {" €"}
-                </td>
-                <td>
-                  {Object.values(totalMMZFunds).reduce((sum, funds) => {
-                    return sum + (Number(funds) || 0);
-                  }, 0)}
-                  {" €"}
-                </td>
-              </tr>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Leta {year}</th>
+                  <th>Skupaj</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Prevoženih:</td>
+                  <td>{mileages[year] ?? 0} km</td>
+                  <td>
+                    {Object.values(mileages).reduce((sum, totalKm) => {
+                      return sum + (Number(totalKm) || 0);
+                    }, 0)}
+                    {" km"}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Merch profit:</td>
+                  <td>{totalSalesProfit[year] ?? 0} €</td>
+                  <td>
+                    {Object.values(totalSalesProfit).reduce((sum, profit) => {
+                      return sum + (Number(profit) || 0);
+                    }, 0)}{" "}
+                    €
+                  </td>
+                </tr>
+                <tr>
+                  <td>MZZ:</td>
+                  <td>
+                    {totalMMZFunds[year] ?? 0}
+                    {" €"}
+                  </td>
+                  <td>
+                    {Object.values(totalMMZFunds).reduce((sum, funds) => {
+                      return sum + (Number(funds) || 0);
+                    }, 0)}
+                    {" €"}
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </div>
           <div className="flex gap">

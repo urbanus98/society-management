@@ -5,6 +5,8 @@ import AuthContext from "../../../context/AuthProvider";
 import axios from "../../../api/axios";
 import Alert from "../../ui/Alert";
 
+const VITE_API_URL = import.meta.env.VITE_API_URL;
+
 const LoginForm = () => {
   const navigate = useNavigate();
 
@@ -37,7 +39,7 @@ const LoginForm = () => {
 
     try {
       const response = await axios.post(
-        "/auth",
+        `${VITE_API_URL}/auth`,
         JSON.stringify({ username, password }),
         {
           headers: { "Content-Type": "application/json" },

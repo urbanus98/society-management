@@ -59,25 +59,31 @@ const getTrips = async (req, res) => {
 const putTrips = async (req, res) => {
     try {
         const { userId, eventId, details } = req.body;
+        console.log(details);
         const oldData = details.filter((detail) => detail.id);
         const newData = details.filter((detail) => !detail.id);
+        console.log(oldData);
+        console.log(newData);
 
+        // UPDATE EXISTING
         const sqlUpdate = `UPDATE trips SET origin_id = ?, destination_id = ?, mileage = ? WHERE id = ?`;
         await performMassUpdate(sqlUpdate, oldData, ['origin', 'destination', 'mileage', 'id']);
 
         const year = await getEventYear(eventId); // get year from event
         const rateId = await getYearRateId(year); // id for year
-            
-        const sqlInsert = "INSERT INTO trips (origin_id, destination_id, mileage, user_id, event_id, rate_id) VALUES ?";
-        await performMassInsert(sqlInsert, newData, ['origin', 'destination', 'mileage'], [userId, eventId, rateId]);
 
-        // DELETE THE REST
+        // FIND EXISTING NOT IN OLD DATA
         const sqlExisting = "SELECT id FROM trips WHERE event_id = ? and user_id = ?";
         const existing = await performQuery(sqlExisting, [eventId, userId]);
 
         const oldIds = oldData.map((detail) => detail.id);
-        const idsToDelete = existing.filter((item) => !oldIds.includes(item.id)).map((item) => item.id);
+        const idsToDelete = existing.filter((item) => !oldIds.includes(item.id)).map((item) => item.id); // ids not oin old data
 
+        // INSERT NEW
+        const sqlInsert = "INSERT INTO trips (origin_id, destination_id, mileage, user_id, event_id, rate_id) VALUES ?";
+        await performMassInsert(sqlInsert, newData, ['origin', 'destination', 'mileage'], [userId, eventId, rateId]);
+        
+        // DELETE THE REST
         if (idsToDelete.length > 0) {
             const sqlDelete = "DELETE FROM trips WHERE id IN (?)";
             await performDelete(sqlDelete, [idsToDelete]);

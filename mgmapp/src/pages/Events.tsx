@@ -23,7 +23,7 @@ export function Events() {
 
   useEffect(() => {
     const getEvents = async () => {
-      const response = await axiosPrivate.get("/events");
+      const response = await axiosPrivate.get("/api/events");
       setEvents(response.data);
     };
 
@@ -67,7 +67,7 @@ export function UpdateEvent() {
 
   useEffect(() => {
     const getEvent = async () => {
-      const response = await axiosPrivate.get(`/events/${id}`);
+      const response = await axiosPrivate.get(`/api/events/${id}`);
       setEvent(response.data);
       // console.log(response.data);
     };

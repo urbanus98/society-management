@@ -13,7 +13,7 @@ const Users = () => {
 
     const getUsers = async () => {
       try {
-        const response = await axiosPrivate.get("/users", {
+        const response = await axiosPrivate.get("/api/users", {
           signal: controller.signal,
         });
         console.log(response.data);

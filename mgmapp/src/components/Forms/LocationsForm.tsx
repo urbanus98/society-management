@@ -16,16 +16,17 @@ const LocationsForm = ({
 }: Props) => {
   const axiosPrivate = useAxiosPrivate();
   const [rows, setRows] = useState<any[]>([{}]);
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     const getLocations = async () => {
-      const response = await axiosPrivate.get("/data/locations");
+      const response = await axiosPrivate.get("/api/data/locations");
       console.log(response.data);
       setRows(response.data);
     };
 
     getLocations();
-  }, []);
+  }, [refresh]);
 
   const columns: {
     header: string;
@@ -37,14 +38,14 @@ const LocationsForm = ({
     onChange?: () => void;
   }[] = [
     {
-      header: "Kraj + razdalja od Vipave",
+      header: "Kraj",
       key: "name",
       placeholder: "Ime lokacije",
       type: "text",
       required: true,
     },
     {
-      header: "(km)",
+      header: "Razdalja od Vipave (km)",
       key: "distance",
       placeholder: "km",
       type: "number",
@@ -57,9 +58,10 @@ const LocationsForm = ({
     try {
       const formData = { details: rows };
       console.log(formData.details);
-      const response = await axiosPrivate.put("/data/locations", formData);
+      const response = await axiosPrivate.put("/api/data/locations", formData);
       setMsg(response.data.message);
       setAlertColor("success");
+      setRefresh((prev) => !prev);
     } catch (error) {
       setMsg("Napaka pri posodabljanju lokacij");
       setAlertColor("danger");

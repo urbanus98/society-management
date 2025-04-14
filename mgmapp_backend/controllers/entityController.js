@@ -17,7 +17,7 @@ const getEntities = (req, res)=>{
 };
 
 const getEntitiesRow = (req, res)=>{
-    const sql = "SELECT * FROM entities";
+    const sql = "SELECT * FROM entities ORDER BY name";
     db.query(sql, (err, result)=>{
         if (err) {
             console.error('Error fetching data from database:', err);

@@ -17,7 +17,7 @@ const InvoicesForm = () => {
   useEffect(() => {
     const fetchEntities = async () => {
       try {
-        const response = await axiosPrivate.get("/entities");
+        const response = await axiosPrivate.get("/api/entities");
         setEntities(response.data);
       } catch (err) {
         console.error(err);
@@ -42,7 +42,7 @@ const InvoicesForm = () => {
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
-        await axiosPrivate.post("/invoices", values);
+        await axiosPrivate.post("/api/invoices", values);
         resetForm();
         navigate("/finance");
       } catch (error) {

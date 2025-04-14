@@ -16,16 +16,17 @@ const MileageRatesForm = ({
 }: Props) => {
   const axiosPrivate = useAxiosPrivate();
   const [rows, setRows] = useState<any[]>([{}]);
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     const getMileageRates = async () => {
-      const response = await axiosPrivate.get("/data/mileage-rates");
+      const response = await axiosPrivate.get("/api/data/mileage-rates");
       console.log(response.data);
       setRows(response.data);
     };
 
     getMileageRates();
-  }, []);
+  }, [refresh]);
 
   const columns: {
     header: string;
@@ -56,9 +57,13 @@ const MileageRatesForm = ({
     try {
       const formData = { details: rows };
       console.log(formData.details);
-      const response = await axiosPrivate.put("/data/mileage-rates", formData);
+      const response = await axiosPrivate.put(
+        "/api/data/mileage-rates",
+        formData
+      );
       setMsg(response.data.message);
       setAlertColor("success");
+      setRefresh((prev) => !prev);
     } catch (error) {
       setMsg("Napaka pri posodabljanju postavk");
       setAlertColor("danger");

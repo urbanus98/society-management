@@ -56,9 +56,9 @@ export const Finance = () => {
   // console.log(entities);
   useEffect(() => {
     // Run both requests concurrently
-    const fetchProforma = axiosPrivate.get("/proforma");
-    const fetchInvoices = axiosPrivate.get("/invoices");
-    const fetchEntities = axiosPrivate.get("/entities/row");
+    const fetchProforma = axiosPrivate.get("/api/proforma");
+    const fetchInvoices = axiosPrivate.get("/api/invoices");
+    const fetchEntities = axiosPrivate.get("/api/entities/row");
 
     axios
       .all([fetchInvoices, fetchEntities, fetchProforma])
@@ -137,7 +137,7 @@ export const UpdateEntity = () => {
 
   useEffect(() => {
     axiosPrivate
-      .get(`/entities/${id}`)
+      .get(`/api/entities/${id}`)
       .then((response) => {
         setEntity(response.data);
       })
@@ -177,7 +177,7 @@ export const UpdateProforma = () => {
   const [proforma, setProforma] = useState<any>();
 
   useEffect(() => {
-    axiosPrivate.get(`/proforma/${id}`).then((response) => {
+    axiosPrivate.get(`/api/proforma/${id}`).then((response) => {
       setProforma(response.data);
       // console.log(response.data);
     });
@@ -203,7 +203,7 @@ export const CreateInvoice = () => {
   const [proforma, setProforma] = useState<any>();
 
   useEffect(() => {
-    axiosPrivate.get(`/proforma/${id}`).then((response) => {
+    axiosPrivate.get(`/api/proforma/${id}`).then((response) => {
       const proformaData = response.data;
       proformaData.issueDate = getDate();
       setProforma(proformaData);
@@ -230,7 +230,7 @@ export const UpdateInvoice = () => {
   const { id } = useParams();
 
   useEffect(() => {
-    axiosPrivate.get(`/invoices/${id}`).then((response) => {
+    axiosPrivate.get(`/api/invoices/${id}`).then((response) => {
       setInvoice(response.data);
     });
   }, [id]);

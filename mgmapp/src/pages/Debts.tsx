@@ -31,9 +31,9 @@ export const Debts = () => {
 
   useEffect(() => {
     const getDebts = async () => {
-      const response = await axiosPrivate.get("/debts");
+      const response = await axiosPrivate.get("/api/debts");
       setDebts(response.data);
-      const responseRows = await axiosPrivate.get("/debts/rows");
+      const responseRows = await axiosPrivate.get("/api/debts/rows");
       setDebtsRows(responseRows.data);
       console.log(response.data);
     };
@@ -90,7 +90,7 @@ export const UpdateDebt = () => {
 
   useEffect(() => {
     const getDebt = async () => {
-      const response = await axiosPrivate.get(`/debts/${id}`);
+      const response = await axiosPrivate.get(`/api/debts/${id}`);
       setDebt(response.data);
     };
 
@@ -118,7 +118,7 @@ export const DebtActions = () => {
 
   useEffect(() => {
     const getDummy = async () => {
-      await axiosPrivate.get("/dummy"); // TODO remove
+      await axiosPrivate.get("/api/dummy"); // TODO remove
     };
 
     getDummy();

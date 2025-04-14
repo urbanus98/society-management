@@ -13,7 +13,7 @@ const UpdateUserForm = () => {
 
   useEffect(() => {
     axiosPrivate
-      .get(`/users/${id}`)
+      .get(`/api/users/${id}`)
       .then((response) => {
         setName(response.data.name);
         setUsername(response.data.username);
@@ -37,7 +37,7 @@ const UpdateUserForm = () => {
     }
 
     try {
-      await axiosPrivate.put(`/users/${id}`, { name, username, password });
+      await axiosPrivate.put(`/api/users/${id}`, { name, username, password });
       navigate("/");
     } catch (error: any) {
       console.error(error);

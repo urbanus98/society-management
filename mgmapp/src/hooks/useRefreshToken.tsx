@@ -1,11 +1,13 @@
 import axios from "../api/axios";
 import useAuth from "./useAuth";
 
+const VITE_API_URL = import.meta.env.VITE_API_URL;
+
 const useRefreshToken = () => {
   const { setAuth } = useAuth();
 
   const refresh = async () => {
-    const response = await axios("refresh", {
+    const response = await axios(`${VITE_API_URL}/refresh`, {
       withCredentials: true,
     });
 

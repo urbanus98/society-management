@@ -84,6 +84,7 @@ nav {
   
     nav ul.open {
       display: flex; /* Show ul when open class is applied */
+      margin-top: 5pt;
     }
   
     nav ul li {

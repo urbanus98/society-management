@@ -3,7 +3,7 @@ const { performQuery, performMassUpdate, performMassInsertO, performUpdate } = r
 
 const getLocations = async (req, res) => {
     try {
-        const sql = `SELECT * FROM locations`;
+        const sql = `SELECT * FROM locations ORDER BY name`;
         
         const result = await performQuery(sql);
         return res.json(result);

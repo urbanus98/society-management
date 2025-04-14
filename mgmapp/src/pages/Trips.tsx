@@ -16,7 +16,7 @@ export const Trips = () => {
 
   useEffect(() => {
     const getTrips = async () => {
-      const response = await axiosPrivate.get("/trips");
+      const response = await axiosPrivate.get("/api/trips");
       setTrips(formatTrips(response.data));
       console.log(formatTrips(response.data));
     };

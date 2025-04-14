@@ -33,7 +33,7 @@ const TrafficUpdateForm = ({ traffic }: Props) => {
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       console.log(values);
       try {
-        await axiosPrivate.put(`/traffic/${id}`, values);
+        await axiosPrivate.put(`/api/traffic/${id}`, values);
 
         resetForm();
         navigate("/traffic");

@@ -26,7 +26,7 @@ const getMZZFunds = async (req, res) => {
                 COALESCE(SUM(amount), 0) as funds
             FROM
                 black_traffic
-            WHERE name="zelišča" OR name="zelisca" OR name="zelenjava" OR name="zelenje" 
+            WHERE name="zelišča" OR name="zelisca" OR name="zelenjava" OR name="zelenje"
             GROUP BY year
         `;
         const result = await performQuery(sql);
