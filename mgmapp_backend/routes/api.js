@@ -1,5 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const verifyJWT = require('../middleware/verifyJWT');
+
+router.use(verifyJWT);
 
 router.use('/register', require('./Auth/register'));
 router.use('/events', require('./events'));

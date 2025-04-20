@@ -10,7 +10,6 @@ const fs = require('fs');
 const errorHandler = require('./middleware/errorHandler');
 const credentials = require('./middleware/credentials');
 const { logger } = require('./middleware/logEvents');
-const verifyJWT = require('./middleware/verifyJWT');
 
 const corsOptions = require('./config/corsOptions');
 const DEV_MODE = process.env.DEV_MODE === 'true';
@@ -26,7 +25,6 @@ app.use(credentials);
 
 // serve static files
 app.use(express.static(path.join(__dirname, 'dist')));
-// serve static files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/assets", express.static(path.join(__dirname, "assets")));
 app.use("/public", express.static(path.join(__dirname, "public")));
@@ -47,8 +45,6 @@ app.use(cookieParser());
 app.use('/auth', require('./routes/Auth/auth'));
 app.use('/refresh', require('./routes/Auth/refresh'));
 app.use('/logout', require('./routes/Auth/logout'));
-
-app.use(verifyJWT);
 
 // private routes
 app.use('/api', require('./routes/api'));

@@ -16,7 +16,7 @@ const getTripRows = async (req, res) => {
             JOIN events ON trips.event_id = events.id
             JOIN locations AS locations1 ON trips.origin_id = locations1.id
             JOIN locations AS locations2 ON trips.destination_id = locations2.id
-        ORDER BY events.date, events.id, users.name
+        ORDER BY events.date DESC, events.id, users.name
         `;
     const result = await performQuery(sql);
     console.log(result);
