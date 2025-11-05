@@ -19,7 +19,7 @@ export const Black = () => {
     { key: "date", label: "Datum" },
     { key: "amount", label: "Znesek" },
     { key: "name", label: "Razlog" },
-    { key: "user", label: "Uporabnik", hideOnMobile: true },
+    { key: "user", label: "Od/prilivalec", hideOnMobile: true },
     { key: "id", label: "" },
   ];
 
@@ -27,7 +27,7 @@ export const Black = () => {
     const getBlackFlow = async () => {
       const response = await axiosPrivate.get("/api/black");
       setBlack(response.data);
-      // console.log(response.data);
+      console.log(response.data);
     };
 
     const getBlackChart = async () => {

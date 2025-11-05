@@ -50,9 +50,11 @@ export default function FinanceTable({ headers, rows, linkPart }: Props) {
               {visibleHeaders.map((header) => (
                 <TableCell key={`${index}-${header.key}`}>
                   {header.key === "id" ? ( // If this column is a link
+                  !row.isSale && row["id"] && ( // hide on sales and trip costs
                     <Link to={`/${linkPart}/${row["id"]}/edit`}>
                       <img src={editIcon} alt="edit" width={20} />
                     </Link>
+                    )
                   ) : (
                     <>
                       {row["direction"] === 1 ? ( // If outflow

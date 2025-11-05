@@ -35,7 +35,7 @@ export const Debts = () => {
       setDebts(response.data);
       const responseRows = await axiosPrivate.get("/api/debts/rows");
       setDebtsRows(responseRows.data);
-      console.log(response.data);
+      console.log(responseRows.data);
     };
 
     getDebts();

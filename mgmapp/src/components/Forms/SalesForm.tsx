@@ -15,6 +15,8 @@ const SalesForm = ({ sale }: { sale?: any }) => {
   const [rows, setRows] = useState<any[]>([{}]);
   const [date, setDate] = useState(sale ? sale.date : getDate());
   const [note, setNote] = useState(sale?.note);
+  const [discount, setDiscount] = useState(sale?.discount ?? 0);
+  const [sum, setSum] = useState(0);
 
   useEffect(() => {
     axiosPrivate
@@ -82,14 +84,30 @@ const SalesForm = ({ sale }: { sale?: any }) => {
       classes: "w100 mw100",
     },
     {
-      header: "Kolicina",
+      header: "Količina",
       key: "quantity",
-      placeholder: "Kolicina",
+      placeholder: "Količina",
       type: "number",
       required: true,
       classes: "w100 mw100",
     },
   ];
+
+  useEffect(() => {
+    calculateSum();
+  }, [rows, discount]);
+
+  const calculateSum = () => {
+    console.log(rows);
+    const total = rows.reduce((acc, row) => {
+      const price = parseFloat(row.price) || 0;
+      const quantity = parseFloat(row.quantity) || 0;
+      return acc + price * quantity;
+    }, 0);
+
+    // console.log("Total = ", total.toFixed(2));
+    setSum(total - discount);
+  }
 
   const changePrice = (rowIndex: number, selectedValue: string) => {
     // Find the selected stuff type
@@ -115,6 +133,7 @@ const SalesForm = ({ sale }: { sale?: any }) => {
     const data = {
       date,
       note,
+      discount,
       sold: rows,
     };
 
@@ -154,6 +173,28 @@ const SalesForm = ({ sale }: { sale?: any }) => {
           columns={columns}
           isDisabled={isDisabled}
         />
+        <table className="width-100">
+          <tbody>
+            <tr>
+              <td className="width-100"></td>
+              <td className="w100 mw100 input_label bright-text" style={{ textAlign: "right" }}>Popust (&euro;):</td>
+              <td className="w100 mw100">
+                <input
+                  name="discount"
+                  type="number"
+                  value={discount}
+                  className="input w60"
+                  onChange={(e) => setDiscount(e.target.value)}
+                  />
+              </td>
+              <td style={{ minWidth: '100px' }}>
+                <h5 className="input_label bright-text">
+                  &sum; { sum } &euro;
+                </h5>
+              </td>
+            </tr>
+          </tbody>
+        </table>
         <SubmButton text="Potrdi" />
       </div>
     </form>

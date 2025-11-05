@@ -2,10 +2,15 @@ import Input from "../Inputs/Formik/FormikInput";
 import FormikSelect from "../Inputs/Formik/FormikSelect";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
 import * as Yup from "yup";
 import { getDate } from "../misc";
 import SubmButton from "../ui/SubmButton";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import DeleteButton from "../ui/DeleteButton";
+import useAuth from "../../hooks/useAuth";
+import Alert from "../ui/Alert";
+
 
 interface Props {
   flow?: any;
@@ -15,7 +20,21 @@ const BlackTrafficForm = ({ flow }: Props) => {
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
   const { id } = useParams();
-  // const { auth } = useAuth();
+  const { auth } = useAuth();
+  const [errorMsg, setErrorMsg] = useState("");
+  const [alertVisible, setAlertVisibility] = useState(false);
+
+  const deleteEntry = async () => {
+    if (!confirm(`Si prepričan, da želiš izbrisati ta vnos, ${auth.name}?`)) return;
+    try {
+      await axiosPrivate.delete(`/api/black/flow/${id}`);
+      navigate("/black");
+    } catch (error: any) {
+      // console.log(error);
+      setErrorMsg(error.response.data.error);
+      setAlertVisibility(true);
+    }
+  }
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -49,6 +68,7 @@ const BlackTrafficForm = ({ flow }: Props) => {
       }
     },
   });
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <div className="flex gap">
@@ -91,6 +111,12 @@ const BlackTrafficForm = ({ flow }: Props) => {
       </div>
 
       <SubmButton text="Potrdi" />
+      <DeleteButton onClick={deleteEntry} disabled={!flow?.canDelete} />
+      {alertVisible && (
+        <Alert color="danger" onClose={() => setAlertVisibility(false)}>
+          {errorMsg}
+        </Alert>
+      )}
     </form>
   );
 };

@@ -8,7 +8,8 @@
     width: 100%;
 }
 
-html, body {
+html,
+body {
     background-color: #5a6168;
 }
 
@@ -67,15 +68,19 @@ html, body {
     .res-width-30 {
         width: 30%;
     }
+
     .res-width-40 {
         width: 40%;
     }
+
     .res-width-50 {
         width: 50%;
     }
+
     .res-width-60 {
         width: 60%;
     }
+
     .res-width-80 {
         width: 80%;
     }
@@ -86,18 +91,22 @@ html, body {
 }
 
 .scrollable {
-    overflow: auto; /* Enables scrolling */
-    scrollbar-width: none; /* Firefox: Hides scrollbar */
-    -ms-overflow-style: none; /* IE/Edge: Hides scrollbar */
-  }
-  
-  .scrollable::-webkit-scrollbar {
-    display: none; /* Chrome/Safari: Hides scrollbar */
-  }
+    overflow: auto;
+    /* Enables scrolling */
+    scrollbar-width: none;
+    /* Firefox: Hides scrollbar */
+    -ms-overflow-style: none;
+    /* IE/Edge: Hides scrollbar */
+}
+
+.scrollable::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari: Hides scrollbar */
+}
 
 .input {
     padding: 0.5rem;
-    line-height: 1.2em;
+    line-height: 1.5em;
     /* margin: 0.5rem; */
     border-radius: 0.2rem;
     border: 1px solid #f1f5f8;
@@ -111,7 +120,7 @@ select {
     background-color: #f1f5f8;
 }
 
-input::selection{
+input::selection {
     background: #4492e0;
     color: #3d92d3;
 }
@@ -290,21 +299,26 @@ table {
     .gap {
         gap: 0.5rem;
     }
+
     .pad-1r {
         padding: 1rem;
     }
+
     .gap-s {
         gap: .2rem;
     }
+
     .break-mobile {
-        display: block; /* Forces "Podatki" to take the full line, pushing "za leto:" to the next line */
-      }
+        display: block;
+        /* Forces "Podatki" to take the full line, pushing "za leto:" to the next line */
+    }
 }
 
 @media (min-width: 600px) {
     .res-hide {
         display: block !important;
     }
+
     .res-show {
         display: none !important;
     }
@@ -367,7 +381,7 @@ table {
 }
 
 .height {
-    height:91vh;
+    height: 91vh;
 }
 
 .padding-table {
@@ -478,7 +492,7 @@ table {
 .dark-back {
     /* background-color: #212224 */
     background-color: #292a2b
-}   
+}
 
 .no-decor {
     text-decoration: none !important;
@@ -493,7 +507,8 @@ a {
 }
 
 .glow-hover:hover {
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Adjust glow color and intensity */
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    /* Adjust glow color and intensity */
 }
 
 .shadow-hover:hover {
@@ -529,9 +544,11 @@ a {
     .grid-2 {
         grid-template-columns: 1fr 1fr;
     }
+
     .grid-3 {
         grid-template-columns: 1fr 1fr 1fr;
     }
+
     .span-2c {
         grid-column: span 2;
     }
@@ -557,7 +574,7 @@ a {
     color: #fff;
     background-color: #e3342f;
     border-color: #e3342f;
-  }
+}
 
 .btn-danger:hover {
     color: #fff;
@@ -574,58 +591,67 @@ a {
 .dynamic-table {
     width: 100%;
     border-spacing: 0;
-    table-layout: auto; /* Allows columns to adjust based on content and CSS */
+    table-layout: auto;
+    /* Allows columns to adjust based on content and CSS */
 }
-  
-  /* Style for table headers and cells */
+
+/* Style for table headers and cells */
 .dynamic-table th,
 .dynamic-table td {
     /* padding: 5px; */
     /* text-align: center; */
 }
 
-  /* Ensure inputs and selects take full width of their cells */
+/* Ensure inputs and selects take full width of their cells */
 .dynamic-table .input {
     width: 100%;
-    box-sizing: border-box; /* Ensures padding doesn't affect width */
+    box-sizing: border-box;
+    /* Ensures padding doesn't affect width */
 }
-  
+
 /* Optional: Style for the button column */
 .dynamic-table th:last-child,
 .dynamic-table td:last-child {
-    width: 40px; /* Fixed width for the add/remove button column */
+    width: 40px;
+    /* Fixed width for the add/remove button column */
 }
 
 .header-long {
     display: inline;
 }
-  
+
 .header-short {
     display: none;
 }
 
-  /* Responsive design for smaller screens */
+/* Responsive design for smaller screens */
 @media (max-width: 768px) {
+
     .th-mileage,
     .td-mileage {
-      width: 70px !important; /* Smaller width for small screens */
+        width: 70px !important;
+        /* Smaller width for small screens */
     }
+
     .th-quantity,
     .td-quantity {
         width: 90px !important;
     }
+
     .th-price,
     .td-price {
         width: 90px !important;
     }
+
     .header-long {
         display: none !important;
     }
+
     .header-short {
         display: inline !important;
     }
 }
-  
+
 
 
 /* TRIPS TABLE */
@@ -634,12 +660,13 @@ a {
 .td-origin,
 .th-destination,
 .td-destination {
-    width: auto; /* Allow these columns to take remaining space */
+    width: auto;
+    /* Allow these columns to take remaining space */
 }
 
 /* Mileage column (Km) */
 .th-mileage,
 .td-mileage {
-    width: 110px; /* Default width for large screens */
+    width: 110px;
+    /* Default width for large screens */
 }
-    

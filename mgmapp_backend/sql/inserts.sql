@@ -30,3 +30,5 @@ SELECT
 FROM ordered_stuff as os
     JOIN stuff_types st ON st.id = os.stufftype_id
 WHERE UPPER(TRIM(st.type)) IN ('S', 'M', 'L', 'XL', 'XXL');
+
+ALTER TABLE sales ADD discount int AFTER event_id;

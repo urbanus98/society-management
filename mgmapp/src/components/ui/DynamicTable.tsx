@@ -90,7 +90,7 @@ const DynamicTable = <T extends Record<string, any>>({
                       return (
                         <select
                           className={
-                            "input padding-5 " +
+                            "input " +
                             (col.classes ? `${col.classes}` : "width-100")
                           }
                           value={row[col.key] || ""}

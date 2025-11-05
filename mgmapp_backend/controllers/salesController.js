@@ -1,6 +1,6 @@
 const db = require('../db');
 const { insertBlackFlow } = require('../services/blackDebtService');
-const { performInsert, performUpdate } = require('../services/genericActions');
+const { performInsert, performUpdate, performQuery } = require('../services/genericActions');
 const { updateBlackSaleFlow } = require('./blackController');
 
 // ** MERCH SALES **
@@ -11,6 +11,7 @@ const getSalesRows = async (req, res) => {
         SELECT
             id,
             note,
+            discount,
             DATE_FORMAT(date, "%d.%m.%Y") as date
         FROM
             sales
@@ -34,11 +35,11 @@ const getSalesRows = async (req, res) => {
 
 const postSale = async (req, res) => {
     try {
-        var { date, note, sold } = req.body;
+        var { date, note, discount, sold } = req.body;
 
-        const saleId = await insertSale(date, note);
+        const saleId = await insertSale(date, discount, note);
         await insertStuffSold(sold, saleId);
-        await insertBlackFlow(saleId, null, "Merch Sale", sold.reduce((acc, { quantity, price }) => acc + quantity * price, 0), 0, date);
+        await insertBlackFlow(saleId, null, "Merch Sale", sold.reduce((acc, { quantity, price }) => acc + quantity * price, 0) - discount, 0, date);
 
         return res.status(201).json({ message: 'Data created successfully' });
     } catch (error) {
@@ -55,14 +56,14 @@ const getSale = async (req, res) => {
 const putSale = async (req, res) => {
     try {
         const id = req.params.id;
-        var { date, note, sold } = req.body;
+        var { date, note, discount, sold } = req.body;
 
-        await updateSale(date, note, id);
+        await updateSale(date, note, discount, id);
 
         const stuffSold = await getSaleStuffSold(id);
         await handleStuffSold(id, stuffSold, sold);
 
-        await updateBlackSaleFlow(sold.reduce((acc, { quantity, price }) => acc + quantity * price, 0), date, id);
+        await updateBlackSaleFlow(sold.reduce((acc, { quantity, price }) => acc + quantity * price, 0) - discount, date, id);
 
         return res.status(200).json({ message: 'Data updated successfully' });
     } catch (error) {
@@ -111,9 +112,11 @@ const formatAndAggregateSales = async (sales) => {
             return new Promise((resolve, reject) => {
                 const sqlStuffSold = `
               SELECT
-                SUM(quantity * price_actual) as total
+                SUM(ss.quantity * ss.price_actual) as subtotal,
+                s.discount
               FROM
-                stuff_sold
+                sales s
+              JOIN stuff_sold ss on s.id = ss.sale_id
               WHERE
                 sale_id = ?
             `;
@@ -122,7 +125,7 @@ const formatAndAggregateSales = async (sales) => {
                     if (err) {
                         reject(err);
                     } else {
-                        sale.total = resultStuffSold[0].total || 0;
+                        sale.total = resultStuffSold[0].subtotal - resultStuffSold[0].discount || 0;
                         resolve(sale);
                         // resolve([sale.date, total + " €", sale.id]);
                     }
@@ -134,9 +137,9 @@ const formatAndAggregateSales = async (sales) => {
     return (salesWithAmounts);
 }
 
-const insertSale = async (date, note) => {
-    const sql = `INSERT INTO sales (date, note) VALUES (?, ?)`;
-    const insertID = await performInsert(sql, [date, note]);
+const insertSale = async (date, discount, note) => {
+    const sql = `INSERT INTO sales (date, discount, note) VALUES (?, ?, ?)`;
+    const insertID = await performInsert(sql, [date, discount, note]);
     return insertID;
 };
 
@@ -157,8 +160,8 @@ const insertStuffSold = (newDetails, saleId) => {
     });
 };
 
-const updateSale = async (date, note, id) => {
-    const sql = `UPDATE sales SET date = '${date}', note = '${note}' WHERE id = ${id}`;
+const updateSale = async (date, note, discount, id) => {
+    const sql = `UPDATE sales SET date = '${date}', discount = '${discount}', note = '${note}' WHERE id = ${id}`;
     const result = await performUpdate(sql);
 };
 
@@ -223,6 +226,7 @@ const getSaleData = (saleId) => {
                 stuff_types.type as type, 
                 stuff.name as name,
                 DATE_FORMAT(sales.date, "%Y-%m-%d") as date,
+                sales.discount,
                 sales.note
             FROM sales
             LEFT JOIN stuff_sold on sales.id = stuff_sold.sale_id
@@ -242,6 +246,7 @@ const getSaleData = (saleId) => {
             const formattedResult = {
                 date: resultStuffSold[0].date,
                 note: resultStuffSold[0].note,
+                discount: resultStuffSold[0].discount,
                 types: resultStuffSold.map((row) => {
                     // console.log(row.type_id);
                     return {

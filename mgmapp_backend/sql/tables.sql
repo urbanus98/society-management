@@ -56,6 +56,7 @@ CREATE TABLE events (
 CREATE TABLE sales (
     id int NOT NULL AUTO_INCREMENT,
     event_id int NULL UNIQUE,
+    discount int DEFAULT 0,
     date date,
     note VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -1,10 +1,11 @@
 const db = require("../db");
 const { updateDebt, insertBlackFlow } = require("../services/blackDebtService");
+const { performQuery, performDelete } = require("../services/genericActions");
 
-const getBlack = (req, res)=> {
+const getBlackRows = (req, res) => {
     const sql = `
             SELECT 
-                date, black_traffic.amount, black_traffic.name as flowName, black_traffic.id, direction, users.name as userName
+                date, black_traffic.amount, black_traffic.name as flowName, black_traffic.id, direction, users.name as userName, black_traffic.sale_id IS NOT NULL AS is_sale
             FROM black_traffic 
             LEFT JOIN debts ON black_traffic.debt_id = debts.id
             LEFT JOIN users ON debts.user_id = users.id
@@ -23,11 +24,12 @@ const getBlack = (req, res)=> {
                 name: row.flowName,
                 user: row.userName,
                 id: row.id,
-                direction: row.direction
+                direction: row.direction,
+                isSale: row.is_sale === 1
             };
         });
         return res.json(rows);
-    });  
+    });
 }
 
 const getBlackStatus = (req, res) => {
@@ -45,7 +47,7 @@ const getBlackStatus = (req, res) => {
     });
 }
 
-const getBlackChart = (req, res)=> {
+const getBlackChart = (req, res) => {
     const sql = `
         WITH RECURSIVE WeekSeries AS (
             SELECT CURDATE() - INTERVAL 25 WEEK AS week_start
@@ -90,17 +92,22 @@ const createBlackRecord = async (req, res) => {
     }
 }
 
-const getABlackFlow = (req, res) => {
-    const sql = `SELECT
-        name, amount, direction, DATE_FORMAT(date, "%Y-%m-%d") as date
-        FROM black_traffic WHERE id = ?`;
-    db.query(sql, [req.params.id], (err, result) => {
-        if (err) {
-            console.error("Error fetching data from database:", err);
-            return res.status(500).json({ error: "Failed to fetch data from the database" });
-        }
-        return res.json(result[0]);
-    });
+const getABlackFlow = async (req, res) => {
+    const id = req.params.id;
+    const sql = `
+        SELECT
+            name, 
+            amount,
+            direction,
+            sale_id,
+            debt_id,
+            DATE_FORMAT(date, "%Y-%m-%d") as date
+        FROM black_traffic WHERE id = ?
+    `;
+    const [result] = await performQuery(sql, id);
+    const canDelete = result && result.debt_id == null && result.sale_id == null;
+
+    return res.json({ ...result, canDelete });
 }
 
 const updateBlackFlowAndDebt = async (req, res) => {
@@ -109,12 +116,26 @@ const updateBlackFlowAndDebt = async (req, res) => {
 
     await updateBlackFlow(name, amount, date, direction, id);
 
-    const debtId = await ifDebt(id);
-    if (debtId != null) {
+    if (await ifDebt(id)) {
         await updateDebt(debtId, amount);
     }
 
     return res.status(200).json({ message: 'Data updated successfully' });
+}
+
+const deleteBlackFlow = async (req, res) => {
+    const id = req.params.id;
+
+    if (await isIndependent(id)) {
+        const result = await performDelete(`DELETE FROM black_traffic WHERE id = ${id};`);
+        if (result.success) {
+            return res.status(200).json({ message: 'Deleted successfully.' })
+        } else {
+            return res.status(500).json({ error: "Failed to delete data." });
+        }
+    } else {
+        return res.status(500).json({ error: 'Cannot delete. Row is not independent.' })
+    }
 }
 
 const updateBlackSaleFlow = (amount, date, id) => {
@@ -127,19 +148,19 @@ const updateBlackSaleFlow = (amount, date, id) => {
                 return reject(err);
             }
             console.log('Data updated successfully:', result);
-            
+
             resolve();
         });
     });
 }
 
-module.exports = { getBlack, getBlackStatus, getBlackChart, createBlackRecord, getABlackFlow, updateBlackFlowAndDebt, updateBlackSaleFlow };
+module.exports = { getBlackRows, getBlackStatus, getBlackChart, createBlackRecord, getABlackFlow, updateBlackFlowAndDebt, updateBlackSaleFlow, deleteBlackFlow };
 
 const ifDebt = (blackId) => {
     return new Promise((resolve, reject) => {
         const sql = `SELECT debt_id from black_traffic where id=${blackId}`;
 
-        db.query(sql, (err, result)=>{
+        db.query(sql, (err, result) => {
             if (err) {
                 console.error('Error fetching data from database:', err);
                 return reject(err);
@@ -158,8 +179,18 @@ const updateBlackFlow = (name, amount, date, direction, id) => {
                 return reject(err);
             }
             console.log('Data updated successfully:', result);
-            
+
             resolve();
         });
     });
+}
+
+const isIndependent = async (blackTrafficID) => {
+    const sql = `
+                SELECT (debt_id IS NULL AND sale_id IS NULL) AS canDelete
+                    FROM black_traffic
+                WHERE id = ${blackTrafficID};`;
+
+    const result = await performQuery(sql);
+    return result[0].canDelete;
 }

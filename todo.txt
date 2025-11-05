@@ -19,6 +19,9 @@
 - whitelist .env
 - static files folder
 - cors
+- potni stroski bug
+
+- edit merch traffic -> redirect to edit sale
 
 home page:
 - n of events, hours
