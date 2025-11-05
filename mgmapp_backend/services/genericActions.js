@@ -20,7 +20,7 @@ const performInsert = (sql, params = []) => {
                 console.error("Database insert error:", err);
                 reject({ error: "Database insert failed", details: err });
             } else {
-                resolve({ id: result.insertId });
+                resolve(result.insertId);
             }
         });
     });

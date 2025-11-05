@@ -5,7 +5,7 @@ const { updateBlackSaleFlow } = require('./blackController');
 
 // ** MERCH SALES **
 
-const getSalesRows = async (req, res)=>{
+const getSalesRows = async (req, res) => {
     try {
         var sql = `
         SELECT
@@ -32,7 +32,7 @@ const getSalesRows = async (req, res)=>{
     }
 };
 
-const postSale = async (req, res)=>{
+const postSale = async (req, res) => {
     try {
         var { date, note, sold } = req.body;
 
@@ -47,12 +47,12 @@ const postSale = async (req, res)=>{
     }
 };
 
-const getSale = async (req, res)=>{
+const getSale = async (req, res) => {
     const result = await getSaleData(req.params.id);
     return res.json(result);
 };
 
-const putSale = async (req, res)=>{
+const putSale = async (req, res) => {
     try {
         const id = req.params.id;
         var { date, note, sold } = req.body;
@@ -79,9 +79,9 @@ const getSalesWithAmounts = async (sqlSales) => {
             return ([]);
         }
         const formattedSales = await formatAndAggregateSales(sales)
-        return formattedSales;        
+        return formattedSales;
     } catch (error) {
-        return(error);
+        return (error);
     }
 }
 
@@ -108,8 +108,8 @@ const getSales = (sql) => {
 const formatAndAggregateSales = async (sales) => {
     const salesWithAmounts = await Promise.all(
         sales.map((sale) => {
-          return new Promise((resolve, reject) => {
-            const sqlStuffSold = `
+            return new Promise((resolve, reject) => {
+                const sqlStuffSold = `
               SELECT
                 SUM(quantity * price_actual) as total
               FROM
@@ -118,26 +118,26 @@ const formatAndAggregateSales = async (sales) => {
                 sale_id = ?
             `;
 
-            db.query(sqlStuffSold, [sale.id], (err, resultStuffSold) => {
-              if (err) {
-                reject(err);
-              } else {
-                sale.total = resultStuffSold[0].total || 0;
-                resolve(sale);
-                // resolve([sale.date, total + " €", sale.id]);
-              }
+                db.query(sqlStuffSold, [sale.id], (err, resultStuffSold) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        sale.total = resultStuffSold[0].total || 0;
+                        resolve(sale);
+                        // resolve([sale.date, total + " €", sale.id]);
+                    }
+                });
             });
-          });
         })
     );
 
-    return(salesWithAmounts);
+    return (salesWithAmounts);
 }
 
 const insertSale = async (date, note) => {
     const sql = `INSERT INTO sales (date, note) VALUES (?, ?)`;
-    const result = await performInsert(sql, [date, note]);
-    return result.insertId;
+    const insertID = await performInsert(sql, [date, note]);
+    return insertID;
 };
 
 const insertStuffSold = (newDetails, saleId) => {
@@ -232,7 +232,7 @@ const getSaleData = (saleId) => {
         `;
         // console.log(sqlStuffSold);
 
-        db.query(sqlStuffSold, (err, resultStuffSold)=>{
+        db.query(sqlStuffSold, (err, resultStuffSold) => {
             if (err) {
                 console.error('Error fetching sale:', err);
                 reject(err);

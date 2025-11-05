@@ -97,8 +97,8 @@ module.exports = { getProformaRows, postProforma, getProforma, putProforma };
 
 const insertInvoice = async (entityId) => {
     const sql = `INSERT INTO invoices (payer_id, receiver_id) VALUES ('${entityId}', '1')`;
-    const result = await performInsert(sql);
-    return result.id;
+    const insertID = await performInsert(sql);
+    return insertID;
 }
 
 const updateInvoice = async (id, entityId) => {

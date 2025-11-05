@@ -39,7 +39,7 @@ const getDebts = async (req, res) => {
             };
         })
     );
-    
+
 }
 
 const getDebtRows = async (req, res) => {
@@ -52,7 +52,7 @@ const getDebtRows = async (req, res) => {
         //         JOIN users ON debts.user_id = users.id
         //     ORDER BY date DESC, id DESC;
         // `;
-    const sql = `
+        const sql = `
         SELECT 
             date,
             id,
@@ -61,7 +61,7 @@ const getDebtRows = async (req, res) => {
             userName,
             direction
         FROM (
-            -- Query for debts
+            -- debts
             SELECT 
                 black_traffic.date,
                 debts.id as id,
@@ -75,7 +75,7 @@ const getDebtRows = async (req, res) => {
 
             UNION ALL
 
-            -- Query for trip costs grouped by year
+            -- trip costs grouped by year
             SELECT 
                 STR_TO_DATE(CONCAT(YEAR(e.date), '-12-31'), '%Y-%m-%d') as date,
                 NULL as id,
@@ -107,7 +107,7 @@ const getDebtRows = async (req, res) => {
     } catch (error) {
         console.error("Error fetching data from database:", error);
         return res.status(500).json({ error: "Failed to fetch data from the database" });
-    }   
+    }
 }
 
 const insertPay = async (req, res) => {
@@ -172,14 +172,14 @@ const insertCashout = async (req, res) => {
 
 const getDebt = (req, res) => {
     const id = req.params.id;
-    const sql =`
+    const sql = `
         SELECT
             debts.amount, DATE_FORMAT(date, "%Y-%m-%d") as date, black_traffic.name
         FROM debts
         JOIN black_traffic ON debts.id = black_traffic.debt_id
         WHERE debts.id = ${id}
     `;
-    db.query(sql, (err, result)=>{
+    db.query(sql, (err, result) => {
         if (err) {
             console.error('Error fetching data from database:', err);
             return res.status(500).json({ error: 'Failed to fetch data from the database' });
@@ -191,12 +191,19 @@ const getDebt = (req, res) => {
 const updateDebtAndFlow = async (req, res) => {
     const { amount, name, date } = req.body;
     const debtId = req.params.id;
+    try {
+        await updateDebt(debtId, amount);
 
-    await updateDebt(debtId, amount);
-
-    await updateFlow(name, amount, date, debtId);
-
-    return res.status(200).json({ message: 'Data updated successfully' });
+        if (await affectsBlackTraffic(debtId)) {
+            await updateFlow(name, amount, date, debtId);
+        } else {
+            await updateFlow(name, null, date, debtId);
+        }
+        return res.status(200).json({ message: 'Data updated successfully.' });
+    } catch (error) {
+        console.error("Error updating data:", error);
+        return res.status(500).json({ error: "Failed to update database data." });
+    }
 }
 
 module.exports = { getDebts, getDebtRows, insertPay, insertDeposit, insertBuy, insertCashout, getDebt, updateDebtAndFlow }; // TODO implement setDebtStatusTo
@@ -215,3 +222,8 @@ const insertDebt = async (user_id, amount) => {
         });
     });
 };
+
+const affectsBlackTraffic = async (debtId) => {
+    const result = await performQuery(`SELECT amount IS NOT NULL as isNull FROM black_traffic WHERE debt_id = ${debtId};`);
+    return result[0].isNull == 1;
+}

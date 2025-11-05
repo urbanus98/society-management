@@ -66,7 +66,7 @@ const InvoicesForm = ({ invoice }: Props) => {
     try {
       const issuingEntityRes = await axiosPrivate.get(`/api/entities/1`);
       const payingEntityRes = await axiosPrivate.get(
-        `/entities/${invoice.payerId}`
+        `/api/entities/${invoice.payerId}`
       );
       const issuer = issuingEntityRes.data;
       const payer = payingEntityRes.data;
