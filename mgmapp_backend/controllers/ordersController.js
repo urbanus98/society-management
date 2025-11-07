@@ -126,8 +126,10 @@ const getOrderedStuffIDs = (id) => {
     });
 };
 
-const handleOrderedStuff = async (orderId, alreadyOrderedStuffIDs, details) => {
+const handleOrderedStuff = async (orderId, alreadyOrderedStuffIDs, detailString) => {
     try {
+        const details = parseJSON(detailString);
+        
         let oldDetails = details.slice(0, alreadyOrderedStuffIDs.length);
         let newDetails = details.slice(alreadyOrderedStuffIDs.length);
 
@@ -163,10 +165,10 @@ const updateOldStuffOrdered = (oldDetails, stuffSoldIDs) => {
 
 const insertNewStuffOrdered = (newDetails, orderId) => {
     return new Promise((resolve, reject) => {
-        const details = parseJSON(newDetails);
-        if (details.length === 0) return resolve(); // No new items to insert
 
-        const values = details.map(({ stuffType_id, quantity }) => [orderId, stuffType_id, quantity]);
+        if (newDetails.length === 0) return resolve(); // No new items to insert
+        console.log(newDetails);
+        const values = newDetails.map(({ stuffType_id, quantity }) => [orderId, stuffType_id, quantity]);
         const sql = `INSERT INTO ordered_stuff (order_id, stufftype_id, quantity) VALUES ?`;
 
         db.query(sql, [values], (err, result) => {
@@ -183,8 +185,7 @@ const insertOrder = (req) => {
     return new Promise((resolve, reject) => {
         const { date } = req.body;
 
-        // console.log(req.body);
-        // console.log(details);
+        console.log(req.body);
         
         let filePath = null;
         if (req.file) {

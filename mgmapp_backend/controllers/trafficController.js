@@ -1,7 +1,7 @@
 const db = require("../db");
 const { priceMultiply } = require("../services/genericActions");
 
-const getTraffic = (req, res)=> {
+const getTrafficRows = (req, res)=> {
     const sql = `
         SELECT
             traffic.id,
@@ -10,6 +10,8 @@ const getTraffic = (req, res)=> {
             traffic.direction,
             DATE_FORMAT(traffic.date, "%d.%m.%Y") as date
         FROM traffic
+        LEFT JOIN invoices on traffic.invoice_id = invoices.id
+        WHERE traffic.invoice_id IS NULL OR invoices.status = 0
         ORDER BY traffic.date DESC, id DESC;
     `;
 
@@ -113,18 +115,29 @@ const getTrafficChart = (req, res)=> {
         SELECT 
             DATE_FORMAT(ws.week_start, '%Y-%m') AS month_year,
             YEARWEEK(ws.week_start) AS week_number,
-            ws.week_start, -- Explicitly include in GROUP BY
-            COALESCE(SUM(CASE WHEN tr.direction = 0 THEN ROUND(tr.amount / 100, 2) ELSE 0 END), 0) - 
+            ws.week_start,
+            COALESCE(SUM(CASE WHEN tr.direction = 0 THEN ROUND(tr.amount / 100, 2) ELSE 0 END), 0) -
             COALESCE(SUM(CASE WHEN tr.direction = 1 THEN ROUND(tr.amount / 100, 2) ELSE 0 END), 0) AS weekly_balance,
-            (SELECT 
-                SUM(CASE WHEN tr2.direction = 0 THEN ROUND(tr2.amount / 100, 2) ELSE 0 END) - 
-                SUM(CASE WHEN tr2.direction = 1 THEN ROUND(tr2.amount / 100, 2) ELSE 0 END)
-            FROM traffic tr2
-            WHERE tr2.date <= ws.week_start) AS cumulative_balance
+            (
+                SELECT 
+                    SUM(
+                        CASE 
+                            WHEN tr2.direction = 0 THEN ROUND(tr2.amount / 100, 2)
+                            ELSE -ROUND(tr2.amount / 100, 2)
+                        END
+                    )
+                FROM traffic tr2
+                LEFT JOIN invoices inv2 ON tr2.invoice_id = inv2.id
+                WHERE tr2.date <= ws.week_start
+                AND (tr2.invoice_id IS NULL OR inv2.status = 0)
+            ) AS cumulative_balance
         FROM WeekSeries ws
         LEFT JOIN traffic tr ON YEARWEEK(tr.date) = YEARWEEK(ws.week_start)
+        LEFT JOIN invoices inv ON tr.invoice_id = inv.id
+        WHERE tr.invoice_id IS NULL OR inv.status = 0
         GROUP BY month_year, week_number, ws.week_start
         ORDER BY ws.week_start;
+
     `;
     db.query(sql, (err, result) => {
         if (err) {
@@ -136,4 +149,4 @@ const getTrafficChart = (req, res)=> {
     });
 }
 
-module.exports = { getTraffic, postTraffic, getOneTraffic, putTraffic, insertTraffic, updateTraffic, getTrafficChart };
+module.exports = { getTrafficRows, postTraffic, getOneTraffic, putTraffic, insertTraffic, updateTraffic, getTrafficChart };

@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const { getTraffic, postTraffic, getOneTraffic, putTraffic, getTrafficChart } = require('../controllers/trafficController');
+const { getTrafficRows, postTraffic, getOneTraffic, putTraffic, getTrafficChart } = require('../controllers/trafficController');
 
 router.get('/chart', getTrafficChart);
 
-router.get('/', getTraffic);
+router.get('/', getTrafficRows);
 router.post('/', postTraffic);
 
 router.get('/:id', getOneTraffic);
