@@ -154,15 +154,21 @@ const getEitherTrafficStats = async (tableName) => {
                 DATE_FORMAT(date, '%Y') as year,
                 ROUND(SUM(CASE WHEN direction = 0 THEN amount ELSE 0 END)[DIVISION]) AS inflow,
                 ROUND(SUM(CASE WHEN direction = 1 THEN amount ELSE 0 END)[DIVISION]) * (-1) AS outflow
-            FROM [TABLE_NAME]
+            FROM [TABLE_NAME] t
+            [INVOICE_JOIN]
+            [INVOICE_WHEN]
             GROUP BY year 
             ORDER BY year
         `;
         var sql = sqlTemplate.replace(/\[TABLE_NAME\]/g, tableName);
         if (tableName === 'traffic') {
             sql = sql.replace(/\[DIVISION\]/g," / 100, 2");
+            sql = sql.replace(/\[INVOICE_JOIN\]/g,"LEFT JOIN invoices i ON t.invoice_id = i.id");
+            sql = sql.replace(/\[INVOICE_WHEN\]/g,"WHERE (i.status = 0 OR t.invoice_id IS NULL)");
         } else {
             sql = sql.replace(/\[DIVISION\]/g,"");
+            sql = sql.replace(/\[INVOICE_JOIN\]/g,"");
+            sql = sql.replace(/\[INVOICE_WHEN\]/g,"");
         }
         const result = await performQuery(sql);
         return result;
@@ -195,60 +201,75 @@ async function getMonthlyBalance(tableName, year) {
     try {
         const sqlTemplate = `
             WITH all_months AS (
-                SELECT DATE_FORMAT(CONCAT(?, '-01-01'), '%Y-%m') AS month
-                UNION SELECT DATE_FORMAT(CONCAT(?, '-02-01'), '%Y-%m')
-                UNION SELECT DATE_FORMAT(CONCAT(?, '-03-01'), '%Y-%m')
-                UNION SELECT DATE_FORMAT(CONCAT(?, '-04-01'), '%Y-%m')
-                UNION SELECT DATE_FORMAT(CONCAT(?, '-05-01'), '%Y-%m')
-                UNION SELECT DATE_FORMAT(CONCAT(?, '-06-01'), '%Y-%m')
-                UNION SELECT DATE_FORMAT(CONCAT(?, '-07-01'), '%Y-%m')
-                UNION SELECT DATE_FORMAT(CONCAT(?, '-08-01'), '%Y-%m')
-                UNION SELECT DATE_FORMAT(CONCAT(?, '-09-01'), '%Y-%m')
-                UNION SELECT DATE_FORMAT(CONCAT(?, '-10-01'), '%Y-%m')
-                UNION SELECT DATE_FORMAT(CONCAT(?, '-11-01'), '%Y-%m')
-                UNION SELECT DATE_FORMAT(CONCAT(?, '-12-01'), '%Y-%m')
-            ),
-            initial_balance AS (
-                SELECT 
-                    ROUND(COALESCE(SUM(CASE WHEN direction = 0 THEN amount ELSE 0 END) - SUM(CASE WHEN direction = 1 THEN amount ELSE 0 END), 0)[DIVISION]) AS initial_balance
-                FROM [TABLE_NAME]
-                WHERE date < CONCAT(?, '-01-01')
-            ),
-            monthly_transactions AS (
-                SELECT 
-                    DATE_FORMAT(date, '%Y-%m') AS month,
-                    ROUND(COALESCE(SUM(CASE WHEN direction = 0 THEN amount ELSE 0 END), 0)[DIVISION]) AS total_inflow,
-                    ROUND(COALESCE(SUM(CASE WHEN direction = 1 THEN amount ELSE 0 END), 0)[DIVISION]) AS total_outflow,
-                    ROUND(COALESCE(SUM(CASE WHEN direction = 0 THEN amount ELSE 0 END) - SUM(CASE WHEN direction = 1 THEN amount ELSE 0 END), 0)[DIVISION]) AS monthly_change
-                FROM [TABLE_NAME]
-                WHERE YEAR(date) = ?
-                GROUP BY DATE_FORMAT(date, '%Y-%m')
-            ),
-            running_balance AS (
-                SELECT 
-                    am.month,
-                    COALESCE(mt.total_inflow, 0) AS total_inflow,
-                    COALESCE(mt.total_outflow, 0) AS total_outflow,
-                    COALESCE(mt.monthly_change, 0) AS monthly_change,
-                    ib.initial_balance + SUM(COALESCE(mt.monthly_change, 0)) OVER (ORDER BY am.month ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS balance
-                FROM all_months am
-                CROSS JOIN initial_balance ib
-                LEFT JOIN monthly_transactions mt ON am.month = mt.month
-            )
+            SELECT DATE_FORMAT(CONCAT(?, '-01-01'), '%Y-%m') AS month
+            UNION SELECT DATE_FORMAT(CONCAT(?, '-02-01'), '%Y-%m')
+            UNION SELECT DATE_FORMAT(CONCAT(?, '-03-01'), '%Y-%m')
+            UNION SELECT DATE_FORMAT(CONCAT(?, '-04-01'), '%Y-%m')
+            UNION SELECT DATE_FORMAT(CONCAT(?, '-05-01'), '%Y-%m')
+            UNION SELECT DATE_FORMAT(CONCAT(?, '-06-01'), '%Y-%m')
+            UNION SELECT DATE_FORMAT(CONCAT(?, '-07-01'), '%Y-%m')
+            UNION SELECT DATE_FORMAT(CONCAT(?, '-08-01'), '%Y-%m')
+            UNION SELECT DATE_FORMAT(CONCAT(?, '-09-01'), '%Y-%m')
+            UNION SELECT DATE_FORMAT(CONCAT(?, '-10-01'), '%Y-%m')
+            UNION SELECT DATE_FORMAT(CONCAT(?, '-11-01'), '%Y-%m')
+            UNION SELECT DATE_FORMAT(CONCAT(?, '-12-01'), '%Y-%m')
+        ),
+        initial_balance AS (
             SELECT 
-                month,
-                total_inflow,
-                total_outflow,
-                balance
-            FROM running_balance
-            ORDER BY month;
+                ROUND(
+                    COALESCE(
+                        SUM(CASE WHEN t.direction = 0 THEN t.amount ELSE 0 END) - 
+                        SUM(CASE WHEN t.direction = 1 THEN t.amount ELSE 0 END),
+                    0)[DIVISION]
+                ) AS initial_balance
+            FROM [TABLE_NAME] t
+            [INVOICE_JOIN]
+            WHERE t.date < CONCAT(?, '-01-01')
+            [INVOICE_WHEN]
+        ),
+        monthly_transactions AS (
+            SELECT 
+                DATE_FORMAT(t.date, '%Y-%m') AS month,
+                ROUND(COALESCE(SUM(CASE WHEN t.direction = 0 THEN t.amount ELSE 0 END), 0)[DIVISION]) AS total_inflow,
+                ROUND(COALESCE(SUM(CASE WHEN t.direction = 1 THEN t.amount ELSE 0 END), 0)[DIVISION]) AS total_outflow,
+                ROUND(COALESCE(SUM(CASE WHEN t.direction = 0 THEN t.amount ELSE 0 END) - SUM(CASE WHEN t.direction = 1 THEN t.amount ELSE 0 END), 0)[DIVISION]) AS monthly_change
+            FROM [TABLE_NAME] t
+            [INVOICE_JOIN]
+            WHERE YEAR(t.date) = ?
+            [INVOICE_WHEN]
+            GROUP BY DATE_FORMAT(t.date, '%Y-%m')
+        ),
+        running_balance AS (
+            SELECT 
+                am.month,
+                COALESCE(mt.total_inflow, 0) AS total_inflow,
+                COALESCE(mt.total_outflow, 0) AS total_outflow,
+                COALESCE(mt.monthly_change, 0) AS monthly_change,
+                ib.initial_balance + 
+                SUM(COALESCE(mt.monthly_change, 0)) OVER (ORDER BY am.month ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS balance
+            FROM all_months am
+            CROSS JOIN initial_balance ib
+            LEFT JOIN monthly_transactions mt ON am.month = mt.month
+        )
+        SELECT 
+            month,
+            total_inflow,
+            total_outflow,
+            balance
+        FROM running_balance
+        ORDER BY month;
+
         `;
 
         var sql = sqlTemplate.replace(/\[TABLE_NAME\]/g, tableName);
         if (tableName === 'traffic') {
             sql = sql.replace(/\[DIVISION\]/g," / 100, 2");
+            sql = sql.replace(/\[INVOICE_JOIN\]/g,"LEFT JOIN invoices i ON t.invoice_id = i.id");
+            sql = sql.replace(/\[INVOICE_WHEN\]/g,"AND (i.status = 0 OR t.invoice_id IS NULL)");
         } else {
             sql = sql.replace(/\[DIVISION\]/g,"");
+            sql = sql.replace(/\[INVOICE_JOIN\]/g,"");
+            sql = sql.replace(/\[INVOICE_WHEN\]/g,"");
         }
 
         const params = Array(14).fill(year);

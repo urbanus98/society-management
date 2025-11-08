@@ -5,7 +5,8 @@ const { performQuery, performDelete } = require("../services/genericActions");
 const getBlackRows = (req, res) => {
     const sql = `
             SELECT 
-                date, black_traffic.amount, black_traffic.name as flowName, black_traffic.id, direction, users.name as userName, black_traffic.sale_id IS NOT NULL AS is_sale
+                date, black_traffic.amount, black_traffic.name as flowName, black_traffic.id, direction, users.name as userName, 
+                (black_traffic.sale_id IS NULL AND black_traffic.debt_id IS NULL) AS isNative
             FROM black_traffic 
             LEFT JOIN debts ON black_traffic.debt_id = debts.id
             LEFT JOIN users ON debts.user_id = users.id
@@ -25,7 +26,7 @@ const getBlackRows = (req, res) => {
                 user: row.userName,
                 id: row.id,
                 direction: row.direction,
-                isSale: row.is_sale === 1
+                isNative: row.isNative === 1
             };
         });
         return res.json(rows);
@@ -116,7 +117,8 @@ const updateBlackFlowAndDebt = async (req, res) => {
 
     await updateBlackFlow(name, amount, date, direction, id);
 
-    if (await ifDebt(id)) {
+    const debtId = await ifDebt(id)
+    if (debtId) {
         await updateDebt(debtId, amount);
     }
 

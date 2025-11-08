@@ -8,7 +8,8 @@ const getTrafficRows = (req, res)=> {
             traffic.name,
             ROUND(traffic.amount / 100, 2) as amount,
             traffic.direction,
-            DATE_FORMAT(traffic.date, "%d.%m.%Y") as date
+            DATE_FORMAT(traffic.date, "%d.%m.%Y") as date,
+            (traffic.invoice_id IS NULL AND traffic.order_id IS NULL) AS isNative
         FROM traffic
         LEFT JOIN invoices on traffic.invoice_id = invoices.id
         WHERE traffic.invoice_id IS NULL OR invoices.status = 0
@@ -21,13 +22,14 @@ const getTrafficRows = (req, res)=> {
             return res.status(500).json({ error: 'Failed to fetch data from the database' });
         }
         // console.log('Data fetched successfully:', result);
-        return res.json(result.map((traffic) => {
+        return res.json(result.map((row) => {
             return {
-                date: traffic.date,
-                name: traffic.name,
-                amount: traffic.amount + "€",
-                direction: traffic.direction,
-                id: traffic.id,
+                date: row.date,
+                name: row.name,
+                amount: row.amount + "€",
+                direction: row.direction,
+                id: row.id,
+                isNative: row.isNative === 1
             }
         }));
     });
