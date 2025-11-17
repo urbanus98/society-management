@@ -29,7 +29,7 @@ const getTrafficRows = (req, res)=> {
                 amount: row.amount + "€",
                 direction: row.direction,
                 id: row.id,
-                isNative: row.isNative === 1
+                isForeign: row.isNative !== 1
             }
         }));
     });

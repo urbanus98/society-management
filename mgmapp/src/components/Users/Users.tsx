@@ -1,5 +1,5 @@
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import editIcon from "../../assets/icons/edit_bs.png";
+import editIcon from "../../assets/icons/edit_ws.png";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
@@ -35,7 +35,7 @@ const Users = () => {
   return (
     <article>
       {users?.length ? (
-        <div className="black-back pad-1r border-radius width-100 coluflex gap justify-between">
+        <div className="dark-back pad-1r border-radius width-100 coluflex gap justify-between">
           <table className="bright-text">
             <tr>
               <th>ID</th>

@@ -104,7 +104,7 @@ const BlackTrafficForm = ({ flow }: Props) => {
               { id: 1, name: "Odliv" },
             ]}
             withDisabled={false}
-            classes="width-100"
+            classes="input width-100"
             formik={formik}
           />
         </div>

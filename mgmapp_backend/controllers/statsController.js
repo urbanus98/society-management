@@ -22,12 +22,27 @@ const getMZZFunds = async (req, res) => {
     try {
         const sql = `
             SELECT
-                DATE_FORMAT(date, '%Y') as year,
-                COALESCE(SUM(amount), 0) as funds
-            FROM
-                black_traffic
-            WHERE name="zelišča" OR name="zelisca" OR name="zelenjava" OR name="zelenje"
+                year,
+                SUM(amount) AS funds
+            FROM (
+                SELECT
+                    DATE_FORMAT(date, '%Y') as year,
+                    amount
+                FROM
+                    black_traffic
+                WHERE name REGEXP 'zeliš|zelisc|zelenjav|zelenje'
+
+                UNION
+
+                SELECT
+                    DATE_FORMAT(bt.date, '%Y') AS year,
+                    d.amount
+                FROM debts d
+                JOIN black_traffic bt ON bt.debt_id = d.id
+                WHERE name REGEXP 'zeliš|zelisc|zelenjav|zelenje'
+            ) AS combined
             GROUP BY year
+            ORDER BY year;
         `;
         const result = await performQuery(sql);
         res.status(200).json(result);

@@ -26,7 +26,7 @@ const getBlackRows = (req, res) => {
                 user: row.userName,
                 id: row.id,
                 direction: row.direction,
-                isNative: row.isNative === 1
+                isForeign: row.isNative !== 1
             };
         });
         return res.json(rows);

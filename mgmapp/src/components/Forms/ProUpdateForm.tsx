@@ -81,7 +81,7 @@ const ProUpdateForm = ({ proforma }: Props) => {
           <FormikSelect
             name="entityId"
             label="Entiteta"
-            classes="width-100"
+            classes="input width-100"
             values={entities}
             withDisabled={false}
             formik={formik}

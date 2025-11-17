@@ -58,7 +58,7 @@ const InvoicesForm = () => {
       <FormikSelect
         name="entity_id"
         label="Entiteta"
-        classes="width-100"
+        classes="input width-100"
         values={entities}
         withDisabled={true}
         formik={formik}

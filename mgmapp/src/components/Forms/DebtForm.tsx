@@ -70,7 +70,7 @@ const DebtForm = ({ debt, action }: Props) => {
             placeholder="Vsota"
             value={amount}
             handleChange={(event) => setAmount(event.target.value)}
-            classes="w70"
+            classes="w80"
           />
         </div>
         <SubmButton text="Potrdi" />

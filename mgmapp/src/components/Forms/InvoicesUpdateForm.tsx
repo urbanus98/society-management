@@ -85,7 +85,7 @@ const InvoicesForm = ({ invoice }: Props) => {
           <FormikSelect
             name="entityId"
             label="Entiteta"
-            classes="width-100"
+            classes="input width-100"
             values={entities}
             withDisabled={false}
             formik={formik}
@@ -139,6 +139,7 @@ const InvoicesForm = ({ invoice }: Props) => {
             name="status"
             values={statuses}
             label="Status:"
+            classes="input"
             withDisabled={false}
             formik={formik}
           />

@@ -50,7 +50,7 @@ export default function FinanceTable({ headers, rows, linkPart }: Props) {
               {visibleHeaders.map((header) => (
                 <TableCell key={`${index}-${header.key}`}>
                   {header.key === "id" ? ( // If this column is a link
-                  row.isNative && row["id"] && ( // hide on sales and trip costs
+                  !row.isForeign && row["id"] && ( // hide on invoice, sale, debt and trip costs
                     <Link to={`/${linkPart}/${row["id"]}/edit`}>
                       <img src={editIcon} alt="edit" width={20} />
                     </Link>
