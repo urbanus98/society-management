@@ -30,10 +30,19 @@ const performUpdate = (sql, params = []) => {
     return new Promise((resolve, reject) => {
         db.query(sql, params, (err, result) => {
             if (err) {
-                console.error("Database update error:", err);
-                reject({ error: "Database update failed", details: err });
+                console.error('[DB UPDATE ERROR]', {
+                // sql,
+                // params,
+                code: err.code,
+                message: err.message
+                });
+
+                reject(err);
             } else {
-                resolve({ success: true });
+                resolve({
+                success: true,
+                affectedRows: result.affectedRows
+                });
             }
         });
     });

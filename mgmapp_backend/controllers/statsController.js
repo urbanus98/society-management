@@ -152,8 +152,8 @@ const getYearlyEventStats = async (req, res) => {
         `;
         const hours = await performQuery(sqlHours);
         res.status(200).json({
-            typeCount: count.length > 0 ? count : {total: 0, type: 'Ni dogodkov'},
-            typeHours: hours.length > 0 ? hours : {total: 0, type: 'Ni dogodkov'}
+            typeCount: count.length > 0 ? count : [{total: 0, type: 'Ni dogodkov'}],
+            typeHours: hours.length > 0 ? hours : [{total: 0, type: 'Ni dogodkov'}]
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
